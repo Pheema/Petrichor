@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Monitor|x64">
+      <Configuration>Monitor</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{4838408E-EA33-4C89-ABA7-69A54B308D62}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Petrichor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Monitor|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Monitor|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)Bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Obj\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)Src;$(IncludePath)</IncludePath>
+    <EnableCppCoreCheck>false</EnableCppCoreCheck>
+    <CodeAnalysisRuleSet>D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)Bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Obj\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)Src;$(IncludePath)</IncludePath>
+    <EnableCppCoreCheck>false</EnableCppCoreCheck>
+    <CodeAnalysisRuleSet>D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Monitor|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)Bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Obj\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)Src;$(IncludePath)</IncludePath>
+    <EnableCppCoreCheck>false</EnableCppCoreCheck>
+    <CodeAnalysisRuleSet>D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>PHM_DEBUG; _DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <EnablePREfast>false</EnablePREfast>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)Src\Ext\Assimp\Lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <EnablePREfast>false</EnablePREfast>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <OpenMPSupport>true</OpenMPSupport>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Src\Ext\Assimp\Lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Monitor|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>PHM_DEBUG; _CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <EnablePREfast>false</EnablePREfast>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <OpenMPSupport>true</OpenMPSupport>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Src\Ext\Assimp\Lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Src\Core\Accel\Bound.h" />
+    <ClInclude Include="..\Src\Core\Accel\IAccelerationStructureBase.h" />
+    <ClInclude Include="..\Src\Core\Accel\BruteForce.h" />
+    <ClInclude Include="..\Src\Core\Accel\BVH.h" />
+    <ClInclude Include="..\Src\Core\Accel\BVHNode.h" />
+    <ClInclude Include="..\Src\Core\Assert.h" />
+    <ClInclude Include="..\Src\Core\Camera.h" />
+    <ClInclude Include="..\Src\Core\Constants.h" />
+    <ClInclude Include="..\Src\Core\Environment.h" />
+    <ClInclude Include="..\Src\Core\Geometry\GeometryBase.h" />
+    <ClInclude Include="..\Src\Core\Geometry\Mesh.h" />
+    <ClInclude Include="..\Src\Core\Geometry\Sphere.h" />
+    <ClInclude Include="..\Src\Core\Geometry\Triangle.h" />
+    <ClInclude Include="..\Src\Core\Geometry\Vertex.h" />
+    <ClInclude Include="..\Src\Core\HitInfo.h" />
+    <ClInclude Include="..\Src\Core\Integrator\PathTracing.h" />
+    <ClInclude Include="..\Src\Core\Material\Emission.h" />
+    <ClInclude Include="..\Src\Core\Material\GGX.h" />
+    <ClInclude Include="..\Src\Core\Material\Lambert.h" />
+    <ClInclude Include="..\Src\Core\Material\MaterialBase.h" />
+    <ClInclude Include="..\Src\Core\Material\MatMix.h" />
+    <ClInclude Include="..\Src\Core\Petrichor.h" />
+    <ClInclude Include="..\Src\Core\Ray.h" />
+    <ClInclude Include="..\Src\Core\Sampler\ISampler2D.h" />
+    <ClInclude Include="..\Src\Core\Sampler\MicroJitteredSampler.h" />
+    <ClInclude Include="..\Src\Core\Sampler\RandomSampler2D.h" />
+    <ClInclude Include="..\Src\Core\Scene.h" />
+    <ClInclude Include="..\Src\Core\Texture2D.h" />
+    <ClInclude Include="..\Src\Core\TileManager.h" />
+    <ClInclude Include="..\Src\Ext\stb\stb_image.h" />
+    <ClInclude Include="..\Src\Ext\stb\stb_image_write.h" />
+    <ClInclude Include="..\Src\Ext\vdb\vdb.h" />
+    <ClInclude Include="..\Src\Math\Halton.h" />
+    <ClInclude Include="..\Src\Math\MathUtils.h" />
+    <ClInclude Include="..\Src\Math\OrthonormalBasis.h" />
+    <ClInclude Include="..\Src\Math\Vector3f.h" />
+    <ClInclude Include="..\Src\Math\XorShift.h" />
+    <ClInclude Include="..\Src\stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\Core\Accel\Bound.cpp" />
+    <ClCompile Include="..\Src\Core\Accel\BruteForce.cpp" />
+    <ClCompile Include="..\Src\Core\Accel\BVH.cpp" />
+    <ClCompile Include="..\Src\Core\Accel\BVHNode.cpp" />
+    <ClCompile Include="..\Src\Core\Camera.cpp" />
+    <ClCompile Include="..\Src\Core\Environment.cpp" />
+    <ClCompile Include="..\Src\Core\Geometry\Mesh.cpp" />
+    <ClCompile Include="..\Src\Core\Geometry\Sphere.cpp" />
+    <ClCompile Include="..\Src\Core\Geometry\Triangle.cpp" />
+    <ClCompile Include="..\Src\Core\Geometry\Vertex.cpp" />
+    <ClCompile Include="..\Src\Core\Integrator\PathTracing.cpp" />
+    <ClCompile Include="..\Src\Core\main.cpp" />
+    <ClCompile Include="..\Src\Core\Material\Emission.cpp" />
+    <ClCompile Include="..\Src\Core\Material\GGX.cpp" />
+    <ClCompile Include="..\Src\Core\Material\Lambert.cpp" />
+    <ClCompile Include="..\Src\Core\Material\MatMix.cpp" />
+    <ClCompile Include="..\Src\Core\Petrichor.cpp" />
+    <ClCompile Include="..\Src\Core\Sampler\MicroJitteredSampler.cpp" />
+    <ClCompile Include="..\Src\Core\Sampler\RandomSampler2D.cpp" />
+    <ClCompile Include="..\Src\Core\Texture2D.cpp" />
+    <ClCompile Include="..\Src\Core\TileManager.cpp" />
+    <ClCompile Include="..\Src\Math\Halton.cpp" />
+    <ClCompile Include="..\Src\Math\OrthonormalBasis.cpp" />
+    <ClCompile Include="..\Src\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Monitor|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
