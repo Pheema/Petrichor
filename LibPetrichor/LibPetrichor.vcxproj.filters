@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Math">
+      <UniqueIdentifier>{66c3a304-10ca-4240-8ee3-2fc62675ff28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{da0b5e06-b620-435d-8961-4d6ec8589727}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\Bound.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\BruteForce.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\BVH.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\BVHNode.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Camera.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Material\Emission.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Environment.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\GeometryBase.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Material\GGX.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Material\Lambert.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Material\MatMix.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Mesh.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Sampler\MicroJitteredSampler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Integrator\PathTracing.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Petrichor.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Sampler\RandomSampler2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Sphere.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Texture2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\TileManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Triangle.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Vertex.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\MathUtils.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Vector3f.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\XorShift.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Assert.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\Bound.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Box.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BruteForce.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BVH.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BVHNode.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Camera.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Constants.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Material\Emission.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Environment.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\GeometryBase.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Material\GGX.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\HitInfo.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\IAccelerationStructureBase.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sampler\ISampler2D.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Material\Lambert.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Material\MaterialBase.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Material\MatMix.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Mesh.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sampler\MicroJitteredSampler.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Integrator\PathTracing.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Petrichor.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sampler\RandomSampler2D.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Ray.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Scene.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Sphere.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Texture2D.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\TileManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Triangle.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Vertex.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Color3f.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

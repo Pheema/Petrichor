@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{AAA4C621-BAAB-48E3-AF95-5C6ECCD987BD}</ProjectGuid>
+    <RootNamespace>LibPetrichor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>Build\Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Build\Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Build\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)External;$(SolutionDir)LibPetrichor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>assimp-vc140-mt.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\Assimp\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)External;$(SolutionDir)LibPetrichor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>assimp-vc140-mt.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\Assimp\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.cpp" />
+    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.cpp" />
+    <ClCompile Include="Core\Accel\Bound.cpp" />
+    <ClCompile Include="Core\Accel\BruteForce.cpp" />
+    <ClCompile Include="Core\Accel\BVH.cpp" />
+    <ClCompile Include="Core\Accel\BVHNode.cpp" />
+    <ClCompile Include="Core\Camera.cpp" />
+    <ClCompile Include="Core\Environment.cpp" />
+    <ClCompile Include="Core\Geometry\GeometryBase.cpp" />
+    <ClCompile Include="Core\Geometry\Mesh.cpp" />
+    <ClCompile Include="Core\Geometry\Sphere.cpp" />
+    <ClCompile Include="Core\Geometry\Triangle.cpp" />
+    <ClCompile Include="Core\Geometry\Vertex.cpp" />
+    <ClCompile Include="Core\Integrator\PathTracing.cpp" />
+    <ClCompile Include="Core\Material\Emission.cpp" />
+    <ClCompile Include="Core\Material\GGX.cpp" />
+    <ClCompile Include="Core\Material\Lambert.cpp" />
+    <ClCompile Include="Core\Material\MatMix.cpp" />
+    <ClCompile Include="Core\Petrichor.cpp" />
+    <ClCompile Include="Core\Sampler\MicroJitteredSampler.cpp" />
+    <ClCompile Include="Core\Sampler\RandomSampler2D.cpp" />
+    <ClCompile Include="Core\Texture2D.cpp" />
+    <ClCompile Include="Core\TileManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.h" />
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\MathUtils.h" />
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.h" />
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Vector3f.h" />
+    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\XorShift.h" />
+    <ClInclude Include="Core\Accel\Bound.h" />
+    <ClInclude Include="Core\Accel\BruteForce.h" />
+    <ClInclude Include="Core\Accel\BVH.h" />
+    <ClInclude Include="Core\Accel\BVHNode.h" />
+    <ClInclude Include="Core\Accel\IAccelerationStructureBase.h" />
+    <ClInclude Include="Core\Assert.h" />
+    <ClInclude Include="Core\Camera.h" />
+    <ClInclude Include="Core\Color3f.h" />
+    <ClInclude Include="Core\Constants.h" />
+    <ClInclude Include="Core\Environment.h" />
+    <ClInclude Include="Core\Geometry\Box.h" />
+    <ClInclude Include="Core\Geometry\GeometryBase.h" />
+    <ClInclude Include="Core\Geometry\Mesh.h" />
+    <ClInclude Include="Core\Geometry\Sphere.h" />
+    <ClInclude Include="Core\Geometry\Triangle.h" />
+    <ClInclude Include="Core\Geometry\Vertex.h" />
+    <ClInclude Include="Core\HitInfo.h" />
+    <ClInclude Include="Core\Integrator\PathTracing.h" />
+    <ClInclude Include="Core\Material\Emission.h" />
+    <ClInclude Include="Core\Material\GGX.h" />
+    <ClInclude Include="Core\Material\Lambert.h" />
+    <ClInclude Include="Core\Material\MaterialBase.h" />
+    <ClInclude Include="Core\Material\MatMix.h" />
+    <ClInclude Include="Core\Petrichor.h" />
+    <ClInclude Include="Core\Ray.h" />
+    <ClInclude Include="Core\Sampler\ISampler2D.h" />
+    <ClInclude Include="Core\Sampler\MicroJitteredSampler.h" />
+    <ClInclude Include="Core\Sampler\RandomSampler2D.h" />
+    <ClInclude Include="Core\Scene.h" />
+    <ClInclude Include="Core\Texture2D.h" />
+    <ClInclude Include="Core\TileManager.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

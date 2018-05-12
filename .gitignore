@@ -295,8 +295,6 @@ __pycache__/
 *.xsd.cs
 
 # User settings
+AppPetrichor/**
+LibPetrichor/**
 **/Rendered/**
-Petrichor/OutputData/**
-!Src/**
-Petrichor/Resource/**
-Src/Ext/**
