@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "ISampler2D.h"
-#include <Math/Halton.h>
-#include <Random/XorShift.h>
+#include "Math/Halton.h"
+#include "Random/XorShift.h"
 
 namespace Petrichor
 {
@@ -14,10 +14,14 @@ class MicroJitteredSampler : public ISampler2D
 public:
     MicroJitteredSampler(unsigned seed);
 
-    void Initialize(int lengthSeq);
-    virtual std::tuple<float, float> SampleNext2D() final;
+    void
+    Initialize(int lengthSeq);
 
-    unsigned GetIndex() const
+    virtual std::tuple<float, float>
+    SampleNext2D() final;
+
+    unsigned
+    GetIndex() const
     {
         return m_index;
     }
@@ -32,10 +36,10 @@ private:
     unsigned m_index;
     size_t m_lengthSeq;
 
-    float m_mu;         // Jitteringさせる大きさ
+    float m_mu; // Jitteringさせる大きさ
     float m_offsetX, m_offsetY;
-    const float kStarDiscrepancy = 2.5f;    // 論文で使用されていた値
+    const float kStarDiscrepancy = 2.5f; // 論文で使用されていた値
 };
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

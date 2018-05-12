@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include <Core/Accel/Bound.h>
-#include <Core/Material/MaterialBase.h>
-
+#include "Core/Accel/Bound.h"
+#include "Core/Material/MaterialBase.h"
 
 namespace Petrichor
 {
@@ -15,9 +14,9 @@ class ISampler2D;
 
 struct PointData
 {
-    PointData() :
-        pos(),
-        normal()
+    PointData()
+      : pos()
+      , normal()
     {
     }
 
@@ -42,7 +41,10 @@ public:
 
     // ライト表面をサンプルリングする
     virtual void
-    SampleSurface(Math::Vector3f p, ISampler2D& sampler2D, PointData* pointData, float* pdfArea) const
+    SampleSurface(Math::Vector3f p,
+                  ISampler2D& sampler2D,
+                  PointData* pointData,
+                  float* pdfArea) const
     {
         *pdfArea = 0.0f;
         PointData pd;
@@ -63,7 +65,8 @@ public:
     {
         const MaterialBase *mat0 = nullptr, *mat1 = nullptr;
         float mix = 0.0f;
-        if (m_material->GetMaterialType(&mat0, &mat1, &mix) == MaterialTypes::Mix)
+        if (m_material->GetMaterialType(&mat0, &mat1, &mix) ==
+            MaterialTypes::Mix)
         {
             if (randValue < mix)
             {
@@ -83,10 +86,9 @@ public:
 protected:
     // TODO: 苦肉の策
     // あとでCalcBound()とは別にSetBound()を作って分ける
-    mutable Bound m_bound = Bound();
+    mutable Bound m_bound          = Bound();
     const MaterialBase* m_material = nullptr;
-
 };
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

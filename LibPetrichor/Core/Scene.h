@@ -1,12 +1,10 @@
 ﻿#pragma once
 
+#include "Core/Camera.h"
+#include "Core/Environment.h"
+#include "Core/Geometry/GeometryBase.h"
+#include "Core/Geometry/Mesh.h"
 #include <vector>
-
-#include <Core/Camera.h>
-#include <Core/Environment.h>
-#include <Core/Geometry/GeometryBase.h>
-#include <Core/Geometry/Mesh.h>
-
 
 namespace Petrichor
 {
@@ -42,7 +40,7 @@ public:
             AppendLight(&mesh);
         }
     }
-    
+
     // シーンにライトを登録
     void
     AppendLight(const GeometryBase* geometry)
@@ -99,42 +97,41 @@ private:
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
-
 };
 
 #pragma region Inline functions
 
-    inline void
-    Scene::AppendGeometry(const GeometryBase* geometry)
-    {
-        m_geometries.emplace_back(geometry);
-    }
+inline void
+Scene::AppendGeometry(const GeometryBase* geometry)
+{
+    m_geometries.emplace_back(geometry);
+}
 
-    inline const std::vector<const GeometryBase*>&
-    Scene::GetGeometries() const
-    {
-        return m_geometries;
-    }
+inline const std::vector<const GeometryBase*>&
+Scene::GetGeometries() const
+{
+    return m_geometries;
+}
 
-    inline const Camera*
-    Scene::GetMainCamera() const
-    {
-        return m_mainCamera;
-    }
+inline const Camera*
+Scene::GetMainCamera() const
+{
+    return m_mainCamera;
+}
 
-    inline void
-    Scene::SetMainCamera(const Camera& camera)
-    {
-        m_mainCamera = &camera;
-    }
+inline void
+Scene::SetMainCamera(const Camera& camera)
+{
+    m_mainCamera = &camera;
+}
 
-    inline Environment&
-    Scene::GetEnvironment() const
-    {
-        return m_environment;
-    }
+inline Environment&
+Scene::GetEnvironment() const
+{
+    return m_environment;
+}
 
 #pragma endregion
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

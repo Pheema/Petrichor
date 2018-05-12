@@ -1,0 +1,23 @@
+﻿---
+BasedOnStyle: Mozilla
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: true
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AlwaysBreakAfterReturnType: All
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  BeforeElse: true
+FixNamespaceComments: true
+IndentCaseLabels: false
+IndentWidth: 4
+
+...

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Core/Color3f.h>
+#include "Core/Color3f.h"
 
 namespace Petrichor
 {
@@ -40,11 +40,16 @@ public:
     };
 
     virtual Ray
-    CreateNextRay(const Ray& rayIn, const HitInfo& hitInfo, ISampler2D& sampler2D, float* pdfDir) const = 0;
+    CreateNextRay(const Ray& rayIn,
+                  const HitInfo& hitInfo,
+                  ISampler2D& sampler2D,
+                  float* pdfDir) const = 0;
 
-    virtual MaterialTypes GetMaterialType(const MaterialBase** mat0 = nullptr, const MaterialBase** mat1 = nullptr, float* mix = nullptr) const = 0;
-
+    virtual MaterialTypes
+    GetMaterialType(const MaterialBase** mat0 = nullptr,
+                    const MaterialBase** mat1 = nullptr,
+                    float* mix                = nullptr) const = 0;
 };
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

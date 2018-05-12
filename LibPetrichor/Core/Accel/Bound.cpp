@@ -1,26 +1,22 @@
 ﻿#include "Bound.h"
 
+#include "Core/Constants.h"
 #include <algorithm>
-#include <Core/Constants.h>
-
 
 namespace Petrichor
 {
 namespace Core
 {
 
-Bound::Bound() :
-    vMin(Math::Vector3f::One() * kInfinity),
-    vMax(Math::Vector3f::One() * -kInfinity)
+Bound::Bound()
+  : vMin(Math::Vector3f::One() * kInfinity)
+  , vMax(Math::Vector3f::One() * -kInfinity)
 {
 }
 
-Bound::Bound(
-    const Math::Vector3f& vMin,
-    const Math::Vector3f& vMax
-) :
-    vMin(vMin),
-    vMax(vMax)
+Bound::Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax)
+  : vMin(vMin)
+  , vMax(vMax)
 {
 }
 
@@ -51,7 +47,7 @@ Bound::Merge(const Math::Vector3f& point)
 unsigned
 Bound::GetWidestAxis() const
 {
-    float widest = 0.0f;
+    float widest        = 0.0f;
     unsigned axisResult = 0;
 
     for (unsigned axis = 0; axis < 3; ++axis)
@@ -59,13 +55,13 @@ Bound::GetWidestAxis() const
         const float width = vMax[axis] - vMin[axis];
         if (width > widest)
         {
-            widest = width;
+            widest     = width;
             axisResult = axis;
         }
     }
-    
+
     return axisResult;
 }
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

@@ -1,23 +1,28 @@
-﻿#include <fstream>
+﻿#include <Core/Petrichor.h>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <thread>
-#include <Core/Petrichor.h>
 
 // #define ENABLE_TIME_LIMITATION
 #define SAVE_IMAGE_PERIODICALLY
 
-int main()
+int
+main()
 {
     using namespace Petrichor;
     using namespace std::chrono_literals;
 
     const auto kTimeLimit = 123s;
-    const auto timeBegin = std::chrono::high_resolution_clock::now();
+    const auto timeBegin  = std::chrono::high_resolution_clock::now();
 
     Core::Petrichor petrichor;
     petrichor.Initialize();
-    std::thread jobRender([&] { petrichor.Render(); petrichor.Finalize(); exit(0); });
+    std::thread jobRender([&] {
+        petrichor.Render();
+        petrichor.Finalize();
+        exit(0);
+    });
     jobRender.detach();
 
 #ifdef SAVE_IMAGE_PERIODICALLY
@@ -27,7 +32,8 @@ int main()
         {
             std::this_thread::sleep_for(10s);
             std::stringstream path;
-            path << std::setfill('0') << std::setw(4) << std::right << idxImg++ << ".png";
+            path << std::setfill('0') << std::setw(4) << std::right << idxImg++
+                 << ".png";
             petrichor.SaveImage(path.str());
         }
     });
@@ -37,9 +43,9 @@ int main()
     // 時間オーバー監視
     for (;;)
     {
-        const auto timeNow = std::chrono::high_resolution_clock::now();
+        const auto timeNow  = std::chrono::high_resolution_clock::now();
         const auto duration = timeNow - timeBegin;
-        
+
         if (duration > kTimeLimit)
         {
 #ifdef ENABLE_TIME_LIMITATION

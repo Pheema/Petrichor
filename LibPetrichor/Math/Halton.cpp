@@ -7,10 +7,10 @@ namespace Petrichor
 namespace Math
 {
 
-Halton::Halton() :
-    m_isInitialized(false)
+Halton::Halton()
+  : m_isInitialized(false)
 {
-     // Do nothing
+    // Do nothing
 }
 
 void
@@ -36,5 +36,5 @@ Halton::Initialize(size_t length, unsigned base)
     m_isInitialized = true;
 }
 
-}   // namepsace Math
-}   // Petrichor
+} // namepsace Math
+} // Petrichor

@@ -22,22 +22,25 @@ Sign(float x)
 }
 
 template<typename T>
-T Clamp(T x, T min, T max)
+T
+Clamp(T x, T min, T max)
 {
     return std::max(min, std::min(max, x));
 }
 
 template<typename T>
-T Lerp(T v0, T v1, float t)
+T
+Lerp(T v0, T v1, float t)
 {
     return (1.0f - t) * v0 + t * v1;
 }
 
 template<typename T>
-T Mod(T x, T m)
+T
+Mod(T x, T m)
 {
     return x - m * floor(x / m);
 }
 
-}   // namespace Math
-}   // namespace Petrichor
+} // namespace Math
+} // namespace Petrichor

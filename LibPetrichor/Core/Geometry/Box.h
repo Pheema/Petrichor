@@ -1,25 +1,25 @@
 ﻿#pragma once
 
+#include "Core/Geometry/GeometryBase.h"
 #include <array>
-
-#include <Core/Geometry/GeometryBase.h>
 
 namespace Petrichor
 {
 namespace Core
 {
-    struct Vertex;
-    struct HitInfo;
 
-    class Triangle : public GeometryBase
-    {
-    public:
-        bool
-        Intersect(const Ray& ray, HitInfo* hitInfo) const override;
+struct Vertex;
+struct HitInfo;
 
-    protected:
-        std::array<const Vertex*, 3> m_verticies;
+class Triangle : public GeometryBase
+{
+public:
+    bool
+    Intersect(const Ray& ray, HitInfo* hitInfo) const override;
 
-    };
-}   // namespace Core
-}   // namespace Petrichor
+protected:
+    std::array<const Vertex*, 3> m_verticies;
+};
+
+} // namespace Core
+} // namespace Petrichor

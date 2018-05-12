@@ -1,11 +1,11 @@
 ﻿#include "Sphere.h"
 
+#include "Core/Constants.h"
+#include "Core/HitInfo.h"
+#include "Core/Ray.h"
+#include "Core/Sampler/ISampler2D.h"
+#include "Math/OrthonormalBasis.h"
 #include <tuple>
-#include <Core/Constants.h>
-#include <Core/Ray.h>
-#include <Core/HitInfo.h>
-#include <Core/Sampler/ISampler2D.h>
-#include <Math/OrthonormalBasis.h>
 
 namespace Petrichor
 {
@@ -14,16 +14,16 @@ namespace Core
 
 using namespace Math;
 
-Sphere::Sphere() :
-    o(Vector3f::Zero()),
-    r(0.0f)
+Sphere::Sphere()
+  : o(Vector3f::Zero())
+  , r(0.0f)
 {
     // Do nothing
 }
 
-Sphere::Sphere(const Math::Vector3f& o, float r) :
-    o(o),
-    r(r)
+Sphere::Sphere(const Math::Vector3f& o, float r)
+  : o(o)
+  , r(r)
 {
     // Do nothing
 }
@@ -40,13 +40,12 @@ Sphere::CalcBound() const
     return m_bound;
 }
 
-
 bool
 Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
 {
-    const float a = Dot(ray.dir, ray.dir);
+    const float a   = Dot(ray.dir, ray.dir);
     const float b_2 = Dot(ray.dir, ray.o - o);
-    const float c = Dot(ray.o - o, ray.o - o) - r * r;
+    const float c   = Dot(ray.o - o, ray.o - o) - r * r;
     const float D_4 = b_2 * b_2 - a * c;
     if (D_4 < 0.0f)
     {
@@ -66,7 +65,7 @@ Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
     float distance = std::min(std::max(l1, 0.0f), std::max(l2, 0.0f));
 
     hitInfo->distance = distance;
-    hitInfo->pos = ray.o + ray.dir * hitInfo->distance;
+    hitInfo->pos      = ray.o + ray.dir * hitInfo->distance;
 
     if (Math::ApproxEq(hitInfo->distance, l1))
     {
@@ -84,10 +83,13 @@ Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
     return true;
 }
 
-void 
-Sphere::SampleSurface(Math::Vector3f p, ISampler2D& sampler2D, PointData* pointData, float* pdfArea) const
+void
+Sphere::SampleSurface(Math::Vector3f p,
+                      ISampler2D& sampler2D,
+                      PointData* pointData,
+                      float* pdfArea) const
 {
-    
+
     Math::OrthonormalBasis onb;
 
     Math::Vector3f originToPoint = p - o;
@@ -101,15 +103,15 @@ Sphere::SampleSurface(Math::Vector3f p, ISampler2D& sampler2D, PointData* pointD
     ASSERT(l >= r);
 
     float theta = acos(1.0f - std::get<0>(pointSampled) * (1.0f - r / l));
-    float phi = 2.0f * Math::kPi * std::get<1>(pointSampled);
+    float phi   = 2.0f * Math::kPi * std::get<1>(pointSampled);
 
-    auto dir = onb.GetDir(theta, phi);
+    auto dir            = onb.GetDir(theta, phi);
     auto pointOnSurface = o + r * dir;
 
-    pointData->pos = pointOnSurface;
+    pointData->pos    = pointOnSurface;
     pointData->normal = dir;
-    *pdfArea = l / (2.0f * Math::kPi * r * r * (l - r));
+    *pdfArea          = l / (2.0f * Math::kPi * r * r * (l - r));
 }
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

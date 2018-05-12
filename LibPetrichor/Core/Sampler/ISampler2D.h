@@ -10,9 +10,9 @@ namespace Core
 class ISampler2D
 {
 public:
-    virtual std::tuple<float, float> SampleNext2D() = 0;
-
+    virtual std::tuple<float, float>
+    SampleNext2D() = 0;
 };
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

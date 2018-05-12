@@ -1,20 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Math">
-      <UniqueIdentifier>{66c3a304-10ca-4240-8ee3-2fc62675ff28}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{da0b5e06-b620-435d-8961-4d6ec8589727}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Accel\Bound.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -78,23 +69,14 @@
     <ClCompile Include="Core\Geometry\Vertex.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Halton.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\OrthonormalBasis.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Halton.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\MathUtils.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\OrthonormalBasis.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\Vector3f.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\Petrichor\Src\Math\XorShift.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Assert.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -186,6 +168,21 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Color3f.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Halton.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\MathUtils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\OrthonormalBasis.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector3f.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Random\XorShift.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-#include <Core/Sampler/ISampler2D.h>
-#include <Random/XorShift.h>
+#include "Core/Sampler/ISampler2D.h"
+#include "Random/XorShift.h"
 
 namespace Petrichor
 {
@@ -9,15 +9,10 @@ namespace Core
 {
 using namespace Math;
 
-Camera::Camera()
-{
-}
+Camera::Camera() {}
 
-Camera::Camera(
-    const Vector3f& pos,
-    const Vector3f& dir
-) :
-    pos(pos)
+Camera::Camera(const Vector3f& pos, const Vector3f& dir)
+  : pos(pos)
 {
     SetViewDir(dir);
 }
@@ -44,8 +39,8 @@ void
 Camera::SetViewDir(const Vector3f& dir)
 {
     m_forward = dir.Normalized();
-    m_right = Cross(m_forward, m_worldUp);
-    m_up = Cross(m_right, m_forward);
+    m_right   = Cross(m_forward, m_worldUp);
+    m_up      = Cross(m_right, m_forward);
 }
 
 void
@@ -55,38 +50,35 @@ Camera::LookAt(const Vector3f& target)
 }
 
 Ray
-Camera::PixelToRay(int i, int j, int imageWidth, int imageHeight, ISampler2D& rng2D) const
+Camera::PixelToRay(
+  int i, int j, int imageWidth, int imageHeight, ISampler2D& rng2D) const
 {
     // Random
     auto samplingPoint = rng2D.SampleNext2D();
     const float aspect = static_cast<float>(imageWidth) / imageHeight;
-    const float u = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
-    const float v = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
+    const float u      = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
+    const float v      = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
     // 0.5f -> uniDist(xor)
     Vector3f pointOnSensor =
-        pos +
-        m_right * u * m_hPerf * m_focusDist * aspect +
-        -m_up * v * m_hPerf * m_focusDist +
-        m_forward * m_focusDist;
+      pos + m_right * u * m_hPerf * m_focusDist * aspect +
+      -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
 
-
-    samplingPoint = rng2D.SampleNext2D();
-    float r = sqrt(std::get<0>(samplingPoint));
-    float theta = 2.0f * Math::kPi * std::get<1>(samplingPoint);
-    Vector3f pointOnLens =
-        pos +
-        m_right * 0.5f * m_apeture * r * cos(theta) +
-        -m_up * 0.5f * m_apeture * r * sin(theta);
+    samplingPoint        = rng2D.SampleNext2D();
+    float r              = sqrt(std::get<0>(samplingPoint));
+    float theta          = 2.0f * Math::kPi * std::get<1>(samplingPoint);
+    Vector3f pointOnLens = pos + m_right * 0.5f * m_apeture * r * cos(theta) +
+                           -m_up * 0.5f * m_apeture * r * sin(theta);
 
     const Vector3f rayDir = (pointOnSensor - pointOnLens).Normalized();
 
-    float dot = Dot(rayDir, Forward());
-    auto weight = Color3f::One() * dot * dot * m_focusDist * m_focusDist / (pointOnSensor - pointOnLens).SquaredLength();
+    float dot   = Dot(rayDir, Forward());
+    auto weight = Color3f::One() * dot * dot * m_focusDist * m_focusDist /
+                  (pointOnSensor - pointOnLens).SquaredLength();
 
-    Ray cameraRay = Ray(pointOnLens, rayDir, RayTypes::Camera);
+    Ray cameraRay    = Ray(pointOnLens, rayDir, RayTypes::Camera);
     cameraRay.weight = weight;
 
     return cameraRay;
 }
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

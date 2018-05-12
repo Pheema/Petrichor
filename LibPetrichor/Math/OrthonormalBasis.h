@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Math/Vector3f.h"
+
 namespace Petrichor
 {
 namespace Math
@@ -18,10 +20,7 @@ public:
 
     // 法線ベクトル、接線ベクトルを指定した正規直交基底の構築
     void
-    Build(
-        const Vector3f& normal,
-        const Vector3f& tangent
-    );
+    Build(const Vector3f& normal, const Vector3f& tangent);
 
     // 球面座標の(θ, φ)から単位方向ベクトルを取得する
     Vector3f
@@ -40,15 +39,14 @@ public:
 
     inline const Vector3f&
     GetBaseY() const;
-    
+
     inline const Vector3f&
     GetBaseZ() const;
 
 private:
-    Vector3f m_baseX;   // 接線方向
-    Vector3f m_baseY;  // 従法線方向
-    Vector3f m_baseZ;    // 法線方向
-
+    Vector3f m_baseX; // 接線方向
+    Vector3f m_baseY; // 従法線方向
+    Vector3f m_baseZ; // 法線方向
 };
 
 #pragma region Inline functions
@@ -72,5 +70,5 @@ OrthonormalBasis::GetBaseZ() const
 }
 
 #pragma endregion
-}   // namespace Math
-}   // namespace Petrichor
+} // namespace Math
+} // namespace Petrichor

@@ -5,5 +5,5 @@ namespace Petrichor
 namespace Core
 {
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

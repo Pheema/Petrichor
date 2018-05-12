@@ -1,7 +1,7 @@
 ﻿#pragma once
 
+#include "Core/Assert.h"
 #include <vector>
-#include <Core/Assert.h>
 
 namespace Petrichor
 {
@@ -13,7 +13,8 @@ class Halton
 public:
     Halton();
 
-    void Initialize(size_t length, unsigned base);
+    void
+    Initialize(size_t length, unsigned base);
 
     float
     GetValue(unsigned index) const
@@ -29,17 +30,18 @@ public:
         return m_values.size();
     }
 
-    bool IsInitialized() const
+    bool
+    IsInitialized() const
     {
         return m_isInitialized;
     }
 
 private:
-    std::vector<float> m_values;    // ハルトン列
+    std::vector<float> m_values; // ハルトン列
     bool m_isInitialized;
 
     unsigned m_base;
 };
 
-}   // namespace Math
-}   // namespace Petrichor
+} // namespace Math
+} // namespace Petrichor

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Math/Vector3f.h>
+#include "Math/Vector3f.h"
 
 namespace Petrichor
 {
@@ -10,20 +10,24 @@ namespace Core
 class Bound
 {
 public:
-
     Bound();
 
     Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax);
 
     // Boundの中心を求める
-    Math::Vector3f Center() const;
+    Math::Vector3f
+    Center() const;
 
     // 複数のBoundをマージする
-    void Merge(const Bound& aabb);
-    void Merge(const Math::Vector3f& point);
+    void
+    Merge(const Bound& aabb);
+
+    void
+    Merge(const Math::Vector3f& point);
 
     // 一番広い辺を取得する
-    unsigned GetWidestAxis() const;
+    unsigned
+    GetWidestAxis() const;
 
     Math::Vector3f vMin, vMax;
 };
@@ -38,5 +42,5 @@ Bound::Center() const
 
 #pragma endregion
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

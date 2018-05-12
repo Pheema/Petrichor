@@ -1,9 +1,9 @@
 ﻿#include "Texture2D.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <Stb/stb_image.h>
+#include "Stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <Stb/stb_image_write.h>
+#include "Stb/stb_image_write.h"
 
 namespace Petrichor
 {
@@ -13,44 +13,47 @@ namespace Core
 namespace
 {
 
-float ACESFilm(float x)
+float
+ACESFilm(float x)
 {
     float a = 2.51f;
     float b = 0.03f;
     float c = 2.43f;
     float d = 0.59f;
     float e = 0.14f;
-    return Math::Clamp((x*(a*x + b)) / (x*(c*x + d) + e), 0.0f, 1.0f);
+    return Math::Clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0f, 1.0f);
 }
 
-float ApplyGamma(unsigned char val)
+float
+ApplyGamma(unsigned char val)
 {
     const float kDepthMax = 255.0f;
     return std::pow(val / kDepthMax, 2.2f);
 }
 
-unsigned char ApplyDegamma(float val)
+unsigned char
+ApplyDegamma(float val)
 {
     // val = Math::Clamp(val, 0.0f, 1.0f);
-    val = ACESFilm(val);
-    val = std::pow(val, 1 / 2.2f);
+    val                   = ACESFilm(val);
+    val                   = std::pow(val, 1 / 2.2f);
     const float kDepthMax = 255.9999f;
     return static_cast<unsigned char>(kDepthMax * val);
 }
 }
 
-Texture2D::Texture2D() :
-    m_width(0),
-    m_height(0),
-    m_interplationType(InterplationTypes::Point)
+Texture2D::Texture2D()
+  : m_width(0)
+  , m_height(0)
+  , m_interplationType(InterplationTypes::Point)
 {
     Clear();
 }
 
-Texture2D::Texture2D(int width, int height) :
-    m_width(width),
-    m_height(height),
-    m_interplationType(InterplationTypes::Point)
+Texture2D::Texture2D(int width, int height)
+  : m_width(width)
+  , m_height(height)
+  , m_interplationType(InterplationTypes::Point)
 {
     Clear();
 }
@@ -59,12 +62,7 @@ void
 Texture2D::Load(std::string path)
 {
     unsigned char* data = stbi_load(
-        path.c_str(),
-        &m_width,
-        &m_height,
-        nullptr,
-        kNumChannelsInPixel
-    );
+      path.c_str(), &m_width, &m_height, nullptr, kNumChannelsInPixel);
 
     const int numPixels = m_width * m_height;
     for (size_t i = 0; i < numPixels; i++)
@@ -103,13 +101,12 @@ Texture2D::Save(std::string path, ImageTypes imageType) const
             outPixels.emplace_back(degammaB);
         }
 
-        stbi_write_png(
-            path.c_str(),
-            m_width, m_height,
-            kNumChannelsInPixel,
-            &outPixels[0],
-            m_width * kNumChannelsInPixel
-        );
+        stbi_write_png(path.c_str(),
+                       m_width,
+                       m_height,
+                       kNumChannelsInPixel,
+                       &outPixels[0],
+                       m_width * kNumChannelsInPixel);
         break;
     }
 
@@ -162,7 +159,9 @@ Texture2D::GetPixel(int i, int j) const
 }
 
 Color3f
-Texture2D::GetPixel(float x, float y, InterplationTypes interpoplationType) const
+Texture2D::GetPixel(float x,
+                    float y,
+                    InterplationTypes interpoplationType) const
 {
     switch (interpoplationType)
     {
@@ -209,7 +208,9 @@ Texture2D::GetPixel(float x, float y, InterplationTypes interpoplationType) cons
 }
 
 Color3f
-Texture2D::GetPixelByUV(float u, float v, InterplationTypes interpoplationType) const
+Texture2D::GetPixelByUV(float u,
+                        float v,
+                        InterplationTypes interpoplationType) const
 {
     u = Math::Mod(u, 1.0f);
     v = Math::Mod(v, 1.0f);
@@ -236,6 +237,5 @@ Texture2D::GetHeight() const
     return m_height;
 }
 
-}   // namespace Core
-}   // namespace Petrichor
-
+} // namespace Core
+} // namespace Petrichor

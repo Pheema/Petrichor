@@ -1,17 +1,17 @@
 ﻿#include "Environment.h"
 
-#include <Math/Vector3f.h>
-#include <Core/Color3f.h>
-#include <Core/Constants.h>
+#include "Core/Color3f.h"
+#include "Core/Constants.h"
+#include "Math/Vector3f.h"
 
 namespace Petrichor
 {
 namespace Core
 {
 
-Environment::Environment() :
-    m_texEnv(nullptr),
-    m_baseColor(Color3f::Zero())
+Environment::Environment()
+  : m_texEnv(nullptr)
+  , m_baseColor(Color3f::Zero())
 {
 }
 
@@ -36,7 +36,7 @@ Environment::GetColor(const Math::Vector3f& dir) const
 
     IS_NORMALIZED(dir);
     const float theta = acos(dir.z);
-    const float phi = atan2(dir.y, dir.x);
+    const float phi   = atan2(dir.y, dir.x);
 
     float u = 1.0f - phi * 0.5f * Math::kInvPi;
     float v = theta * Math::kInvPi;
@@ -53,6 +53,5 @@ Environment::SetBaseColor(const Color3f& baseColor)
     m_baseColor = baseColor;
 }
 
-}   // namespace Core
-}   // namespace Petrichor
-
+} // namespace Core
+} // namespace Petrichor

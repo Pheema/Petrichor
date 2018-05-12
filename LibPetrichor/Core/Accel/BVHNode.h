@@ -1,8 +1,8 @@
 ﻿#pragma once
 
+#include "Bound.h"
 #include <array>
 #include <vector>
-#include "Bound.h"
 
 namespace Petrichor
 {
@@ -44,7 +44,8 @@ public:
     const std::array<size_t, 2>&
     GetChildNodeIndicies() const;
 
-    void SortByNthElement(int widestAxis, float center, size_t nth);
+    void
+    SortByNthElement(int widestAxis, float center, size_t nth);
 
     void
     SetLeaf(bool isLeaf);
@@ -52,7 +53,8 @@ public:
     bool
     IsLeaf() const;
 
-    void ClearAndShrink()
+    void
+    ClearAndShrink()
     {
         m_childGeometries.clear();
         m_childGeometries.shrink_to_fit();
@@ -80,8 +82,8 @@ BVHNode::GetChildArray() const
     return m_childGeometries;
 }
 
-inline
-size_t BVHNode::GetNumChildGeoms() const
+inline size_t
+BVHNode::GetNumChildGeoms() const
 {
     return m_childGeometries.size();
 }
@@ -119,7 +121,5 @@ BVHNode::IsLeaf() const
 
 #pragma endregion
 
-
-
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

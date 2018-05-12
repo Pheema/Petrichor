@@ -1,7 +1,7 @@
 ﻿#pragma once
 
+#include "Core/Constants.h"
 #include <limits>
-#include <Core/Constants.h>
 
 namespace Petrichor
 {
@@ -15,15 +15,15 @@ class Scene;
 class IAccelerationStructureBase
 {
 public:
-    virtual void Build(const Scene& scene) = 0;
-    
-    virtual bool Intersect(
-        const Ray& ray,
-        HitInfo* hitInfo,
-        float distMin = 0.0f,
-        float distMax = kInfinity
-    ) const = 0;
+    virtual void
+    Build(const Scene& scene) = 0;
+
+    virtual bool
+    Intersect(const Ray& ray,
+              HitInfo* hitInfo,
+              float distMin = 0.0f,
+              float distMax = kInfinity) const = 0;
 };
 
-}   // namespace Core
-}   // namespace Petrichor
+} // namespace Core
+} // namespace Petrichor

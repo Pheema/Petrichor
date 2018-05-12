@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Core/Geometry/GeometryBase.h>
+#include "Core/Geometry/GeometryBase.h"
 
 namespace Petrichor
 {
@@ -17,19 +17,18 @@ class PathTracing
 {
 public:
     PathTracing() = default;
-    void Render(const Scene& scene, Texture2D* targetTex);
+
+    void
+    Render(const Scene& scene, Texture2D* targetTex);
 
 private:
     // ランダムにライト上をサンプリング
-    PointData SampleLight(
-        const Scene& scene,
-        const Math::Vector3f& p,
-        float randomVal,
-        ISampler2D& sampler2D,
-        float* pdfArea
-    );
-
+    PointData
+    SampleLight(const Scene& scene,
+                const Math::Vector3f& p,
+                float randomVal,
+                ISampler2D& sampler2D,
+                float* pdfArea);
 };
-
 }
 }
