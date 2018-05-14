@@ -120,38 +120,49 @@ Petrichor::Initialize()
 
 #else
 
-    MaterialBase* matLambertRed   = new Lambert(Color3f(1.0f, 0, 0));
-    MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
-    MaterialBase* matLamberWhite = new Lambert(Color3f::One());
-    MaterialBase* matEmissionWhite = new Lambert(3.0f * Color3f::One());
+    MaterialBase* matLambertRed    = new Lambert(Color3f(1.0f, 0, 0));
+    MaterialBase* matLambertGreen  = new Lambert(Color3f(0, 1.0f, 0));
+    MaterialBase* matLamberWhite   = new Lambert(Color3f::One());
+    MaterialBase* matEmissionWhite = new Emission(2.0f * Color3f::One());
 
-    constexpr float radius = 10.0f;
-    constexpr float boxWidth = 2.0f;
-    Sphere* leftWall       = new Sphere(Math::Vector3f(-radius - 0.5f*boxWidth, 0, 0), radius);
-    Sphere* rightWall      = new Sphere(Math::Vector3f(radius + 0.5f*boxWidth , 0, 0), radius);
-    Sphere* forwardWall    = new Sphere(Math::Vector3f(0, radius+0.5f*boxWidth, 0), radius);
-    Sphere* ceil           = new Sphere(Math::Vector3f(0, 0, radius+0.5f*boxWidth), radius);
-    Sphere* floor          = new Sphere(Math::Vector3f(0, 0, -radius-0.5f*boxWidth), radius);
-    Sphere* sphereLight = new Sphere(Math::Vector3f::Zero(), 0.5f);
+    Mesh* leftWall = new Mesh();
+    leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
+                   &matLambertRed,
+                   1,
+                   ShadingTypes::Flat);
 
-    leftWall->SetMaterial(matLambertRed);
-    rightWall->SetMaterial(matLambertGreen);
-    forwardWall->SetMaterial(matLamberWhite);
-    ceil->SetMaterial(matLamberWhite);
-    floor->SetMaterial(matLamberWhite);
+    Mesh* rightWall = new Mesh();
+    rightWall->Load("Resource/SampleScene/CornellBox/RightWall.obj",
+                    &matLambertGreen,
+                    1,
+                    ShadingTypes::Flat);
 
-    sphereLight->SetMaterial(matEmissionWhite);
-    m_scene.AppendLight(sphereLight);
+    Mesh* whiteWall = new Mesh();
+    whiteWall->Load("Resource/SampleScene/CornellBox/WhiteWall.obj",
+                    &matLamberWhite,
+                    1,
+                    ShadingTypes::Flat);
 
-    m_scene.AppendGeometry(leftWall);
-    m_scene.AppendGeometry(rightWall);
-    m_scene.AppendGeometry(forwardWall);
-    m_scene.AppendGeometry(ceil);
-    m_scene.AppendGeometry(floor);
-    m_scene.AppendGeometry(sphereLight);
+    Mesh* whiteBox = new Mesh();
+    whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
+                   &matLamberWhite,
+                   1,
+                   ShadingTypes::Flat);
 
-    auto camera = new Camera(Math::Vector3f(0, -5.0f, 0),
-                             Math::Vector3f::UnitY());
+    Mesh* ceilLight = new Mesh();
+    ceilLight->Load("Resource/SampleScene/CornellBox/CeilLight.obj",
+                    &matEmissionWhite,
+                    1,
+                    ShadingTypes::Flat);
+
+    m_scene.AppendMesh(*leftWall);
+    m_scene.AppendMesh(*rightWall);
+    m_scene.AppendMesh(*whiteWall);
+    m_scene.AppendMesh(*whiteBox);
+    m_scene.AppendLightMesh(*ceilLight);
+
+    auto camera =
+      new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
 
@@ -161,7 +172,7 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(1.0f * Color3f::One());
+    m_scene.GetEnvironment().SetBaseColor(0.0f * Color3f::One());
 }
 
 void
@@ -187,7 +198,7 @@ void
 Petrichor::Finalize()
 {
     const auto& targetTex = m_scene.GetTargetTexture();
-    targetTex->Save("final.png");
+    targetTex->Save("Output/final.png");
 
     auto timeEnd     = std::chrono::high_resolution_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -195,7 +206,7 @@ Petrichor::Finalize()
     std::cout << "Elapsed time: " << elapsedTime.count() << " msec"
               << std::endl;
 
-    std::ofstream of("log.txt");
+    std::ofstream of("Output/log.txt");
     of << elapsedTime.count() << "[msec]" << std::endl;
     of.close();
 

@@ -23,7 +23,8 @@ namespace Core
 Color3f
 SimplifiedSpectrum(float x)
 {
-    x              = Petrichor::Math::Clamp(x, 0.0f, 1.0f);
+    x = Petrichor::Math::Clamp(x, 0.0f, 1.0f);
+
     Color3f value  = 2.1f * x * Color3f::One() - Color3f(1.8f, 1.14f, 0.3f);
     Color3f result = Color3f::One() - value * value;
     return Color3f(Petrichor::Math::Clamp(result.x, 0.0f, 1.0f),
@@ -63,6 +64,7 @@ PathTracing::Render(const Scene& scene, Texture2D* targetTex)
         Tile tile = tileManager.GetTile();
 
         const auto pixelPos = tile.GetInitialPixel();
+
         const uint32_t i0 = pixelPos.first;
         const uint32_t j0 = pixelPos.second;
         for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
@@ -70,7 +72,7 @@ PathTracing::Render(const Scene& scene, Texture2D* targetTex)
             for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
             {
                 Color3f pixelColorSum;
-                const uint32_t kSamplesPerPixel = 128;
+                const uint32_t kSamplesPerPixel = 256;
                 for (uint32_t spp = 0; spp < kSamplesPerPixel; spp++)
                 {
                     Color3f color;

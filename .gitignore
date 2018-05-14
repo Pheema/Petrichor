@@ -296,6 +296,6 @@ __pycache__/
 
 # User settings
 Output/**
-# !.placeholder
+!.placeholder
 !/Resource/**
 !/External/**

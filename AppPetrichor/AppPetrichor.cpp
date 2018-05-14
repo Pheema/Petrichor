@@ -32,8 +32,8 @@ main()
         {
             std::this_thread::sleep_for(10s);
             std::stringstream path;
-            path << std::setfill('0') << std::setw(4) << std::right << idxImg++
-                 << ".png";
+            path << "Output/" << std::setfill('0') << std::setw(4) << std::right
+                 << idxImg++ << ".png";
             petrichor.SaveImage(path.str());
         }
     });
