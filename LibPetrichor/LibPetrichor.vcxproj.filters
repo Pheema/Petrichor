@@ -182,5 +182,14 @@
     <ClInclude Include="Random\XorShift.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Core\File\JsonLoader.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\File\IFileLoader.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\File\JsonDef.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

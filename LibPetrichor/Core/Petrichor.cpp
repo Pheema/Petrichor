@@ -12,6 +12,9 @@
 #include "Core/Material/MatMix.h"
 #include <fstream>
 
+#include <Cereal/archives/json.hpp>
+#include <Core/File/JsonDef.h>
+
 namespace Petrichor
 {
 namespace Core
@@ -125,31 +128,31 @@ Petrichor::Initialize()
     MaterialBase* matLamberWhite   = new Lambert(Color3f::One());
     MaterialBase* matEmissionWhite = new Emission(2.0f * Color3f::One());
 
-    Mesh* leftWall = new Mesh();
+    Mesh* const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
                    &matLambertRed,
                    1,
                    ShadingTypes::Flat);
 
-    Mesh* rightWall = new Mesh();
+    Mesh* const rightWall = new Mesh();
     rightWall->Load("Resource/SampleScene/CornellBox/RightWall.obj",
                     &matLambertGreen,
                     1,
                     ShadingTypes::Flat);
 
-    Mesh* whiteWall = new Mesh();
+    Mesh* const whiteWall = new Mesh();
     whiteWall->Load("Resource/SampleScene/CornellBox/WhiteWall.obj",
                     &matLamberWhite,
                     1,
                     ShadingTypes::Flat);
 
-    Mesh* whiteBox = new Mesh();
+    Mesh* const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
                    &matLamberWhite,
                    1,
                    ShadingTypes::Flat);
 
-    Mesh* ceilLight = new Mesh();
+    Mesh* const ceilLight = new Mesh();
     ceilLight->Load("Resource/SampleScene/CornellBox/CeilLight.obj",
                     &matEmissionWhite,
                     1,
@@ -161,7 +164,7 @@ Petrichor::Initialize()
     m_scene.AppendMesh(*whiteBox);
     m_scene.AppendLightMesh(*ceilLight);
 
-    auto camera =
+    Camera* const camera =
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());

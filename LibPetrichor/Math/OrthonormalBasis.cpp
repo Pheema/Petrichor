@@ -12,7 +12,6 @@ OrthonormalBasis::OrthonormalBasis()
   , m_baseY()
   , m_baseZ()
 {
-    // Do nothing
 }
 
 void

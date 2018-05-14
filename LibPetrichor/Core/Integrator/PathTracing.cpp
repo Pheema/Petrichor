@@ -104,7 +104,7 @@ PathTracing::Render(const Scene& scene, Texture2D* targetTex)
                     {
 
                         // ---- ライトをサンプリング ----
-                        if (!scene.GetLights().empty())
+                        if (!scene.GetLights().empty() && false)
                         {
                             float pdfArea     = 0.0f;
                             auto p            = hitInfo.pos;
@@ -216,6 +216,7 @@ PathTracing::Render(const Scene& scene, Texture2D* targetTex)
 #ifdef BALANCE_HEURISTIC
                                 misWeight =
                                   pdfDirBSDF / (pdfDirLight + pdfDirBSDF);
+                                misWeight = 1.0f;
 #else
                                 misWeight = pdfDirBSDF * pdfDirBSDF /
                                             (pdfDirLight * pdfDirLight +

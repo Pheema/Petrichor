@@ -30,5 +30,5 @@ private:
                 ISampler2D& sampler2D,
                 float* pdfArea);
 };
-}
-}
+} // namespace Core
+} // namespace Petrichor

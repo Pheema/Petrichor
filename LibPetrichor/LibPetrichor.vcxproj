@@ -186,6 +186,9 @@
     <ClInclude Include="Core\Color3f.h" />
     <ClInclude Include="Core\Constants.h" />
     <ClInclude Include="Core\Environment.h" />
+    <ClInclude Include="Core\File\IFileLoader.h" />
+    <ClInclude Include="Core\File\JsonDef.h" />
+    <ClInclude Include="Core\File\JsonLoader.h" />
     <ClInclude Include="Core\Geometry\Box.h" />
     <ClInclude Include="Core\Geometry\GeometryBase.h" />
     <ClInclude Include="Core\Geometry\Mesh.h" />
