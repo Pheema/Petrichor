@@ -64,6 +64,12 @@ Texture2D::Load(std::string path)
     unsigned char* data = stbi_load(
       path.c_str(), &m_width, &m_height, nullptr, kNumChannelsInPixel);
 
+    if (data == nullptr)
+    {
+        std::cerr << "[Texture Loading Error] " << path << std::endl;
+        return;
+    }
+
     const int numPixels = m_width * m_height;
     for (size_t i = 0; i < numPixels; i++)
     {

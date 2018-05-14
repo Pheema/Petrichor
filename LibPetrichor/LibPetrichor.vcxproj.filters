@@ -27,9 +27,6 @@
     <ClCompile Include="Core\Environment.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Geometry\GeometryBase.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Material\GGX.cpp">
       <Filter>Core</Filter>
     </ClCompile>

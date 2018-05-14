@@ -62,7 +62,9 @@ PathTracing::Render(const Scene& scene, Texture2D* targetTex)
 
         Tile tile = tileManager.GetTile();
 
-        const auto[i0, j0] = tile.GetInitialPixel();
+        const auto pixelPos = tile.GetInitialPixel();
+        const uint32_t i0 = pixelPos.first;
+        const uint32_t j0 = pixelPos.second;
         for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
         {
             for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)

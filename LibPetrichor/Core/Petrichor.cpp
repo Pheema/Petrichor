@@ -22,6 +22,8 @@ Petrichor::Initialize()
 {
     m_timeBegin = std::chrono::high_resolution_clock::now();
 
+#if 0
+
     // シーンの定義
     auto sphere = new Sphere(Math::Vector3f(-1.5f, 0.0f, 1.0f), 1.0f);
 
@@ -116,16 +118,57 @@ Petrichor::Initialize()
     camera->FocusTo(sphere->o);
     m_scene.SetMainCamera(*camera);
 
+#else
+
+    MaterialBase* matLambertRed   = new Lambert(Color3f(1.0f, 0, 0));
+    MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
+    MaterialBase* matLamberWhite = new Lambert(Color3f::One());
+    MaterialBase* matEmissionWhite = new Lambert(3.0f * Color3f::One());
+
+    constexpr float radius = 10.0f;
+    constexpr float boxWidth = 2.0f;
+    Sphere* leftWall       = new Sphere(Math::Vector3f(-radius - 0.5f*boxWidth, 0, 0), radius);
+    Sphere* rightWall      = new Sphere(Math::Vector3f(radius + 0.5f*boxWidth , 0, 0), radius);
+    Sphere* forwardWall    = new Sphere(Math::Vector3f(0, radius+0.5f*boxWidth, 0), radius);
+    Sphere* ceil           = new Sphere(Math::Vector3f(0, 0, radius+0.5f*boxWidth), radius);
+    Sphere* floor          = new Sphere(Math::Vector3f(0, 0, -radius-0.5f*boxWidth), radius);
+    Sphere* sphereLight = new Sphere(Math::Vector3f::Zero(), 0.5f);
+
+    leftWall->SetMaterial(matLambertRed);
+    rightWall->SetMaterial(matLambertGreen);
+    forwardWall->SetMaterial(matLamberWhite);
+    ceil->SetMaterial(matLamberWhite);
+    floor->SetMaterial(matLamberWhite);
+
+    sphereLight->SetMaterial(matEmissionWhite);
+    m_scene.AppendLight(sphereLight);
+
+    m_scene.AppendGeometry(leftWall);
+    m_scene.AppendGeometry(rightWall);
+    m_scene.AppendGeometry(forwardWall);
+    m_scene.AppendGeometry(ceil);
+    m_scene.AppendGeometry(floor);
+    m_scene.AppendGeometry(sphereLight);
+
+    auto camera = new Camera(Math::Vector3f(0, -5.0f, 0),
+                             Math::Vector3f::UnitY());
+
+    camera->FocusTo(Math::Vector3f::Zero());
+
+    m_scene.SetMainCamera(*camera);
+
+#endif
+
     // 環境マップの設定
     m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(0.0f * Color3f::One());
+    m_scene.GetEnvironment().SetBaseColor(1.0f * Color3f::One());
 }
 
 void
 Petrichor::Render()
 {
     // uint32_t height = 1080;
-    uint32_t height = 540;
+    uint32_t height = 270;
     auto targetTex  = new Texture2D(height * 3 / 2, height);
     m_scene.SetTargetTexture(targetTex);
 
