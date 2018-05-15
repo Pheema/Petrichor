@@ -46,7 +46,7 @@ BVHNode::Intersect(const Ray& ray, const HitInfo& hitInfo) const
         }
     }
 
-    float distance = Math::kPi;
+    float distance = kInfinity;
     for (uint8_t axis = 0; axis < 3; ++axis)
     {
         if (t0[axis] > 0.0f)
