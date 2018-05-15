@@ -13,40 +13,41 @@ namespace Core
 using namespace Math;
 
 BVHNode::BVHNode()
-  : bound{}
+  : bound()
 {
 }
 
 BVHNode::BVHNode(const Vector3f& vMin, const Vector3f& vMax)
-  : bound{ vMin, vMax } {};
+  : bound(vMin, vMax){};
 
 bool
 BVHNode::Intersect(const Ray& ray, const HitInfo& hitInfo) const
 {
     // TODO: ray.dirが軸に平行だと0div
-    Vector3f InvRayDir = Vector3f::One() / ray.dir;
+    const Vector3f InvRayDir = Vector3f::One() / ray.dir;
 
-    Vector3f t0 = (bound.vMin - ray.o) * InvRayDir;
-    Vector3f t1 = (bound.vMax - ray.o) * InvRayDir;
+    const Vector3f t0 = (bound.vMin - ray.o) * InvRayDir;
+    const Vector3f t1 = (bound.vMax - ray.o) * InvRayDir;
 
-    const uint32_t idxArray[] = { 0, 1, 2, 0 };
+    const uint8_t idxArray[] = { 0, 1, 2, 0 };
 
-    for (uint32_t cnt = 0; cnt < 3; cnt++)
+    for (uint8_t cnt = 0; cnt < 3; cnt++)
     {
-        const uint32_t axis0 = idxArray[cnt];
-        const uint32_t axis1 = idxArray[cnt + 1];
+        const uint8_t axis0 = idxArray[cnt];
+        const uint8_t axis1 = idxArray[cnt + 1];
 
-        float tMinMax = std::max(std::min(t0[axis0], t1[axis0]),
-                                 std::min(t0[axis1], t1[axis1]));
-        float tMaxMin = std::min(std::max(t0[axis0], t1[axis0]),
-                                 std::max(t0[axis1], t1[axis1]));
+        const float tMinMax = std::max(std::min(t0[axis0], t1[axis0]),
+                                       std::min(t0[axis1], t1[axis1]));
+        const float tMaxMin = std::min(std::max(t0[axis0], t1[axis0]),
+                                       std::max(t0[axis1], t1[axis1]));
         if (tMaxMin < tMinMax)
+        {
             return false;
+        }
     }
 
     float distance = Math::kPi;
-
-    for (unsigned axis = 0; axis < 3; ++axis)
+    for (uint8_t axis = 0; axis < 3; ++axis)
     {
         if (t0[axis] > 0.0f)
         {
