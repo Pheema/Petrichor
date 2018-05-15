@@ -20,10 +20,10 @@ public:
 
     // 複数のBoundをマージする
     void
-    Merge(const Bound& aabb);
+    Expand(const Bound& aabb);
 
     void
-    Merge(const Math::Vector3f& point);
+    Expand(const Math::Vector3f& point);
 
     // 一番広い辺を取得する
     unsigned

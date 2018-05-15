@@ -21,7 +21,7 @@ Bound::Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax)
 }
 
 void
-Bound::Merge(const Bound& other)
+Bound::Expand(const Bound& other)
 {
     vMin.x = std::min(vMin.x, other.vMin.x);
     vMin.y = std::min(vMin.y, other.vMin.y);
@@ -33,7 +33,7 @@ Bound::Merge(const Bound& other)
 }
 
 void
-Bound::Merge(const Math::Vector3f& point)
+Bound::Expand(const Math::Vector3f& point)
 {
     vMin.x = std::min(vMin.x, point.x);
     vMin.y = std::min(vMin.y, point.y);

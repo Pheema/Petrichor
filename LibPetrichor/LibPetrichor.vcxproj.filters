@@ -80,9 +80,6 @@
     <ClInclude Include="Core\Accel\Bound.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Geometry\Box.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Accel\BruteForce.h">
       <Filter>Core</Filter>
     </ClInclude>

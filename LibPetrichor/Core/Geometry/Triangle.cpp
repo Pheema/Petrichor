@@ -40,7 +40,7 @@ Triangle::CalcBound() const
     Bound bound;
     for (const auto& vertex : m_vertices)
     {
-        bound.Merge(vertex->pos);
+        bound.Expand(vertex->pos);
     }
     m_bound = bound;
     return m_bound;
