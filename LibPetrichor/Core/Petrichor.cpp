@@ -16,6 +16,8 @@
 #include "Core/TileManager.h"
 #include "Random/XorShift.h"
 #include <fstream>
+#include <iomanip>
+#include <mutex>
 
 namespace Petrichor
 {
@@ -25,7 +27,6 @@ namespace Core
 void
 Petrichor::Initialize()
 {
-    m_timeBegin = std::chrono::high_resolution_clock::now();
 
 #if 0
 
@@ -178,25 +179,36 @@ Petrichor::Initialize()
     // 環境マップの設定
     m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(0.0f * Color3f::One());
+
+    // レンダリング先を指定
+    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
+                                   m_scene.GetSceneSettings().outputHeight);
+    m_scene.SetTargetTexture(targetTex);
 }
 
 void
 Petrichor::Render()
 {
-    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
-                                   m_scene.GetSceneSettings().outputHeight);
-    m_scene.SetTargetTexture(targetTex);
-
     PathTracing pt;
 
     const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
     const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
-    TileManager tileManager(
-      targetTex->GetWidth(), targetTex->GetHeight(), tileWidth, tileHeight);
+
+    Texture2D* const targetTexure = m_scene.GetTargetTexture();
+    if (targetTexure == nullptr)
+    {
+        std::cerr << "[Error] Target texture has not been set." << std::endl;
+        return;
+    }
+    const uint32_t outputWidth  = targetTexure->GetWidth();
+    const uint32_t outputHeight = targetTexure->GetHeight();
+    TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
 
     m_scene.BuildAccel();
 
-#pragma omp parallel for schedule(dynamic)
+    std::mutex mtx;
+    uint32_t maxIdxTile = 0;
+#pragma omp parallel for num_threads(4) schedule(dynamic)
     for (int idxTile = 0; idxTile < static_cast<int>(tileManager.GetNumTiles());
          idxTile++)
     {
@@ -213,14 +225,25 @@ Petrichor::Render()
         {
             for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
             {
-                pt.Render(i, j, m_scene, targetTex, sampler1D, sampler2D);
+                pt.Render(i, j, m_scene, targetTexure, sampler1D, sampler2D);
             }
         }
 
-        std::stringstream ss;
-        ss << "[PT: Rendering] " << (idxTile + 1) << "/"
-           << tileManager.GetNumTiles() << std::endl;
-        std::cout << ss.str();
+        {
+            mtx.lock();
+            maxIdxTile = std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
+
+            const float ratio = 100.0f * static_cast<float>(maxIdxTile) /
+                                tileManager.GetNumTiles();
+
+            std::stringstream ss;
+            ss << "[PT: Rendering] " << (maxIdxTile + 1) << "/"
+               << tileManager.GetNumTiles() << "(" << std::fixed
+               << std::setprecision(2) << ratio << "%)"
+               << "\r" << std::flush;
+            std::cout << ss.str();
+            mtx.unlock();
+        }
     }
 }
 
@@ -234,19 +257,6 @@ Petrichor::SaveImage(const std::string& path)
 void
 Petrichor::Finalize()
 {
-    const auto& targetTex = m_scene.GetTargetTexture();
-    targetTex->Save("Output/final.png");
-
-    auto timeEnd     = std::chrono::high_resolution_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-      timeEnd - m_timeBegin);
-    std::cout << "Elapsed time: " << elapsedTime.count() << " msec"
-              << std::endl;
-
-    std::ofstream of("Output/log.txt");
-    of << elapsedTime.count() << "[msec]" << std::endl;
-    of.close();
-
     std::cout << "[Finished]" << std::endl;
 }
 

@@ -11,7 +11,7 @@ struct SceneSettings
 {
     uint32_t outputWidth     = 1280; // レンダリング画面幅[px]
     uint32_t outputHeight    = 720;  // レンダリング画面高さ[px]
-    uint32_t samplesPerPixel = 64;   // 1ピクセル毎のサンプル数
+    uint32_t samplesPerPixel = 32;   // 1ピクセル毎のサンプル数
     uint32_t tileWidth       = 32;   // レンダリングタイルの幅[px]
     uint32_t tileHeight      = 32;   // レンダリングタイルの高さ[px]
     uint32_t maxNumBounces   = 64;   // レイの反射回数上限

@@ -82,7 +82,7 @@ public:
     }
 
     // レンダリング先のテクスチャを取得
-    const Texture2D*
+    Texture2D*
     GetTargetTexture() const
     {
         return m_targetTex;
