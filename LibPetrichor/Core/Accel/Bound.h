@@ -26,8 +26,7 @@ public:
     Expand(const Math::Vector3f& point);
 
     // 一番広い辺を取得する
-    unsigned
-    GetWidestAxis() const;
+    uint8_t GetWidestAxis() const;
 
     Math::Vector3f vMin, vMax;
 };

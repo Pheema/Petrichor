@@ -44,13 +44,12 @@ Bound::Expand(const Math::Vector3f& point)
     vMax.z = std::max(vMax.z, point.z);
 }
 
-unsigned
-Bound::GetWidestAxis() const
+uint8_t Bound::GetWidestAxis() const
 {
     float widest        = 0.0f;
-    unsigned axisResult = 0;
+    uint8_t axisResult = 0;
 
-    for (unsigned axis = 0; axis < 3; ++axis)
+    for (uint8_t axis = 0; axis < 3; ++axis)
     {
         const float width = vMax[axis] - vMin[axis];
         if (width > widest)
