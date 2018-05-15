@@ -63,7 +63,7 @@ Petrichor::Core::Tile
 TileManager::GetTile()
 {
     m_mtx.lock();
-    Tile tile = m_tiles.front();
+    Tile tile = std::move(m_tiles.front());
     m_tiles.pop();
     m_mtx.unlock();
     return tile;

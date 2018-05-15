@@ -1,16 +1,14 @@
 ﻿#pragma once
 
-#include <tuple>
-
 namespace Petrichor
 {
 namespace Core
 {
 
-class ISampler2D
+class ISampler1D
 {
 public:
-    virtual std::tuple<float, float>
+    virtual float
     Next() = 0;
 };
 

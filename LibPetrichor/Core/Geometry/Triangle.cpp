@@ -124,7 +124,7 @@ Triangle::SampleSurface(Math::Vector3f p,
     const Math::Vector3f e0 = m_vertices[1]->pos - m_vertices[0]->pos;
     const Math::Vector3f e1 = m_vertices[2]->pos - m_vertices[0]->pos;
 
-    auto rand2D = sampler2D.SampleNext2D();
+    auto rand2D = sampler2D.Next();
 
     const float u0 = std::get<0>(rand2D);
     const float u1 = std::get<1>(rand2D);

@@ -12,7 +12,13 @@ struct HitInfo;
 struct Ray;
 class Scene;
 
-class IAccelerationStructureBase
+enum class AccelType
+{
+    BruteForce, // 構造を使用しない
+    BVH         // BVH
+};
+
+class AccelerationStructureBase
 {
 public:
     virtual void

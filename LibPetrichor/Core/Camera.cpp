@@ -54,7 +54,7 @@ Camera::PixelToRay(
   int i, int j, int imageWidth, int imageHeight, ISampler2D& rng2D) const
 {
     // Random
-    auto samplingPoint = rng2D.SampleNext2D();
+    auto samplingPoint = rng2D.Next();
     const float aspect = static_cast<float>(imageWidth) / imageHeight;
     const float u      = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
     const float v      = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
@@ -63,7 +63,7 @@ Camera::PixelToRay(
       pos + m_right * u * m_hPerf * m_focusDist * aspect +
       -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
 
-    samplingPoint        = rng2D.SampleNext2D();
+    samplingPoint        = rng2D.Next();
     float r              = sqrt(std::get<0>(samplingPoint));
     float theta          = 2.0f * Math::kPi * std::get<1>(samplingPoint);
     Vector3f pointOnLens = pos + m_right * 0.5f * m_apeture * r * cos(theta) +

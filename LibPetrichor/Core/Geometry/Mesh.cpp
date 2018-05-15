@@ -1,13 +1,13 @@
 ﻿#include "Mesh.h"
 
+#include "Assimp/mesh.h"
+#include "Assimp/Importer.hpp"
+#include "Assimp/postprocess.h"
+#include "Assimp/scene.h"
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
 #include "Core/Material/MaterialBase.h"
 #include "Core/Scene.h"
-#include <Assimp/Importer.hpp>
-#include <Assimp/mesh.h>
-#include <Assimp/postprocess.h>
-#include <Assimp/scene.h>
 
 namespace Petrichor
 {
@@ -127,5 +127,5 @@ Mesh::Load(const std::string& path,
         }
     }
 }
-}
-}
+} // namespace Core
+} // namespace Petrichor

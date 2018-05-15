@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
+#include "Core/Sampler/ISampler1D.h"
+#include "Core/Sampler/ISampler2D.h"
 
 namespace Petrichor
 {
@@ -19,7 +21,12 @@ public:
     PathTracing() = default;
 
     void
-    Render(const Scene& scene, Texture2D* targetTex);
+    Render(uint32_t pixelX,
+           uint32_t pixelY,
+           const Scene& scene,
+           Texture2D* const targetTex,
+           ISampler1D& sampler1D,
+           ISampler2D& sampler2D);
 
 private:
     // ランダムにライト上をサンプリング

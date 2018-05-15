@@ -3,7 +3,7 @@
 #include "BVHNode.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/HitInfo.h"
-#include "IAccelerationStructureBase.h"
+#include "AccelerationStructureBase.h"
 
 namespace Petrichor {
 namespace Core {
@@ -12,7 +12,7 @@ class Scene;
 struct HitInfo;
 struct Ray;
 
-class BVH : public IAccelerationStructureBase {
+class BVH : public AccelerationStructureBase {
 public:
     BVH() = default;
 

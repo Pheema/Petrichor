@@ -96,7 +96,7 @@ Sphere::SampleSurface(Math::Vector3f p,
 
     onb.Build(originToPoint);
 
-    auto pointSampled = sampler2D.SampleNext2D();
+    auto pointSampled = sampler2D.Next();
 
     float l = originToPoint.Length();
     // TODO: 点pが球の中にある場合に破綻するのでチェック

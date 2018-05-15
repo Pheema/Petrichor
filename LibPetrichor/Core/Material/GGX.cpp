@@ -127,7 +127,7 @@ std::cout << "[O]" << outDir << std::endl;*/
     Math::OrthonormalBasis onb;
     onb.Build(normal);
 
-    auto pointSampled = rng2D.SampleNext2D();
+    auto pointSampled = rng2D.Next();
 
     float theta = acos(std::get<0>(pointSampled));
     float phi   = 2.0f * M_PI * std::get<1>(pointSampled);
@@ -201,7 +201,7 @@ GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
     const auto t2 = Cross(t1, v);
     onb.Build(t2, t1);
 
-    const auto rand = rng2D.SampleNext2D();
+    const auto rand = rng2D.Next();
     float u0        = std::get<0>(rand);
     float u1        = std::get<1>(rand);
 

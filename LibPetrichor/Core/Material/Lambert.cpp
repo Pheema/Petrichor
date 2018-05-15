@@ -58,7 +58,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
     Math::OrthonormalBasis onb;
     onb.Build(normal);
 
-    auto pointSampled = sampler2D.SampleNext2D();
+    auto pointSampled = sampler2D.Next();
 
 #if 1
     // ImportanceSampling

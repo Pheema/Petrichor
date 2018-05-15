@@ -180,7 +180,7 @@
     <ClInclude Include="Core\Accel\BruteForce.h" />
     <ClInclude Include="Core\Accel\BVH.h" />
     <ClInclude Include="Core\Accel\BVHNode.h" />
-    <ClInclude Include="Core\Accel\IAccelerationStructureBase.h" />
+    <ClInclude Include="Core\Accel\AccelerationStructureBase.h" />
     <ClInclude Include="Core\Assert.h" />
     <ClInclude Include="Core\Camera.h" />
     <ClInclude Include="Core\Color3f.h" />
@@ -204,8 +204,10 @@
     <ClInclude Include="Core\Material\MatMix.h" />
     <ClInclude Include="Core\Petrichor.h" />
     <ClInclude Include="Core\Ray.h" />
+    <ClInclude Include="Core\Sampler\ISampler1D.h" />
     <ClInclude Include="Core\Sampler\ISampler2D.h" />
     <ClInclude Include="Core\Sampler\MicroJitteredSampler.h" />
+    <ClInclude Include="Core\Sampler\RandomSampler1D.h" />
     <ClInclude Include="Core\Sampler\RandomSampler2D.h" />
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Core\Texture2D.h" />

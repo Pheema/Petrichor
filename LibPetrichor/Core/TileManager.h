@@ -27,7 +27,7 @@ public:
     }
 
     std::pair<uint32_t, uint32_t>
-    GetInitialPixel()
+    GetInitialPixel() const
     {
         return { m_initPixelX, m_initPixelY };
     }
@@ -68,10 +68,8 @@ private:
         m_height = height;
     }
 
-    int m_initPixelX, m_initPixelY;
-
-    uint32_t m_width;
-    uint32_t m_height;
+    uint32_t m_initPixelX, m_initPixelY;    // タイル左上のコーナーを示す座標
+    uint32_t m_width, m_height;             // タイルの幅、高さ
 };
 
 class TileManager
@@ -84,8 +82,10 @@ public:
 
     bool
     IsEmpty() const;
+
     Tile
     GetTile();
+
     int
     GetNumTiles() const
     {

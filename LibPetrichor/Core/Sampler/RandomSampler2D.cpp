@@ -12,7 +12,7 @@ RandomSampler2D::RandomSampler2D(unsigned seed)
 }
 
 std::tuple<float, float>
-RandomSampler2D::SampleNext2D()
+RandomSampler2D::Next()
 {
     float x = m_xorShift.next();
     float y = m_xorShift.next();

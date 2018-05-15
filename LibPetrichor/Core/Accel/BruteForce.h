@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
-#include "IAccelerationStructureBase.h"
+#include "AccelerationStructureBase.h"
 #include <vector>
 
 namespace Petrichor
@@ -14,7 +14,7 @@ struct Ray;
 class Scene;
 class GeometryBase;
 
-class BruteForce : public IAccelerationStructureBase
+class BruteForce : public AccelerationStructureBase
 {
 public:
     void

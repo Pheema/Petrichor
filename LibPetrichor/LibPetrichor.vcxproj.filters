@@ -113,9 +113,6 @@
     <ClInclude Include="Core\HitInfo.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Accel\IAccelerationStructureBase.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Sampler\ISampler2D.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -189,6 +186,15 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\File\JsonDef.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\AccelerationStructureBase.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sampler\ISampler1D.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sampler\RandomSampler1D.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

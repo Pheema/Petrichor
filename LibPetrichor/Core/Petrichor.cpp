@@ -1,5 +1,6 @@
 ﻿#include "Petrichor.h"
 
+#include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Geometry/Sphere.h"
@@ -10,10 +11,11 @@
 #include "Core/Material/GGX.h"
 #include "Core/Material/Lambert.h"
 #include "Core/Material/MatMix.h"
+#include "Core/Sampler/RandomSampler1D.h"
+#include "Core/Sampler/RandomSampler2D.h"
+#include "Core/TileManager.h"
+#include "Random/XorShift.h"
 #include <fstream>
-
-#include <Cereal/archives/json.hpp>
-#include <Core/File/JsonDef.h>
 
 namespace Petrichor
 {
@@ -181,13 +183,45 @@ Petrichor::Initialize()
 void
 Petrichor::Render()
 {
-    // uint32_t height = 1080;
-    uint32_t height = 270;
-    auto targetTex  = new Texture2D(height * 3 / 2, height);
+    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
+                                   m_scene.GetSceneSettings().outputHeight);
     m_scene.SetTargetTexture(targetTex);
 
     PathTracing pt;
-    pt.Render(m_scene, targetTex);
+
+    const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
+    const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
+    TileManager tileManager(
+      targetTex->GetWidth(), targetTex->GetHeight(), tileWidth, tileHeight);
+
+    m_scene.BuildAccel();
+
+#pragma omp parallel for schedule(dynamic)
+    for (int idxTile = 0; idxTile < static_cast<int>(tileManager.GetNumTiles());
+         idxTile++)
+    {
+        const Tile tile     = tileManager.GetTile();
+        const auto pixelPos = tile.GetInitialPixel();
+
+        const uint32_t i0 = pixelPos.first;
+        const uint32_t j0 = pixelPos.second;
+
+        RandomSampler1D sampler1D(idxTile);
+        RandomSampler2D sampler2D(idxTile);
+
+        for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
+        {
+            for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
+            {
+                pt.Render(i, j, m_scene, targetTex, sampler1D, sampler2D);
+            }
+        }
+
+        std::stringstream ss;
+        ss << "[PT: Rendering] " << (idxTile + 1) << "/"
+           << tileManager.GetNumTiles() << std::endl;
+        std::cout << ss.str();
+    }
 }
 
 void

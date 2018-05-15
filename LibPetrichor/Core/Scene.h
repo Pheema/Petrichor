@@ -1,7 +1,10 @@
 ﻿#pragma once
 
+#include "Core/Accel/AccelerationStructureBase.h"
+#include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
 #include "Core/Environment.h"
+#include "Core/File/JsonDef.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
 #include <vector>
@@ -71,16 +74,53 @@ public:
     Environment&
     GetEnvironment() const;
 
+    // レンダリング先のテクスチャを設定
     void
     SetTargetTexture(Texture2D* targetTex)
     {
         m_targetTex = targetTex;
     }
 
+    // レンダリング先のテクスチャを取得
     const Texture2D*
     GetTargetTexture() const
     {
         return m_targetTex;
+    }
+
+    void
+    SetSceneSettings(const SceneSettings& sceneSettings)
+    {
+        m_sceneSettings = sceneSettings;
+    }
+
+    const SceneSettings&
+    GetSceneSettings() const
+    {
+        return m_sceneSettings;
+    }
+
+    void
+    BuildAccel()
+    {
+        ASSERT(m_accel != nullptr &&
+               "Acceleration structure has not been created.");
+        m_accel = std::make_unique<BVH>();
+        m_accel->Build(*this);
+    }
+
+    bool
+    Intersect(const Ray& ray, HitInfo* hitInfo) const
+    {
+        ASSERT(m_accel != nullptr);
+        return m_accel->Intersect(ray, hitInfo);
+    }
+
+    bool
+    Intersect(const Ray& ray, HitInfo* hitInfo, float distMin) const
+    {
+        ASSERT(m_accel != nullptr);
+        return m_accel->Intersect(ray, hitInfo, distMin);
     }
 
 private:
@@ -93,10 +133,16 @@ private:
     mutable Environment m_environment;
 
     // メインカメラ
-    const Camera* m_mainCamera;
+    const Camera* m_mainCamera = nullptr;
+
+    // 高速化構造
+    std::unique_ptr<AccelerationStructureBase> m_accel = nullptr;
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
+
+    // シーンの設定ファイル
+    SceneSettings m_sceneSettings;
 };
 
 #pragma region Inline functions

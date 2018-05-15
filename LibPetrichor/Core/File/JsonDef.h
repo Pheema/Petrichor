@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Cereal/archives/json.hpp"
+#include "cereal/archives/json.hpp"
 
 namespace Petrichor
 {
@@ -14,7 +14,7 @@ struct SceneSettings
     uint32_t samplesPerPixel = 64;   // 1ピクセル毎のサンプル数
     uint32_t tileWidth       = 32;   // レンダリングタイルの幅[px]
     uint32_t tileHeight      = 32;   // レンダリングタイルの高さ[px]
-    uint32_t maxNumBounces   = 64;   // レイの反射数上限[px]
+    uint32_t maxNumBounces   = 64;   // レイの反射回数上限
 
     template<class Archive>
     void
