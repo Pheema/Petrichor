@@ -1,11 +1,13 @@
-﻿#include "BVH.h"
+#include "BVH.h"
 
 #include "Core/Accel/BVHNode.h"
 #include "Core/Scene.h"
 #include <stack>
 
-namespace Petrichor {
-namespace Core {
+namespace Petrichor
+{
+namespace Core
+{
 
 void
 BVH::Build(const Scene& scene)
@@ -15,7 +17,8 @@ BVH::Build(const Scene& scene)
     {
         BVHNode rootNode;
         rootNode.ReserveChildArray(scene.GetGeometries().size());
-        for (const auto* geometry : scene.GetGeometries()) {
+        for (const auto* geometry : scene.GetGeometries())
+        {
             rootNode.bound.Expand(geometry->CalcBound());
             rootNode.AppendChild(geometry);
         }
@@ -28,7 +31,8 @@ BVH::Build(const Scene& scene)
 
     size_t index = 0;
     size_t depth = 1;
-    while (!bvhNodeIndexStack.empty()) {
+    while (!bvhNodeIndexStack.empty())
+    {
         const size_t nodeIndex = bvhNodeIndexStack.top();
         bvhNodeIndexStack.pop();
         depth--;
@@ -38,7 +42,8 @@ BVH::Build(const Scene& scene)
         VDB_BOX(m_bvhNodes[nodeIndex].bound.vMin,
                 m_bvhNodes[nodeIndex].bound.vMax);
 
-        if (m_bvhNodes[nodeIndex].GetNumChildGeoms() < 16) {
+        if (m_bvhNodes[nodeIndex].GetNumChildGeoms() < 16)
+        {
             m_bvhNodes[nodeIndex].SetLeaf(true);
             continue;
         }
@@ -60,18 +65,21 @@ BVH::Build(const Scene& scene)
 
         BVHNode childNodes[2];
 
-        if (iterMid == m_bvhNodes[nodeIndex].GetChildArray().cbegin()) {
+        if (iterMid == m_bvhNodes[nodeIndex].GetChildArray().cbegin())
+        {
             iterMid++;
         }
 
-        if (iterMid == m_bvhNodes[nodeIndex].GetChildArray().cend()) {
+        if (iterMid == m_bvhNodes[nodeIndex].GetChildArray().cend())
+        {
             iterMid--;
         }
 
         const auto& iterBegin = m_bvhNodes[nodeIndex].GetChildArray().cbegin();
         const size_t numChildren0 = std::distance(iterBegin, iterMid);
         childNodes[0].ReserveChildArray(numChildren0);
-        for (auto iter = iterBegin; iter != iterMid; ++iter) {
+        for (auto iter = iterBegin; iter != iterMid; ++iter)
+        {
             childNodes[0].bound.Expand((*iter)->CalcBound());
             childNodes[0].AppendChild(*iter);
         }
@@ -79,7 +87,8 @@ BVH::Build(const Scene& scene)
         const auto& iterEnd = m_bvhNodes[nodeIndex].GetChildArray().cend();
         const size_t numChildren1 = std::distance(iterMid, iterEnd);
         childNodes[1].ReserveChildArray(numChildren1);
-        for (auto iter = iterMid; iter != iterEnd; ++iter) {
+        for (auto iter = iterMid; iter != iterEnd; ++iter)
+        {
             childNodes[1].bound.Expand((*iter)->CalcBound());
             childNodes[1].AppendChild(*iter);
         }
@@ -116,37 +125,46 @@ BVH::Intersect(const Ray& ray,
     HitInfo hitInfo_;
 
     // 2つの子ノード又は子オブジェクトに対して
-    while (!bvhNodeIndexQueue.empty()) {
+    while (!bvhNodeIndexQueue.empty())
+    {
         // 葉ノードに対して
         const size_t bvhNodeIndex = bvhNodeIndexQueue.top();
         bvhNodeIndexQueue.pop();
 
-        if (!m_bvhNodes[bvhNodeIndex].Intersect(ray, *hitInfo)) {
+        if (!m_bvhNodes[bvhNodeIndex].Intersect(ray, *hitInfo))
+        {
             // 衝突しない場合 or RayがAABBより手前で衝突している場合
             // 子ノードの探索はしない
             continue;
         }
 
-        if (m_bvhNodes[bvhNodeIndex].IsLeaf()) {
+        if (m_bvhNodes[bvhNodeIndex].IsLeaf())
+        {
             for (const auto* geometry :
-                 m_bvhNodes[bvhNodeIndex].GetChildArray()) {
-                if (geometry->Intersect(ray, &hitInfo_)) {
+                 m_bvhNodes[bvhNodeIndex].GetChildArray())
+            {
+                if (geometry->Intersect(ray))
+                {
                     if (hitInfo_.distance < distMin ||
-                        hitInfo_.distance > distMax) {
+                        hitInfo_.distance > distMax)
+                    {
                         continue;
                     }
 
-                    if (hitInfo_.distance < hitInfo->distance) {
+                    if (hitInfo_.distance < hitInfo->distance)
+                    {
                         isHit    = true;
                         *hitInfo = hitInfo_;
                     }
                 }
             }
         }
-        else {
+        else
+        {
             // 枝ノードの場合
             for (const auto childNodeIndex :
-                 m_bvhNodes[bvhNodeIndex].GetChildNodeIndicies()) {
+                 m_bvhNodes[bvhNodeIndex].GetChildNodeIndicies())
+            {
                 bvhNodeIndexQueue.emplace(childNodeIndex);
             }
         }

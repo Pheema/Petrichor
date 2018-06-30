@@ -1,4 +1,4 @@
-﻿#include "PathTracing.h"
+#include "PathTracing.h"
 
 #include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
@@ -30,7 +30,8 @@ SimplifiedSpectrum(float x)
                    Petrichor::Math::Clamp(result.z, 0.0f, 1.0f));
 }
 
-void PathTracing::Render(uint32_t pixelX,
+void
+PathTracing::Render(uint32_t pixelX,
                     uint32_t pixelY,
                     const Scene& scene,
                     Texture2D* const targetTex,
@@ -44,13 +45,17 @@ void PathTracing::Render(uint32_t pixelX,
         return;
     }
 
+    constexpr uint32_t numSamples = 64;
+
     Color3f pixelColorSum;
-    for (uint32_t spp = 0; spp < scene.GetSceneSettings().samplesPerPixel;
-         spp++)
+    for (uint32_t spp = 0; spp < numSamples; spp++)
     {
         Color3f color;
-        auto ray = mainCamera->PixelToRay(
-          pixelX, pixelY, targetTex->GetWidth(), targetTex->GetHeight(), sampler2D);
+        auto ray = mainCamera->PixelToRay(pixelX,
+                                          pixelY,
+                                          targetTex->GetWidth(),
+                                          targetTex->GetHeight(),
+                                          sampler2D);
 
         HitInfo hitInfo;
         const MaterialBase* mat;
@@ -71,10 +76,10 @@ void PathTracing::Render(uint32_t pixelX,
             continue;
         }
 
+        constexpr uint32_t maxNumBounces = 64;
+
         // ---- ヒットした場合 ----
-        for (uint32_t bounce = 0;
-             bounce < scene.GetSceneSettings().maxNumBounces;
-             bounce++)
+        for (uint32_t bounce = 0; bounce < maxNumBounces; bounce++)
         {
 
             // ---- ライトをサンプリング ----
@@ -169,7 +174,8 @@ void PathTracing::Render(uint32_t pixelX,
                     float pdfAreaLight;
                     PointData pointData;
                     (hitInfo.hitObj)
-                      ->SampleSurface(ray.o, sampler2D, &pointData, &pdfAreaLight);
+                      ->SampleSurface(
+                        ray.o, sampler2D, &pointData, &pdfAreaLight);
 
                     pdfDirBSDF  = pdfDir;
                     pdfDirLight = l2 / cos * pdfAreaLight;
@@ -198,7 +204,8 @@ void PathTracing::Render(uint32_t pixelX,
             }
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
-            if (ray.bounce < scene.GetSceneSettings().maxNumBounces)
+            // #TODO: 反射回数をセッティングから読み込む
+            if (ray.bounce < numSamples)
             {
                 continue;
             }
@@ -224,10 +231,7 @@ void PathTracing::Render(uint32_t pixelX,
         }
     }
 
-    Color3f averagedColor =
-      pixelColorSum /
-      static_cast<float>(scene.GetSceneSettings().samplesPerPixel);
-
+    Color3f averagedColor = pixelColorSum / static_cast<float>(numSamples);
     targetTex->SetPixel(pixelX, pixelY, averagedColor);
 }
 

@@ -1,4 +1,4 @@
-﻿#include "BruteForce.h"
+#include "BruteForce.h"
 
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/HitInfo.h"
@@ -28,7 +28,7 @@ BruteForce::Intersect(const Ray& ray,
     for (const auto* geometry : m_geometries)
     {
         HitInfo hitInfo_;
-        if (geometry->Intersect(ray, &hitInfo_))
+        if (geometry->Intersect(ray))
         {
             // 衝突位置がレイの原点から近すぎたり遠すぎる場合は無視
             if (hitInfo_.distance < distMin || hitInfo_.distance > distMax)

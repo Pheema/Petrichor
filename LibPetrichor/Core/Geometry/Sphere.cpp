@@ -40,8 +40,8 @@ Sphere::CalcBound() const
     return m_bound;
 }
 
-bool
-Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
+std::optional<Petrichor::Core::HitInfo>
+Sphere::Intersect(const Ray& ray) const
 {
     const float a   = Dot(ray.dir, ray.dir);
     const float b_2 = Dot(ray.dir, ray.o - o);
@@ -50,7 +50,7 @@ Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
     if (D_4 < 0.0f)
     {
         // レイの進行する上に球面が存在しない
-        return false;
+        return std::nullopt;
     }
 
     const float l1 = (-b_2 - sqrt(D_4)) / a;
@@ -59,28 +59,28 @@ Sphere::Intersect(const Ray& ray, HitInfo* hitInfo) const
     if (l1 < 0.0f && l2 < 0.0f)
     {
         // レイの進行後方に球面が存在する場合
-        return false;
+        return std::nullopt;
     }
 
     float distance = std::min(std::max(l1, 0.0f), std::max(l2, 0.0f));
 
-    hitInfo->distance = distance;
-    hitInfo->pos      = ray.o + ray.dir * hitInfo->distance;
+    HitInfo hitInfo;
+    hitInfo.distance = distance;
+    hitInfo.pos      = ray.o + ray.dir * hitInfo.distance;
 
-    if (Math::ApproxEq(hitInfo->distance, l1))
+    if (Math::ApproxEq(hitInfo.distance, l1))
     {
         // 球の外側からの衝突
-        hitInfo->normal = (hitInfo->pos - o).Normalized();
+        hitInfo.normal = (hitInfo.pos - o).Normalized();
     }
     else
     {
         // 球内部からの衝突
-        hitInfo->normal = -(hitInfo->pos - o).Normalized();
+        hitInfo.normal = -(hitInfo.pos - o).Normalized();
     }
 
-    hitInfo->hitObj = this;
-
-    return true;
+    hitInfo.hitObj = this;
+    return hitInfo;
 }
 
 void

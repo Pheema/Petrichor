@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
 #include <array>
@@ -33,8 +33,8 @@ public:
     virtual Bound
     CalcBound() const override;
 
-    bool
-    Intersect(const Ray& ray, HitInfo* hitInfo) const override;
+    std::optional<HitInfo>
+    Intersect(const Ray& ray) const override;
 
     virtual void
     SampleSurface(Math::Vector3f p,

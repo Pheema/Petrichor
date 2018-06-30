@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Accel/Bound.h"
 #include "Core/Material/MaterialBase.h"
+#include <optional>
 
 namespace Petrichor
 {
@@ -36,8 +37,8 @@ public:
     }
 
     // レイとの交差判定
-    virtual bool
-    Intersect(const Ray& ray, HitInfo* hitInfo) const = 0;
+    virtual std::optional<HitInfo>
+    Intersect(const Ray& ray) const = 0;
 
     // ライト表面をサンプルリングする
     virtual void

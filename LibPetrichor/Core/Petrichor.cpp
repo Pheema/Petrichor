@@ -1,4 +1,4 @@
-﻿#include "Petrichor.h"
+#include "Petrichor.h"
 
 #include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
@@ -18,6 +18,7 @@
 #include <fstream>
 #include <iomanip>
 #include <mutex>
+#include <sstream>
 
 namespace Petrichor
 {
@@ -181,8 +182,8 @@ Petrichor::Initialize()
     m_scene.GetEnvironment().SetBaseColor(0.0f * Color3f::One());
 
     // レンダリング先を指定
-    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
-                                   m_scene.GetSceneSettings().outputHeight);
+    // #TODO: セッティングから読み込む
+    auto targetTex = new Texture2D(1280, 720);
     m_scene.SetTargetTexture(targetTex);
 }
 
@@ -191,8 +192,9 @@ Petrichor::Render()
 {
     PathTracing pt;
 
-    const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
-    const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
+    // #TODO: 設定ファイルから読み込む
+    const uint32_t tileWidth  = 64;
+    const uint32_t tileHeight = 64;
 
     Texture2D* const targetTexure = m_scene.GetTargetTexture();
     if (targetTexure == nullptr)

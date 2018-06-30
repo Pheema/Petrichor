@@ -1,10 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Accel/AccelerationStructureBase.h"
 #include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
 #include "Core/Environment.h"
-#include "Core/File/JsonDef.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
 #include <vector>
@@ -89,18 +88,6 @@ public:
     }
 
     void
-    SetSceneSettings(const SceneSettings& sceneSettings)
-    {
-        m_sceneSettings = sceneSettings;
-    }
-
-    const SceneSettings&
-    GetSceneSettings() const
-    {
-        return m_sceneSettings;
-    }
-
-    void
     BuildAccel()
     {
         ASSERT(m_accel != nullptr &&
@@ -140,9 +127,6 @@ private:
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
-
-    // シーンの設定ファイル
-    SceneSettings m_sceneSettings;
 };
 
 #pragma region Inline functions
