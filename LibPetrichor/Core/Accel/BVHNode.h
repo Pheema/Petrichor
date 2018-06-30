@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "Bound.h"
 #include <array>
+#include <optional>
 #include <vector>
 
 namespace Petrichor
@@ -20,8 +21,8 @@ public:
 
     BVHNode(const Math::Vector3f& vMin, const Math::Vector3f& vMax);
 
-    bool
-    Intersect(const Ray& ray, const HitInfo& hitInfo) const;
+    std::optional<HitInfo>
+    Intersect(const Ray& ray) const;
 
     size_t
     Partition(int axis);

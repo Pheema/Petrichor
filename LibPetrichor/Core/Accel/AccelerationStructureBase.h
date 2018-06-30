@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Constants.h"
 #include <limits>
+#include <optional>
 
 namespace Petrichor
 {
@@ -24,9 +25,8 @@ public:
     virtual void
     Build(const Scene& scene) = 0;
 
-    virtual bool
+    virtual std::optional<HitInfo>
     Intersect(const Ray& ray,
-              HitInfo* hitInfo,
               float distMin = 0.0f,
               float distMax = kInfinity) const = 0;
 };

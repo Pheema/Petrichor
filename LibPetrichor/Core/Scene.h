@@ -2,10 +2,12 @@
 
 #include "Core/Accel/AccelerationStructureBase.h"
 #include "Core/Accel/BVH.h"
+#include "Core/Accel/BruteForce.h"
 #include "Core/Camera.h"
 #include "Core/Environment.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
+#include <optional>
 #include <vector>
 
 namespace Petrichor
@@ -96,18 +98,18 @@ public:
         m_accel->Build(*this);
     }
 
-    bool
-    Intersect(const Ray& ray, HitInfo* hitInfo) const
+    std::optional<HitInfo>
+    Intersect(const Ray& ray) const
     {
         ASSERT(m_accel != nullptr);
-        return m_accel->Intersect(ray, hitInfo);
+        return m_accel->Intersect(ray);
     }
 
-    bool
-    Intersect(const Ray& ray, HitInfo* hitInfo, float distMin) const
+    std::optional<HitInfo>
+    Intersect(const Ray& ray, float distMin) const
     {
         ASSERT(m_accel != nullptr);
-        return m_accel->Intersect(ray, hitInfo, distMin);
+        return m_accel->Intersect(ray, distMin);
     }
 
 private:

@@ -1,4 +1,4 @@
-﻿#include "BVHNode.h"
+#include "BVHNode.h"
 
 #include <Core/Constants.h>
 #include <Core/Geometry/GeometryBase.h>
@@ -20,8 +20,8 @@ BVHNode::BVHNode()
 BVHNode::BVHNode(const Vector3f& vMin, const Vector3f& vMax)
   : bound(vMin, vMax){};
 
-bool
-BVHNode::Intersect(const Ray& ray, const HitInfo& hitInfo) const
+std::optional<HitInfo>
+BVHNode::Intersect(const Ray& ray) const
 {
     // TODO: ray.dirが軸に平行だと0div
     const Vector3f InvRayDir = Vector3f::One() / ray.dir;
@@ -42,7 +42,7 @@ BVHNode::Intersect(const Ray& ray, const HitInfo& hitInfo) const
                                        std::max(t0[axis1], t1[axis1]));
         if (tMaxMin < tMinMax)
         {
-            return false;
+            return std::nullopt;
         }
     }
 
@@ -60,17 +60,11 @@ BVHNode::Intersect(const Ray& ray, const HitInfo& hitInfo) const
         }
     }
 
-    // レイがBVHNodeより手前のメッシュにあたっている場合は
-    // 子を探索しない
-    if (distance > hitInfo.distance)
-    {
-        return false;
-    }
-
-    // BVHNodeは実際に接触する物体ではないので
-    // hitInfoの更新は行わない
-
-    return true;
+    HitInfo hitInfo;
+    hitInfo.distance = distance;
+    hitInfo.pos      = ray.o + ray.dir * distance;
+    // BVHNodeは実際に接触する物体ではないので、その他hitInfoの更新は行わない
+    return hitInfo;
 }
 
 size_t

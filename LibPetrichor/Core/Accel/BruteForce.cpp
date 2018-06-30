@@ -18,34 +18,35 @@ BruteForce::Build(const Scene& scene)
     }
 }
 
-bool
+std::optional<Petrichor::Core::HitInfo>
 BruteForce::Intersect(const Ray& ray,
-                      HitInfo* hitInfo,
-                      float distMin,
-                      float distMax) const
+                      float distMin /*= 0.0f*/,
+                      float distMax /*= kInfinity*/) const
 {
-    bool isHit = false;
+    std::optional<HitInfo> hitInfoResult;
+
     for (const auto* geometry : m_geometries)
     {
-        HitInfo hitInfo_;
-        if (geometry->Intersect(ray))
+        if (const auto optGeoHitInfo = geometry->Intersect(ray); optGeoHitInfo)
         {
+            const auto& geoHitInfo = optGeoHitInfo.value();
+
             // 衝突位置がレイの原点から近すぎたり遠すぎる場合は無視
-            if (hitInfo_.distance < distMin || hitInfo_.distance > distMax)
+            if (geoHitInfo.distance < distMin || geoHitInfo.distance > distMax)
             {
                 continue;
             }
 
             // 衝突位置が近ければ衝突情報を更新
-            if (hitInfo_.distance < hitInfo->distance)
+            if (hitInfoResult == std::nullopt ||
+                geoHitInfo.distance < hitInfoResult.value().distance)
             {
-                isHit    = true;
-                *hitInfo = hitInfo_;
+                hitInfoResult = geoHitInfo;
             }
         }
     }
 
-    return isHit;
+    return hitInfoResult;
 }
 
 } // namespace Core

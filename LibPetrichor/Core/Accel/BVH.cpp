@@ -42,7 +42,7 @@ BVH::Build(const Scene& scene)
         VDB_BOX(m_bvhNodes[nodeIndex].bound.vMin,
                 m_bvhNodes[nodeIndex].bound.vMax);
 
-        if (m_bvhNodes[nodeIndex].GetNumChildGeoms() < 16)
+        if (m_bvhNodes[nodeIndex].GetNumChildGeoms() < 2)
         {
             m_bvhNodes[nodeIndex].SetLeaf(true);
             continue;
@@ -53,7 +53,8 @@ BVH::Build(const Scene& scene)
 #if 0
         // 座標の中心で2分割する
         auto offsetMid = m_bvhNodes[nodeIndex].Partition(widestAxis);
-        auto iterMid = m_bvhNodes[nodeIndex].GetChildArray().cbegin() + offsetMid;
+        auto iterMid =
+          m_bvhNodes[nodeIndex].GetChildArray().cbegin() + offsetMid;
 #else
         // 一番長い辺に垂直に2分割
         // なるべく木の階層が浅くなるように均等な個数だけ入るようにする
@@ -111,18 +112,16 @@ BVH::Build(const Scene& scene)
     std::cout << "[Done] BVH Construction" << std::endl;
 }
 
-bool
+std::optional<HitInfo>
 BVH::Intersect(const Ray& ray,
-               HitInfo* hitInfo,
-               float distMin,
-               float distMax) const
+               float distMin /*= 0.0f*/,
+               float distMax /*= kInfinity*/) const
 {
     std::stack<size_t> bvhNodeIndexQueue;
     bvhNodeIndexQueue.emplace(0);
 
     // ---- BVHのトラバーサル ----
-    bool isHit = false;
-    HitInfo hitInfo_;
+    std::optional<HitInfo> optHitInfoResult;
 
     // 2つの子ノード又は子オブジェクトに対して
     while (!bvhNodeIndexQueue.empty())
@@ -131,11 +130,24 @@ BVH::Intersect(const Ray& ray,
         const size_t bvhNodeIndex = bvhNodeIndexQueue.top();
         bvhNodeIndexQueue.pop();
 
-        if (!m_bvhNodes[bvhNodeIndex].Intersect(ray, *hitInfo))
+        const auto optNodeHitInfo = m_bvhNodes[bvhNodeIndex].Intersect(ray);
+
+        // そもそもBVHノードに当たる軌道ではない
+        if (optNodeHitInfo == std::nullopt)
         {
-            // 衝突しない場合 or RayがAABBより手前で衝突している場合
-            // 子ノードの探索はしない
             continue;
+        }
+
+        // 自ノードより手前で既に衝突している
+        if (optHitInfoResult)
+        {
+            const auto dist0 = optHitInfoResult.value().distance;
+            const auto dist1 = optNodeHitInfo.value().distance;
+
+            if (dist0 < dist1)
+            {
+                continue;
+            }
         }
 
         if (m_bvhNodes[bvhNodeIndex].IsLeaf())
@@ -143,19 +155,24 @@ BVH::Intersect(const Ray& ray,
             for (const auto* geometry :
                  m_bvhNodes[bvhNodeIndex].GetChildArray())
             {
-                if (geometry->Intersect(ray))
+                const auto optGeoHitInfo = geometry->Intersect(ray);
+                if (optGeoHitInfo == std::nullopt)
                 {
-                    if (hitInfo_.distance < distMin ||
-                        hitInfo_.distance > distMax)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (hitInfo_.distance < hitInfo->distance)
-                    {
-                        isHit    = true;
-                        *hitInfo = hitInfo_;
-                    }
+                const auto& geoHitInfo = optGeoHitInfo.value();
+
+                if (geoHitInfo.distance < distMin ||
+                    geoHitInfo.distance > distMax)
+                {
+                    continue;
+                }
+
+                if (optHitInfoResult == std::nullopt ||
+                    geoHitInfo.distance < optHitInfoResult.value().distance)
+                {
+                    optHitInfoResult = geoHitInfo;
                 }
             }
         }
@@ -169,7 +186,7 @@ BVH::Intersect(const Ray& ray,
             }
         }
     }
-    return isHit;
+    return optHitInfoResult;
 }
 
 } // namespace Core
