@@ -176,6 +176,8 @@
     <ClCompile Include="Core\Petrichor.cpp" />
     <ClCompile Include="Core\Sampler\MicroJitteredSampler.cpp" />
     <ClCompile Include="Core\Sampler\RandomSampler2D.cpp" />
+    <ClCompile Include="Core\Scene.cpp" />
+    <ClCompile Include="Core\SceneSettings.cpp" />
     <ClCompile Include="Core\Texture2D.cpp" />
     <ClCompile Include="Core\TileManager.cpp" />
     <ClCompile Include="Math\Halton.cpp" />
@@ -192,7 +194,6 @@
     <ClInclude Include="Core\Color3f.h" />
     <ClInclude Include="Core\Constants.h" />
     <ClInclude Include="Core\Environment.h" />
-    <ClInclude Include="Core\File\IFileLoader.h" />
     <ClInclude Include="Core\Geometry\GeometryBase.h" />
     <ClInclude Include="Core\Geometry\Mesh.h" />
     <ClInclude Include="Core\Geometry\Sphere.h" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Core\Sampler\RandomSampler1D.h" />
     <ClInclude Include="Core\Sampler\RandomSampler2D.h" />
     <ClInclude Include="Core\Scene.h" />
+    <ClInclude Include="Core\SceneSettings.h" />
     <ClInclude Include="Core\Texture2D.h" />
     <ClInclude Include="Core\TileManager.h" />
     <ClInclude Include="Math\Halton.h" />

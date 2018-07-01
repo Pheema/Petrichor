@@ -1,4 +1,4 @@
-#include "BruteForce.h"
+﻿#include "BruteForce.h"
 
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/HitInfo.h"

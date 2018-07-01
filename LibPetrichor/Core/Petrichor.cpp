@@ -1,4 +1,4 @@
-#include "Petrichor.h"
+﻿#include "Petrichor.h"
 
 #include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
@@ -162,6 +162,8 @@ Petrichor::Initialize()
                     1,
                     ShadingTypes::Flat);
 
+    m_scene.LoadSceneSettings();
+
     m_scene.AppendMesh(*leftWall);
     m_scene.AppendMesh(*rightWall);
     m_scene.AppendMesh(*whiteWall);
@@ -182,8 +184,8 @@ Petrichor::Initialize()
     m_scene.GetEnvironment().SetBaseColor(0.1f * Color3f::One());
 
     // レンダリング先を指定
-    // #TODO: セッティングから読み込む
-    auto targetTex = new Texture2D(1280, 720);
+    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
+                                   m_scene.GetSceneSettings().outputHeight);
     m_scene.SetTargetTexture(targetTex);
 }
 
@@ -192,9 +194,8 @@ Petrichor::Render()
 {
     PathTracing pt;
 
-    // #TODO: 設定ファイルから読み込む
-    const uint32_t tileWidth  = 16;
-    const uint32_t tileHeight = 16;
+    const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
+    const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
 
     Texture2D* const targetTexure = m_scene.GetTargetTexture();
     if (targetTexure == nullptr)

@@ -32,9 +32,9 @@ PathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    constexpr uint32_t numSamples = 32;
+    const uint32_t kNumSamples = scene.GetSceneSettings().numSamplesPerPixel;
     Color3f pixelColorSum;
-    for (uint32_t spp = 0; spp < numSamples; spp++)
+    for (uint32_t spp = 0; spp < kNumSamples; spp++)
     {
         Color3f color;
         auto ray = mainCamera->PixelToRay(pixelX,
@@ -194,8 +194,7 @@ PathTracing::Render(uint32_t pixelX,
             }
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
-            // #TODO: 反射回数をセッティングから読み込む
-            if (ray.bounce < numSamples)
+            if (ray.bounce < scene.GetSceneSettings().numMaxBouces)
             {
                 continue;
             }
@@ -221,7 +220,7 @@ PathTracing::Render(uint32_t pixelX,
         }
     }
 
-    Color3f averagedColor = pixelColorSum / static_cast<float>(numSamples);
+    Color3f averagedColor = pixelColorSum / static_cast<float>(kNumSamples);
     targetTex->SetPixel(pixelX, pixelY, averagedColor);
 }
 

@@ -72,6 +72,12 @@
     <ClCompile Include="Math\OrthonormalBasis.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Scene.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\SceneSettings.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Assert.h">
@@ -176,9 +182,6 @@
     <ClInclude Include="Random\XorShift.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\File\IFileLoader.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Accel\AccelerationStructureBase.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -186,6 +189,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Sampler\RandomSampler1D.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\SceneSettings.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

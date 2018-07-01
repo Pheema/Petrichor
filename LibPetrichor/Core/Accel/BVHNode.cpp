@@ -1,4 +1,4 @@
-#include "BVHNode.h"
+﻿#include "BVHNode.h"
 
 #include <Core/Constants.h>
 #include <Core/Geometry/GeometryBase.h>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Accel/AccelerationStructureBase.h"
 #include "Core/Accel/BVH.h"
@@ -7,6 +7,7 @@
 #include "Core/Environment.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
+#include "Core/SceneSettings.h"
 #include <optional>
 #include <vector>
 
@@ -22,7 +23,10 @@ public:
 
     // シーンにジオメトリを追加
     void
-    AppendGeometry(const GeometryBase* geometry);
+    AppendGeometry(const GeometryBase* geometry)
+    {
+        m_geometries.emplace_back(geometry);
+    }
 
     // シーンに頂点を追加
     void
@@ -54,7 +58,10 @@ public:
 
     // ジオメトリのリストを取得
     const std::vector<const GeometryBase*>&
-    GetGeometries() const;
+    GetGeometries() const
+    {
+        return m_geometries;
+    }
 
     // ライトのリストを取得
     const std::vector<const GeometryBase*>&
@@ -64,16 +71,26 @@ public:
     }
 
     // メインカメラを取得
+
     const Camera*
-    GetMainCamera() const;
+    GetMainCamera() const
+    {
+        return m_mainCamera;
+    }
 
     // メインカメラを登録
     void
-    SetMainCamera(const Camera& camera);
+    SetMainCamera(const Camera& camera)
+    {
+        m_mainCamera = &camera;
+    }
 
     // Environmentを取得
     Environment&
-    GetEnvironment() const;
+    GetEnvironment() const
+    {
+        return m_environment;
+    }
 
     // レンダリング先のテクスチャを設定
     void
@@ -93,8 +110,8 @@ public:
     BuildAccel()
     {
         ASSERT(m_accel != nullptr &&
-               "Acceleration structure has not been created.");
-        m_accel = std::make_unique<BVH>();
+               "Acceleration structure has not been assigned.");
+        m_accel = std::make_unique<BruteForce>();
         m_accel->Build(*this);
     }
 
@@ -112,11 +129,21 @@ public:
         return m_accel->Intersect(ray, distMin);
     }
 
+    //! シーン設定を読み込む
+    void
+    LoadSceneSettings();
+
+    const SceneSettings&
+    GetSceneSettings() const
+    {
+        return m_sceneSetting;
+    }
+
 private:
     // シーンに登録されたオブジェクト
     std::vector<const GeometryBase*> m_geometries;
 
-    // シーンに登録された
+    //シーンに登録されたライト
     std::vector<const GeometryBase*> m_lights;
 
     mutable Environment m_environment;
@@ -129,41 +156,10 @@ private:
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
+
+    // シーン設定
+    SceneSettings m_sceneSetting;
 };
-
-#pragma region Inline functions
-
-inline void
-Scene::AppendGeometry(const GeometryBase* geometry)
-{
-    m_geometries.emplace_back(geometry);
-}
-
-inline const std::vector<const GeometryBase*>&
-Scene::GetGeometries() const
-{
-    return m_geometries;
-}
-
-inline const Camera*
-Scene::GetMainCamera() const
-{
-    return m_mainCamera;
-}
-
-inline void
-Scene::SetMainCamera(const Camera& camera)
-{
-    m_mainCamera = &camera;
-}
-
-inline Environment&
-Scene::GetEnvironment() const
-{
-    return m_environment;
-}
-
-#pragma endregion
 
 } // namespace Core
 } // namespace Petrichor
