@@ -21,7 +21,7 @@ ACESFilm(float x)
     float c = 2.43f;
     float d = 0.59f;
     float e = 0.14f;
-    return Math::Clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0f, 1.0f);
+    return std::clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0f, 1.0f);
 }
 
 float
@@ -34,7 +34,6 @@ ApplyGamma(unsigned char val)
 unsigned char
 ApplyDegamma(float val)
 {
-    // val = Math::Clamp(val, 0.0f, 1.0f);
     val                   = ACESFilm(val);
     val                   = std::pow(val, 1 / 2.2f);
     const float kDepthMax = 255.9999f;

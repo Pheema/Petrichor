@@ -1,4 +1,4 @@
-#include "PathTracing.h"
+﻿#include "PathTracing.h"
 
 #include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
@@ -16,19 +16,6 @@ namespace Petrichor
 {
 namespace Core
 {
-
-// TODO:
-Color3f
-SimplifiedSpectrum(float x)
-{
-    x = Petrichor::Math::Clamp(x, 0.0f, 1.0f);
-
-    Color3f value  = 2.1f * x * Color3f::One() - Color3f(1.8f, 1.14f, 0.3f);
-    Color3f result = Color3f::One() - value * value;
-    return Color3f(Petrichor::Math::Clamp(result.x, 0.0f, 1.0f),
-                   Petrichor::Math::Clamp(result.y, 0.0f, 1.0f),
-                   Petrichor::Math::Clamp(result.z, 0.0f, 1.0f));
-}
 
 void
 PathTracing::Render(uint32_t pixelX,
