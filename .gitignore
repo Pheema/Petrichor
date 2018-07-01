@@ -299,3 +299,4 @@ Output/**
 !.placeholder
 !/Resource/**
 !/External/**
+/settings.json

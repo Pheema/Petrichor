@@ -27,19 +27,18 @@ BruteForce::Intersect(const Ray& ray,
 
     for (const auto* geometry : m_geometries)
     {
-        if (const auto optGeoHitInfo = geometry->Intersect(ray); optGeoHitInfo)
+        if (const auto geoHitInfo = geometry->Intersect(ray); geoHitInfo)
         {
-            const auto& geoHitInfo = optGeoHitInfo.value();
-
             // 衝突位置がレイの原点から近すぎたり遠すぎる場合は無視
-            if (geoHitInfo.distance < distMin || geoHitInfo.distance > distMax)
+            if (geoHitInfo->distance < distMin ||
+                geoHitInfo->distance > distMax)
             {
                 continue;
             }
 
             // 衝突位置が近ければ衝突情報を更新
             if (hitInfoResult == std::nullopt ||
-                geoHitInfo.distance < hitInfoResult.value().distance)
+                geoHitInfo->distance < hitInfoResult->distance)
             {
                 hitInfoResult = geoHitInfo;
             }

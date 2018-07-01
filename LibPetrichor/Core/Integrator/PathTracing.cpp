@@ -43,8 +43,8 @@ PathTracing::Render(uint32_t pixelX,
                                           targetTex->GetHeight(),
                                           sampler2D);
 
-        const auto optHitInfo = scene.Intersect(ray, kEps);
-        if (optHitInfo == std::nullopt)
+        const auto hitInfo = scene.Intersect(ray, kEps);
+        if (hitInfo == std::nullopt)
         {
             // IBL
             pixelColorSum +=
@@ -52,12 +52,12 @@ PathTracing::Render(uint32_t pixelX,
             continue;
         }
 
-        const auto& hitInfo = optHitInfo.value();
         const MaterialBase* mat =
-          (hitInfo.hitObj)->GetMaterial(sampler1D.Next());
+          (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
         if (mat->GetMaterialType() == MaterialTypes::Emission)
         {
-            pixelColorSum += ray.weight * mat->Radiance(ray, ray, hitInfo);
+            pixelColorSum +=
+              ray.weight * mat->Radiance(ray, ray, hitInfo.value());
             continue;
         }
 
@@ -70,22 +70,21 @@ PathTracing::Render(uint32_t pixelX,
             if (!scene.GetLights().empty())
             {
                 float pdfArea = 0.0f;
-                auto p        = hitInfo.pos;
+                auto p        = hitInfo->pos;
                 auto pointOnLight =
                   SampleLight(scene, p, sampler1D.Next(), sampler2D, &pdfArea);
                 Ray rayToLight(
                   p, (pointOnLight.pos - p).Normalized(), RayTypes::Shadow);
 
-                const auto optHitInfoLight = scene.Intersect(rayToLight, kEps);
-                if (optHitInfoLight)
+                const auto hitInfoLight = scene.Intersect(rayToLight, kEps);
+                if (hitInfoLight)
                 {
-                    const auto& hitInfoOfLight = optHitInfoLight.value();
-                    if (hitInfoOfLight.hitObj->GetMaterial(sampler1D.Next())
+                    if (hitInfoLight->hitObj->GetMaterial(sampler1D.Next())
                           ->GetMaterialType() == MaterialTypes::Emission)
                     {
-                        ASSERT(hitInfoOfLight.distance > 0.0f);
+                        ASSERT(hitInfoLight->distance > 0.0f);
 
-                        float eps = (pointOnLight.pos - hitInfoOfLight.pos)
+                        float eps = (pointOnLight.pos - hitInfoLight->pos)
                                       .SquaredLength();
                         if (Math::ApproxEq(eps, 0.0f, kEps))
                         {
@@ -94,22 +93,24 @@ PathTracing::Render(uint32_t pixelX,
                             float misWeight   = 1.0f;
 
                             const auto& matEmission =
-                              (hitInfoOfLight.hitObj)->GetMaterial(0.0f);
+                              (hitInfoLight->hitObj)->GetMaterial(0.0f);
                             auto li = matEmission->Radiance(
-                              rayToLight, rayToLight, hitInfoOfLight);
-                            auto f   = mat->BRDF(ray, rayToLight, hitInfo);
+                              rayToLight, rayToLight, hitInfoLight.value());
+                            auto f =
+                              mat->BRDF(ray, rayToLight, hitInfo.value());
                             auto cos = std::abs(
-                              Math::Dot(rayToLight.dir, hitInfo.normal));
+                              Math::Dot(rayToLight.dir, hitInfo->normal));
 
-                            float l2 = (hitInfoOfLight.pos - hitInfo.pos)
+                            float l2 = (hitInfoLight->pos - hitInfo->pos)
                                          .SquaredLength();
 
                             float cosP = std::abs(
-                              Dot(-rayToLight.dir, hitInfoOfLight.normal));
+                              Dot(-rayToLight.dir, hitInfoLight->normal));
                             if (cosP >= 1.0e-4)
                             {
                                 pdfDirLight = (l2 * pdfArea) / cosP;
-                                pdfDirBSDF = mat->PDF(ray, rayToLight, hitInfo);
+                                pdfDirBSDF =
+                                  mat->PDF(ray, rayToLight, hitInfo.value());
 #ifdef BALANCE_HEURISTIC
                                 misWeight =
                                   pdfDirLight / (pdfDirLight + pdfDirBSDF);
@@ -136,34 +137,31 @@ PathTracing::Render(uint32_t pixelX,
             }
             // 次のレイを生成
             float pdfDir = 0.0f;
-            mat          = (hitInfo.hitObj)->GetMaterial(sampler1D.Next());
+            mat          = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
             ASSERT(std::isfinite(ray.dir.x));
-            ray = mat->CreateNextRay(ray, hitInfo, sampler2D, &pdfDir);
+            ray = mat->CreateNextRay(ray, hitInfo.value(), sampler2D, &pdfDir);
             ASSERT(std::isfinite(ray.dir.x));
 
             // MIS
-            std::optional<HitInfo> optHitInfoNext = scene.Intersect(ray, kEps);
-
-            if (optHitInfoNext)
+            const auto hitInfoNext = scene.Intersect(ray, kEps);
+            if (hitInfoNext)
             {
-                const auto& hitInfoNext = optHitInfoNext.value();
-
-                mat = (hitInfoNext.hitObj)->GetMaterial(sampler1D.Next());
+                mat = (hitInfoNext->hitObj)->GetMaterial(sampler1D.Next());
                 if (mat->GetMaterialType() == MaterialTypes::Emission)
                 {
                     float pdfDirLight = 0.0f;
                     float pdfDirBSDF  = 0.0f;
                     float misWeight   = 1.0f;
 
-                    float l2  = (hitInfoNext.pos - ray.o).SquaredLength();
-                    float cos = abs(Math::Dot(-ray.dir, hitInfoNext.normal));
+                    float l2  = (hitInfoNext->pos - ray.o).SquaredLength();
+                    float cos = abs(Math::Dot(-ray.dir, hitInfoNext->normal));
 
                     // TODO:
                     // 下の関数が確率密度関数を取得しているだけなのに無駄
                     float pdfAreaLight;
                     PointData pointData;
-                    (hitInfoNext.hitObj)
+                    (hitInfoNext->hitObj)
                       ->SampleSurface(
                         ray.o, sampler2D, &pointData, &pdfAreaLight);
 
@@ -179,7 +177,7 @@ PathTracing::Render(uint32_t pixelX,
 #endif
                     ASSERT(std::isfinite(misWeight) && misWeight >= 0.0f);
                     color += misWeight * ray.weight *
-                             mat->Radiance(ray, ray, hitInfoNext);
+                             mat->Radiance(ray, ray, hitInfoNext.value());
                     ASSERT(color.MinElem() >= 0.0f);
                     break;
                 }

@@ -1,4 +1,4 @@
-#include "BVH.h"
+﻿#include "BVH.h"
 
 #include "Core/Accel/BVHNode.h"
 #include "Core/Scene.h"
@@ -121,7 +121,7 @@ BVH::Intersect(const Ray& ray,
     bvhNodeIndexQueue.emplace(0);
 
     // ---- BVHのトラバーサル ----
-    std::optional<HitInfo> optHitInfoResult;
+    std::optional<HitInfo> hitInfoResult;
 
     // 2つの子ノード又は子オブジェクトに対して
     while (!bvhNodeIndexQueue.empty())
@@ -130,24 +130,18 @@ BVH::Intersect(const Ray& ray,
         const size_t bvhNodeIndex = bvhNodeIndexQueue.top();
         bvhNodeIndexQueue.pop();
 
-        const auto optNodeHitInfo = m_bvhNodes[bvhNodeIndex].Intersect(ray);
+        const auto hitInfoNode = m_bvhNodes[bvhNodeIndex].Intersect(ray);
 
         // そもそもBVHノードに当たる軌道ではない
-        if (optNodeHitInfo == std::nullopt)
+        if (hitInfoNode == std::nullopt)
         {
             continue;
         }
 
         // 自ノードより手前で既に衝突している
-        if (optHitInfoResult)
+        if (hitInfoResult && (hitInfoResult->distance < hitInfoNode->distance))
         {
-            const auto dist0 = optHitInfoResult.value().distance;
-            const auto dist1 = optNodeHitInfo.value().distance;
-
-            if (dist0 < dist1)
-            {
-                continue;
-            }
+            continue;
         }
 
         if (m_bvhNodes[bvhNodeIndex].IsLeaf())
@@ -155,24 +149,20 @@ BVH::Intersect(const Ray& ray,
             for (const auto* geometry :
                  m_bvhNodes[bvhNodeIndex].GetChildArray())
             {
-                const auto optGeoHitInfo = geometry->Intersect(ray);
-                if (optGeoHitInfo == std::nullopt)
+                const auto hitInfoGeometry = geometry->Intersect(ray);
+                if (hitInfoGeometry)
                 {
-                    continue;
-                }
+                    if (hitInfoGeometry->distance < distMin ||
+                        hitInfoGeometry->distance > distMax)
+                    {
+                        continue;
+                    }
 
-                const auto& geoHitInfo = optGeoHitInfo.value();
-
-                if (geoHitInfo.distance < distMin ||
-                    geoHitInfo.distance > distMax)
-                {
-                    continue;
-                }
-
-                if (optHitInfoResult == std::nullopt ||
-                    geoHitInfo.distance < optHitInfoResult.value().distance)
-                {
-                    optHitInfoResult = geoHitInfo;
+                    if (hitInfoResult == std::nullopt ||
+                        hitInfoGeometry->distance < hitInfoResult->distance)
+                    {
+                        hitInfoResult = hitInfoGeometry;
+                    }
                 }
             }
         }
@@ -186,7 +176,7 @@ BVH::Intersect(const Ray& ray,
             }
         }
     }
-    return optHitInfoResult;
+    return hitInfoResult;
 }
 
 } // namespace Core
