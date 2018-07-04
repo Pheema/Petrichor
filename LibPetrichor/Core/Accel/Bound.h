@@ -20,13 +20,14 @@ public:
 
     // 複数のBoundをマージする
     void
-    Expand(const Bound& aabb);
+    Merge(const Bound& bound);
 
     void
-    Expand(const Math::Vector3f& point);
+    Merge(const Math::Vector3f& point);
 
     // 一番広い辺を取得する
-    uint8_t GetWidestAxis() const;
+    uint8_t
+    GetWidestAxis() const;
 
     Math::Vector3f vMin, vMax;
 };

@@ -1,4 +1,4 @@
-#include "Triangle.h"
+﻿#include "Triangle.h"
 
 #include "Core/Geometry/Vertex.h"
 #include "Core/HitInfo.h"
@@ -40,7 +40,7 @@ Triangle::CalcBound() const
     Bound bound;
     for (const auto& vertex : m_vertices)
     {
-        bound.Expand(vertex->pos);
+        bound.Merge(vertex->pos);
     }
     m_bound = bound;
     return m_bound;

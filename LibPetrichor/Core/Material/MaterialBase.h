@@ -49,6 +49,21 @@ public:
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
                     float* mix                = nullptr) const = 0;
+
+    void
+    EnableImportanceSampling(bool isEnabled)
+    {
+        m_isImportanceSamplingEnabled = isEnabled;
+    }
+
+    bool
+    IsImportanceSamplingEnabled() const
+    {
+        return m_isImportanceSamplingEnabled;
+    }
+
+private:
+    bool m_isImportanceSamplingEnabled = true;
 };
 
 } // namespace Core

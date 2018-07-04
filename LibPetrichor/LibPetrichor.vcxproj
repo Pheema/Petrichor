@@ -90,6 +90,8 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>assimp-vc140-mt.lib</AdditionalDependencies>
@@ -188,7 +190,7 @@
     <ClInclude Include="Core\Accel\BruteForce.h" />
     <ClInclude Include="Core\Accel\BVH.h" />
     <ClInclude Include="Core\Accel\BVHNode.h" />
-    <ClInclude Include="Core\Accel\AccelerationStructureBase.h" />
+    <ClInclude Include="Core\Accel\AccelBase.h" />
     <ClInclude Include="Core\Assert.h" />
     <ClInclude Include="Core\Camera.h" />
     <ClInclude Include="Core\Color3f.h" />

@@ -182,9 +182,6 @@
     <ClInclude Include="Random\XorShift.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Accel\AccelerationStructureBase.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Sampler\ISampler1D.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -192,6 +189,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\SceneSettings.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\AccelBase.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

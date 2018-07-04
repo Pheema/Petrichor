@@ -21,7 +21,7 @@ Bound::Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax)
 }
 
 void
-Bound::Expand(const Bound& other)
+Bound::Merge(const Bound& other)
 {
     vMin.x = std::min(vMin.x, other.vMin.x);
     vMin.y = std::min(vMin.y, other.vMin.y);
@@ -33,7 +33,7 @@ Bound::Expand(const Bound& other)
 }
 
 void
-Bound::Expand(const Math::Vector3f& point)
+Bound::Merge(const Math::Vector3f& point)
 {
     vMin.x = std::min(vMin.x, point.x);
     vMin.y = std::min(vMin.y, point.y);
@@ -44,9 +44,10 @@ Bound::Expand(const Math::Vector3f& point)
     vMax.z = std::max(vMax.z, point.z);
 }
 
-uint8_t Bound::GetWidestAxis() const
+uint8_t
+Bound::GetWidestAxis() const
 {
-    float widest        = 0.0f;
+    float widest       = 0.0f;
     uint8_t axisResult = 0;
 
     for (uint8_t axis = 0; axis < 3; ++axis)

@@ -130,7 +130,7 @@ Petrichor::Initialize()
     MaterialBase* matLambertRed    = new Lambert(Color3f(1.0f, 0, 0));
     MaterialBase* matLambertGreen  = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite   = new Lambert(Color3f::One());
-    MaterialBase* matEmissionWhite = new Emission(2.0f * Color3f::One());
+    MaterialBase* matEmissionWhite = new Emission(3.0f * Color3f::One());
 
     Mesh* const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
@@ -180,8 +180,8 @@ Petrichor::Initialize()
 #endif
 
     // 環境マップの設定
-    m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(0.1f * Color3f::One());
+    // m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
+    // m_scene.GetEnvironment().SetBaseColor(0.1f * Color3f::One());
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,

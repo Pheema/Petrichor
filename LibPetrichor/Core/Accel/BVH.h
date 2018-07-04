@@ -1,6 +1,6 @@
-#pragma once
+﻿#pragma once
 
-#include "AccelerationStructureBase.h"
+#include "AccelBase.h"
 #include "BVHNode.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/HitInfo.h"
@@ -15,7 +15,7 @@ class Scene;
 struct HitInfo;
 struct Ray;
 
-class BVH : public AccelerationStructureBase
+class BVH : public AccelBase
 {
 public:
     BVH() = default;

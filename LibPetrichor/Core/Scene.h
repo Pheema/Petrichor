@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Core/Accel/AccelerationStructureBase.h"
+#include "Core/Accel/AccelBase.h"
 #include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
 #include "Core/Camera.h"
@@ -152,7 +152,7 @@ private:
     const Camera* m_mainCamera = nullptr;
 
     // 高速化構造
-    std::unique_ptr<AccelerationStructureBase> m_accel = nullptr;
+    std::unique_ptr<AccelBase> m_accel = nullptr;
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;

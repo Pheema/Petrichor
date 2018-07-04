@@ -61,10 +61,9 @@ PathTracing::Render(uint32_t pixelX,
             continue;
         }
 
-        constexpr uint32_t maxNumBounces = 8;
-
         // ---- ヒットした場合 ----
-        for (uint32_t bounce = 0; bounce < maxNumBounces; bounce++)
+        const uint32_t kMaxNumBounces = scene.GetSceneSettings().numMaxBouces;
+        for (uint32_t bounce = 0; bounce < kMaxNumBounces; bounce++)
         {
             // ---- ライトをサンプリング ----
             if (!scene.GetLights().empty())

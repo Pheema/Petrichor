@@ -19,7 +19,7 @@ BVH::Build(const Scene& scene)
         rootNode.ReserveChildArray(scene.GetGeometries().size());
         for (const auto* geometry : scene.GetGeometries())
         {
-            rootNode.bound.Expand(geometry->CalcBound());
+            rootNode.bound.Merge(geometry->CalcBound());
             rootNode.AppendChild(geometry);
         }
         m_bvhNodes.emplace_back(rootNode);
@@ -81,7 +81,7 @@ BVH::Build(const Scene& scene)
         childNodes[0].ReserveChildArray(numChildren0);
         for (auto iter = iterBegin; iter != iterMid; ++iter)
         {
-            childNodes[0].bound.Expand((*iter)->CalcBound());
+            childNodes[0].bound.Merge((*iter)->CalcBound());
             childNodes[0].AppendChild(*iter);
         }
 
@@ -90,7 +90,7 @@ BVH::Build(const Scene& scene)
         childNodes[1].ReserveChildArray(numChildren1);
         for (auto iter = iterMid; iter != iterEnd; ++iter)
         {
-            childNodes[1].bound.Expand((*iter)->CalcBound());
+            childNodes[1].bound.Merge((*iter)->CalcBound());
             childNodes[1].AppendChild(*iter);
         }
 

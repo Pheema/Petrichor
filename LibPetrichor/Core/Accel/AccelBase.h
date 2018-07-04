@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Constants.h"
 #include <limits>
@@ -19,7 +19,7 @@ enum class AccelType
     BVH         // BVH
 };
 
-class AccelerationStructureBase
+class AccelBase
 {
 public:
     virtual void

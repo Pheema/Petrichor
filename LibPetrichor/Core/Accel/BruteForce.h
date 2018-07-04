@@ -1,6 +1,6 @@
-#pragma once
+﻿#pragma once
 
-#include "AccelerationStructureBase.h"
+#include "AccelBase.h"
 #include "Core/Geometry/GeometryBase.h"
 #include <vector>
 
@@ -14,7 +14,7 @@ struct Ray;
 class Scene;
 class GeometryBase;
 
-class BruteForce : public AccelerationStructureBase
+class BruteForce : public AccelBase
 {
 public:
     void
