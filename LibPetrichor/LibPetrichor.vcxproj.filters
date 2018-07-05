@@ -4,6 +4,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{da0b5e06-b620-435d-8961-4d6ec8589727}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Integrator">
+      <UniqueIdentifier>{9da7eed4-5eda-4aa0-99a4-daad65d8e402}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Accel\Bound.cpp">
@@ -42,9 +45,6 @@
     <ClCompile Include="Core\Sampler\MicroJitteredSampler.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Integrator\PathTracing.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Petrichor.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -77,6 +77,12 @@
     </ClCompile>
     <ClCompile Include="Core\SceneSettings.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Integrator\PathTracing.cpp">
+      <Filter>Core\Integrator</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Integrator\SimplePathTracing.cpp">
+      <Filter>Core\Integrator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,9 +138,6 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Sampler\MicroJitteredSampler.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Integrator\PathTracing.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Petrichor.h">
@@ -193,6 +196,12 @@
     </ClInclude>
     <ClInclude Include="Core\Accel\AccelBase.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Integrator\PathTracing.h">
+      <Filter>Core\Integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Integrator\SimplePathTracing.h">
+      <Filter>Core\Integrator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -171,6 +171,7 @@
     <ClCompile Include="Core\Geometry\Triangle.cpp" />
     <ClCompile Include="Core\Geometry\Vertex.cpp" />
     <ClCompile Include="Core\Integrator\PathTracing.cpp" />
+    <ClCompile Include="Core\Integrator\SimplePathTracing.cpp" />
     <ClCompile Include="Core\Material\Emission.cpp" />
     <ClCompile Include="Core\Material\GGX.cpp" />
     <ClCompile Include="Core\Material\Lambert.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Core\Geometry\Vertex.h" />
     <ClInclude Include="Core\HitInfo.h" />
     <ClInclude Include="Core\Integrator\PathTracing.h" />
+    <ClInclude Include="Core\Integrator\SimplePathTracing.h" />
     <ClInclude Include="Core\Material\Emission.h" />
     <ClInclude Include="Core\Material\GGX.h" />
     <ClInclude Include="Core\Material\Lambert.h" />

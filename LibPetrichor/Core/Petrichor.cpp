@@ -7,6 +7,7 @@
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
 #include "Core/Integrator/PathTracing.h"
+#include "Core/Integrator/SimplePathTracing.h"
 #include "Core/Material/Emission.h"
 #include "Core/Material/GGX.h"
 #include "Core/Material/Lambert.h"
@@ -130,7 +131,7 @@ Petrichor::Initialize()
     MaterialBase* matLambertRed    = new Lambert(Color3f(1.0f, 0, 0));
     MaterialBase* matLambertGreen  = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite   = new Lambert(Color3f::One());
-    MaterialBase* matEmissionWhite = new Emission(3.0f * Color3f::One());
+    MaterialBase* matEmissionWhite = new Emission(Color3f::One());
 
     Mesh* const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
@@ -181,7 +182,7 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     // m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
-    // m_scene.GetEnvironment().SetBaseColor(0.1f * Color3f::One());
+    // m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
@@ -192,7 +193,7 @@ Petrichor::Initialize()
 void
 Petrichor::Render()
 {
-    PathTracing pt;
+    SimplePathTracing pt;
 
     const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
     const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
@@ -233,7 +234,7 @@ Petrichor::Render()
         }
 
         {
-            mtx.lock();
+            std::lock_guard<std::mutex> lock(mtx);
             maxIdxTile = std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
 
             const float ratio = 100.0f * static_cast<float>(maxIdxTile) /
@@ -245,7 +246,6 @@ Petrichor::Render()
                << std::setprecision(2) << ratio << "%)"
                << "\r" << std::flush;
             std::cout << ss.str();
-            mtx.unlock();
         }
     }
 }

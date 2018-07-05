@@ -53,19 +53,17 @@ TileManager::TileManager(int renderWidth,
 bool
 TileManager::IsEmpty() const
 {
-    m_mtx.lock();
+    std::lock_guard lock(m_mtx);
     bool isEmpty = m_tiles.empty();
-    m_mtx.unlock();
     return isEmpty;
 }
 
-Petrichor::Core::Tile
+Tile
 TileManager::GetTile()
 {
-    m_mtx.lock();
-    Tile tile = std::move(m_tiles.front());
+    std::lock_guard lock(m_mtx);
+    const Tile tile = m_tiles.front();
     m_tiles.pop();
-    m_mtx.unlock();
     return tile;
 }
 
