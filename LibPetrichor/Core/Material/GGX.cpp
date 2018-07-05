@@ -19,8 +19,8 @@ GGX::GGX(const Color3f& f0, float roughness)
 {
 }
 
-Color3f
-GGX::BRDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+Petrichor::Color3f
+GGX::BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
 {
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
     const float hDotN  = abs(Dot(halfVec, hitInfo.normal));
@@ -138,7 +138,7 @@ std::cout << "[O]" << outDir << std::endl;*/
     Ray ray(
       hitInfo.pos, outDir, RayTypes::Glossy, rayIn.weight, rayIn.bounce + 1);
 
-    auto f   = BRDF(rayIn, ray, hitInfo);
+    auto f   = BxDF(rayIn, ray, hitInfo);
     auto cos = std::max(0.0f, Math::Dot(ray.dir, normal));
     ray.weight *= (f * cos / *pdfDir);
 

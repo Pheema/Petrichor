@@ -30,7 +30,7 @@ public:
     };
 
     virtual Color3f
-    BRDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const = 0;
+    BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const = 0;
 
     virtual float
     PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const

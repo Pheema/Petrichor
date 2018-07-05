@@ -15,7 +15,7 @@ public:
     Lambert(const Color3f& m_kd);
 
     Color3f
-    BRDF(const Ray& rayIn,
+    BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const HitInfo& hitInfo) const override;
 

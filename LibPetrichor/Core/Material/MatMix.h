@@ -16,7 +16,7 @@ public:
     MatMix(const MaterialBase* mat0, const MaterialBase* mat1, float mix);
 
     virtual Color3f
-    BRDF(const Ray& rayIn,
+    BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const HitInfo& hitInfo) const override
     {

@@ -1,4 +1,4 @@
-#include "Emission.h"
+﻿#include "Emission.h"
 
 #include "Core/Ray.h"
 
@@ -20,8 +20,8 @@ Emission::Radiance(const Ray& rayIn,
     return m_color;
 }
 
-Color3f
-Emission::BRDF(const Ray& rayIn,
+Petrichor::Color3f
+Emission::BxDF(const Ray& rayIn,
                const Ray& rayOut,
                const HitInfo& hitInfo) const
 {

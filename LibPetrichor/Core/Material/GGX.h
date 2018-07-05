@@ -17,7 +17,7 @@ public:
     GGX(const Color3f& f0, float roughness = 1.0f);
 
     virtual Color3f
-    BRDF(const Ray& rayIn,
+    BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const HitInfo& hitInfo) const override;
 

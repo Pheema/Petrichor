@@ -96,7 +96,7 @@ PathTracing::Render(uint32_t pixelX,
                             auto li = matEmission->Radiance(
                               rayToLight, rayToLight, hitInfoLight.value());
                             auto f =
-                              mat->BRDF(ray, rayToLight, hitInfo.value());
+                              mat->BxDF(ray, rayToLight, hitInfo.value());
                             auto cos = std::abs(
                               Math::Dot(rayToLight.dir, hitInfo->normal));
 
