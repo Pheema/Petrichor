@@ -25,6 +25,7 @@ PathTracing::Render(uint32_t pixelX,
                     ISampler1D& sampler1D,
                     ISampler2D& sampler2D)
 {
+#if 0
     const auto* const mainCamera = scene.GetMainCamera();
     if (mainCamera == nullptr)
     {
@@ -219,6 +220,7 @@ PathTracing::Render(uint32_t pixelX,
 
     Color3f averagedColor = pixelColorSum / static_cast<float>(kNumSamples);
     targetTex->SetPixel(pixelX, pixelY, averagedColor);
+#endif
 }
 
 PointData
@@ -239,7 +241,7 @@ PathTracing::SampleLight(const Scene& scene,
     ASSERT(index < lights.size());
 
     float sumArea = 0.0f;
-    float area    = 0.0f;
+    float area = 0.0f;
 
     PointData result;
     for (size_t i = 0; i < lights.size(); i++)
@@ -251,7 +253,7 @@ PathTracing::SampleLight(const Scene& scene,
 
         if (i == index)
         {
-            area   = 1.0f / pdfAreaEach;
+            area = 1.0f / pdfAreaEach;
             result = pointOnSurface;
         }
     }

@@ -20,33 +20,35 @@ GGX::GGX(const Color3f& f0, float roughness)
 }
 
 Petrichor::Color3f
-GGX::BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+GGX::BxDF(const Ray& rayIn,
+          const Ray& rayOut,
+          const ShadingInfo& shadingInfo) const
 {
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN  = abs(Dot(halfVec, hitInfo.normal));
+    const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
 
     const float alpha2 = m_alpha * m_alpha;
     const float hDotN2 = hDotN * hDotN;
-    const float tan2   = (1.0f / hDotN2) - 1.0f;
-    const float k      = (alpha2 - 1.0f) * hDotN2 + 1.0f;
+    const float tan2 = (1.0f / hDotN2) - 1.0f;
+    const float k = (alpha2 - 1.0f) * hDotN2 + 1.0f;
 
     // D
     const float dTerm = alpha2 / (Math::kPi * k * k);
 
     // G
-    const float lambdaIn  = Lambda(rayOut.dir, halfVec);
+    const float lambdaIn = Lambda(rayOut.dir, halfVec);
     const float lambdaOut = Lambda(-rayIn.dir, halfVec);
-    const float gTerm     = 1.0f / (1.0f + lambdaIn + lambdaOut);
+    const float gTerm = 1.0f / (1.0f + lambdaIn + lambdaOut);
 
     // F
-    const float hDotL        = abs(Dot(halfVec, rayOut.dir));
-    const float oneMinusCos  = 1.0f - hDotL;
+    const float hDotL = abs(Dot(halfVec, rayOut.dir));
+    const float oneMinusCos = 1.0f - hDotL;
     const float oneMinusCos2 = oneMinusCos * oneMinusCos;
     const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
-    const auto fTerm         = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
+    const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
 
-    const float lDotN = abs(Dot(rayOut.dir, hitInfo.normal));
-    const float vDotN = abs(Dot(-rayIn.dir, hitInfo.normal));
+    const float lDotN = abs(Dot(rayOut.dir, shadingInfo.normal));
+    const float vDotN = abs(Dot(-rayIn.dir, shadingInfo.normal));
 
     auto f = dTerm * gTerm * fTerm / (4.0f * lDotN * vDotN);
 
@@ -54,15 +56,17 @@ GGX::BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
 }
 
 float
-GGX::PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+GGX::PDF(const Ray& rayIn,
+         const Ray& rayOut,
+         const ShadingInfo& shadingInfo) const
 {
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN  = abs(Dot(halfVec, hitInfo.normal));
+    const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
 
     const float alpha2 = m_alpha * m_alpha;
     const float hDotN2 = hDotN * hDotN;
-    const float tan2   = (1.0f / hDotN2) - 1.0f;
-    const float k      = 1.0f + tan2 / alpha2;
+    const float tan2 = (1.0f / hDotN2) - 1.0f;
+    const float k = 1.0f + tan2 / alpha2;
 
     // D
     const float dTerm = 1.0f / (Math::kPi * alpha2 * hDotN2 * hDotN2 * k * k);
@@ -76,25 +80,26 @@ GGX::PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
     return dTerm; // * g1 / (4.0f * abs(Math::Dot(-rayIn.dir, hitInfo.normal)));
 }
 
-Ray
+Petrichor::Core::Ray
 GGX::CreateNextRay(const Ray& rayIn,
-                   const HitInfo& hitInfo,
-                   ISampler2D& rng2D,
+                   const ShadingInfo& shadingInfo,
+                   ISampler2D& sampler2D,
                    float* pdfDir) const
 {
     Math::Vector3f normal;
 
-    if (Math::Dot(rayIn.dir, hitInfo.normal) >= 0)
+    if (Math::Dot(rayIn.dir, shadingInfo.normal) >= 0)
     {
-        normal = -hitInfo.normal;
+        normal = -shadingInfo.normal;
     }
     else
     {
-        normal = hitInfo.normal;
+        normal = shadingInfo.normal;
     }
 
 #if 1 // USE_VNDF_SAMPLING
-    Math::Vector3f sampledHalfVec = SampleGGXVNDF(-rayIn.dir, hitInfo, rng2D);
+    Math::Vector3f sampledHalfVec =
+      SampleGGXVNDF(-rayIn.dir, shadingInfo, sampler2D);
     // sampledHalfVec = hitInfo.normal;
     Math::Vector3f outDir = (rayIn.dir).Reflected(sampledHalfVec);
 
@@ -104,41 +109,47 @@ std::cout << "[I]" << rayIn.dir << std::endl;
 std::cout << "[O]" << outDir << std::endl;*/
 
     // TODO: あとでFresnel()にまとめる
-    const float hDotL        = abs(Math::Dot(sampledHalfVec, outDir));
-    const float oneMinusCos  = 1.0f - hDotL;
+    const float hDotL = abs(Math::Dot(sampledHalfVec, outDir));
+    const float oneMinusCos = 1.0f - hDotL;
     const float oneMinusCos2 = oneMinusCos * oneMinusCos;
     const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
-    const auto fTerm         = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
+    const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
 
-    Ray ray(
-      hitInfo.pos, outDir, RayTypes::Glossy, rayIn.weight, rayIn.bounce + 1);
+    Ray ray(shadingInfo.pos,
+            outDir,
+            RayTypes::Glossy,
+            rayIn.weight,
+            rayIn.bounce + 1);
 
     ASSERT(std::isfinite(ray.dir.x));
 
-    const float lambdaIn  = Lambda(outDir, sampledHalfVec);
+    const float lambdaIn = Lambda(outDir, sampledHalfVec);
     const float lambdaOut = Lambda(-rayIn.dir, sampledHalfVec);
-    const float g2        = 1.0f / (1.0f + lambdaIn + lambdaOut);
-    const float g1        = 1.0f / (1.0f + lambdaIn);
+    const float g2 = 1.0f / (1.0f + lambdaIn + lambdaOut);
+    const float g1 = 1.0f / (1.0f + lambdaIn);
 
-    *pdfDir = PDF(rayIn, ray, hitInfo);
+    *pdfDir = PDF(rayIn, ray, shadingInfo);
     ray.weight *= (fTerm * g2 / g1);
 
 #else
     Math::OrthonormalBasis onb;
     onb.Build(normal);
 
-    auto pointSampled = rng2D.Next();
+    auto pointSampled = sampler2D.Next();
 
     float theta = acos(std::get<0>(pointSampled));
-    float phi   = 2.0f * M_PI * std::get<1>(pointSampled);
-    *pdfDir     = 1.0f / (2.0f * M_PI);
+    float phi = 2.0f * M_PI * std::get<1>(pointSampled);
+    *pdfDir = 1.0f / (2.0f * M_PI);
 
     auto outDir = onb.GetDir(theta, phi);
 
-    Ray ray(
-      hitInfo.pos, outDir, RayTypes::Glossy, rayIn.weight, rayIn.bounce + 1);
+    Ray ray(shadingInfo.pos,
+            outDir,
+            RayTypes::Glossy,
+            rayIn.weight,
+            rayIn.bounce + 1);
 
-    auto f   = BxDF(rayIn, ray, hitInfo);
+    auto f = BxDF(rayIn, ray, shadingInfo);
     auto cos = std::max(0.0f, Math::Dot(ray.dir, normal));
     ray.weight *= (f * cos / *pdfDir);
 
@@ -158,27 +169,27 @@ float
 GGX::Lambda(const Math::Vector3f& dir, const Math::Vector3f& halfDir) const
 {
     const float alpha2 = m_alpha * m_alpha;
-    const float cos    = abs(Dot(dir, halfDir));
-    const float tan2   = 1.0f / (cos * cos) - 1.0f;
+    const float cos = abs(Dot(dir, halfDir));
+    const float tan2 = 1.0f / (cos * cos) - 1.0f;
 
     float lambda = -0.5f + 0.5f * sqrt(1.0f + alpha2 * tan2);
     return lambda;
 }
 
-Math::Vector3f
+Petrichor::Math::Vector3f
 GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
-                   const HitInfo& hitInfo,
+                   const ShadingInfo& shadingInfo,
                    ISampler2D& rng2D) const
 {
     Math::Vector3f normal;
 
-    if (Math::Dot(dirView, hitInfo.normal) >= 0)
+    if (Math::Dot(dirView, shadingInfo.normal) >= 0)
     {
-        normal = hitInfo.normal;
+        normal = shadingInfo.normal;
     }
     else
     {
-        normal = -hitInfo.normal;
+        normal = -shadingInfo.normal;
     }
 
     // ---- vを算出 ----
@@ -202,12 +213,12 @@ GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
     onb.Build(t2, t1);
 
     const auto rand = rng2D.Next();
-    float u0        = std::get<0>(rand);
-    float u1        = std::get<1>(rand);
+    float u0 = std::get<0>(rand);
+    float u1 = std::get<1>(rand);
 
     float a = 1.0f / (1.0f + v.z);
 
-    float r   = sqrt(u0);
+    float r = sqrt(u0);
     float phi = (u1 < a) ? u1 / a * Math::kPi
                          : Math::kPi + (u1 - a) / (1.0f - a) * Math::kPi;
     float p1 = r * cos(phi);

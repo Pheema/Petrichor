@@ -46,16 +46,16 @@ Triangle::CalcBound() const
     return m_bound;
 }
 
-std::optional<Petrichor::Core::HitInfo>
+std::optional<HitInfo>
 Triangle::Intersect(const Ray& ray) const
 {
     const Math::Vector3f e1 = m_vertices[1]->pos - m_vertices[0]->pos;
     const Math::Vector3f e2 = m_vertices[2]->pos - m_vertices[0]->pos;
 
-    const auto crossEdges = Cross(e1, e2);
-    const float invDet    = 1.0f / Dot(-ray.dir, crossEdges);
+    const Math::Vector3f crossEdges = Cross(e1, e2);
+    const float invDet = 1.0f / Dot(-ray.dir, crossEdges);
 
-    auto vec = ray.o - m_vertices[0]->pos;
+    const Math::Vector3f vec = ray.o - m_vertices[0]->pos;
 
     const float weightE1 = Dot(vec, Cross(ray.dir, e2)) * invDet;
     const float weightE2 = Dot(vec, Cross(e1, ray.dir)) * invDet;
@@ -81,23 +81,40 @@ Triangle::Intersect(const Ray& ray) const
 
     HitInfo hitInfo;
     hitInfo.distance = dist;
-    hitInfo.pos      = ray.o + ray.dir * hitInfo.distance;
+    hitInfo.hitObj = this;
+    return hitInfo;
+}
+
+ShadingInfo
+Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
+{
+    ShadingInfo shadingInfo;
+    shadingInfo.pos = ray.o + ray.dir * hitInfo.distance;
+
+    const Math::Vector3f e1 = m_vertices[1]->pos - m_vertices[0]->pos;
+    const Math::Vector3f e2 = m_vertices[2]->pos - m_vertices[0]->pos;
+    const Math::Vector3f crossEdges = Cross(e1, e2);
+
+    const float invDet = 1.0f / Dot(-ray.dir, crossEdges);
+    const Math::Vector3f vec = ray.o - m_vertices[0]->pos;
+    const float weightE1 = Dot(vec, Cross(ray.dir, e2)) * invDet;
+    const float weightE2 = Dot(vec, Cross(e1, ray.dir)) * invDet;
 
     switch (m_shadingType)
     {
     case ShadingTypes::Flat:
     {
-        hitInfo.normal = crossEdges.Normalized();
+        shadingInfo.normal = crossEdges.Normalized();
         break;
     }
 
     case ShadingTypes::Smooth:
     {
-        hitInfo.normal =
+        shadingInfo.normal =
           weightE1 * (m_vertices[1]->normal - m_vertices[0]->normal) +
           weightE2 * (m_vertices[2]->normal - m_vertices[0]->normal) +
           m_vertices[0]->normal;
-        hitInfo.normal.Normalize();
+        shadingInfo.normal.Normalize();
         break;
     }
 
@@ -108,12 +125,11 @@ Triangle::Intersect(const Ray& ray) const
     }
     }
 
-    hitInfo.uv = weightE1 * (m_vertices[1]->uv - m_vertices[0]->uv) +
-                 weightE2 * (m_vertices[2]->uv - m_vertices[0]->uv) +
-                 m_vertices[0]->uv;
+    shadingInfo.uv = weightE1 * (m_vertices[1]->uv - m_vertices[0]->uv) +
+                     weightE2 * (m_vertices[2]->uv - m_vertices[0]->uv) +
+                     m_vertices[0]->uv;
 
-    hitInfo.hitObj = this;
-    return hitInfo;
+    return shadingInfo;
 }
 
 void
@@ -133,7 +149,7 @@ Triangle::SampleSurface(Math::Vector3f p,
     float sqrtu0 = sqrt(u0);
     const auto v = m_vertices[0]->pos + (1.0f - sqrtu0) * e0 + sqrtu0 * u1 * e1;
 
-    pointData->pos    = v;
+    pointData->pos = v;
     pointData->normal = Math::Cross(e0, e1).Normalized();
 
     *pdfArea = 1.0f / (0.5f * Math::Cross(e0, e1).Length());

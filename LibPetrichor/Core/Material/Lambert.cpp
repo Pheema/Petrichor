@@ -18,24 +18,28 @@ Lambert::Lambert(const Color3f& m_kd)
 {
 }
 
-Petrichor::Color3f
-Lambert::BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+Color3f
+Lambert::BxDF(const Ray& rayIn,
+              const Ray& rayOut,
+              const ShadingInfo& shadingInfo) const
 {
     Color3f albedo = Color3f::One();
     if (m_texAlbedo)
     {
-        albedo = m_texAlbedo->GetPixelByUV(hitInfo.uv.x, hitInfo.uv.y);
+        albedo = m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
     }
 
     return m_kd * albedo * Math::kInvPi;
 }
 
 float
-Lambert::PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+Lambert::PDF(const Ray& rayIn,
+             const Ray& rayOut,
+             const ShadingInfo& shadingInfo) const
 {
     if (IsImportanceSamplingEnabled())
     {
-        float cos = abs(Math::Dot(rayOut.dir, hitInfo.normal));
+        float cos = abs(Math::Dot(rayOut.dir, shadingInfo.normal));
         return cos * Math::kInvPi;
     }
     else
@@ -44,15 +48,16 @@ Lambert::PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
     }
 }
 
-Ray
+Petrichor::Core::Ray
 Lambert::CreateNextRay(const Ray& rayIn,
-                       const HitInfo& hitInfo,
+                       const ShadingInfo& shadingInfo,
                        ISampler2D& sampler2D,
                        float* pdfDir) const
 {
-    const float hitSign = -Math::Dot(rayIn.dir, hitInfo.normal);
+    const float hitSign = -Math::Dot(rayIn.dir, shadingInfo.normal);
 
-    const Math::Vector3f normal = hitInfo.normal * std::copysign(1.0f, hitSign);
+    const Math::Vector3f normal =
+      shadingInfo.normal * std::copysign(1.0f, hitSign);
 
     Math::OrthonormalBasis onb;
     onb.Build(normal);
@@ -62,7 +67,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
     if (IsImportanceSamplingEnabled())
     {
         const float theta = asin(sqrt(rand0));
-        const float phi   = 2.0f * Math::kPi * rand1;
+        const float phi = 2.0f * Math::kPi * rand1;
 
         const auto outDir = onb.GetDir(theta, phi);
 
@@ -75,17 +80,20 @@ Lambert::CreateNextRay(const Ray& rayIn,
         auto outWeight = rayIn.weight * m_kd;
         if (m_texAlbedo)
         {
-            outWeight *= m_texAlbedo->GetPixelByUV(hitInfo.uv.x, hitInfo.uv.y);
+            outWeight *=
+              m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
         }
 
-        return {
-            hitInfo.pos, outDir, RayTypes::Diffuse, outWeight, rayIn.bounce + 1
-        };
+        return { shadingInfo.pos,
+                 outDir,
+                 RayTypes::Diffuse,
+                 outWeight,
+                 rayIn.bounce + 1 };
     }
     else
     {
         const float theta = acos(rand0);
-        const float phi   = 2.0f * Math::kPi * rand1;
+        const float phi = 2.0f * Math::kPi * rand1;
 
         const auto outDir = onb.GetDir(theta, phi);
 
@@ -95,13 +103,13 @@ Lambert::CreateNextRay(const Ray& rayIn,
             *pdfDir = pdf;
         }
 
-        Ray rayOut(hitInfo.pos,
+        Ray rayOut(shadingInfo.pos,
                    outDir,
                    RayTypes::Diffuse,
                    rayIn.weight,
                    rayIn.bounce + 1);
 
-        const auto f = BxDF(rayIn, rayOut, hitInfo);
+        const auto f = BxDF(rayIn, rayOut, shadingInfo);
         rayOut.weight *= (f * cos(theta) / pdf);
 
         return rayOut;

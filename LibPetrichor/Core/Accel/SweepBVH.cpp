@@ -39,8 +39,8 @@ SweepBVH::Build(const Scene& scene)
         depth--;
 
         const auto& currentNode = m_bvhNodes[nodeIndex];
-        auto geometryPtrs       = currentNode.GetChildArray();
-        const float invArea     = currentNode.bound.GetSurfaceArea();
+        auto geometryPtrs = currentNode.GetChildArray();
+        const float invArea = currentNode.bound.GetSurfaceArea();
 
         const size_t numGeometryInNode = currentNode.GetNumChildGeoms();
 
@@ -56,8 +56,8 @@ SweepBVH::Build(const Scene& scene)
                 for (uint32_t i = 0; i < numGeometryInNode; i++)
                 {
                     auto begin = std::begin(geometryPtrs);
-                    auto mid   = std::begin(geometryPtrs) + i;
-                    auto end   = std::end(geometryPtrs);
+                    auto mid = std::begin(geometryPtrs) + i;
+                    auto end = std::end(geometryPtrs);
 
                     std::nth_element(
                       begin,
@@ -82,7 +82,7 @@ SweepBVH::Build(const Scene& scene)
                         node1.AppendChild(*iter);
                     }
 
-                    constexpr float timeTri  = 1.0f;
+                    constexpr float timeTri = 1.0f;
                     constexpr float timeAABB = 1.0f;
 
                     const size_t n0 = node0.GetNumChildGeoms();

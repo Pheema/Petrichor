@@ -15,15 +15,15 @@ namespace Core
 using namespace Math;
 
 Sphere::Sphere()
-  : o(Vector3f::Zero())
-  , r(0.0f)
+  : m_origin(Vector3f::Zero())
+  , m_radius(0.0f)
 {
     // Do nothing
 }
 
 Sphere::Sphere(const Math::Vector3f& o, float r)
-  : o(o)
-  , r(r)
+  : m_origin(o)
+  , m_radius(r)
 {
     // Do nothing
 }
@@ -31,8 +31,8 @@ Sphere::Sphere(const Math::Vector3f& o, float r)
 Bound
 Sphere::CalcBound() const
 {
-    const auto vMin = o - Math::Vector3f::One() * r;
-    const auto vMax = o + Math::Vector3f::One() * r;
+    const auto vMin = m_origin - Math::Vector3f::One() * m_radius;
+    const auto vMax = m_origin + Math::Vector3f::One() * m_radius;
 
     Bound bound(vMin, vMax);
     m_bound = bound;
@@ -40,12 +40,13 @@ Sphere::CalcBound() const
     return m_bound;
 }
 
-std::optional<Petrichor::Core::HitInfo>
+std::optional<HitInfo>
 Sphere::Intersect(const Ray& ray) const
 {
-    const float a   = Dot(ray.dir, ray.dir);
-    const float b_2 = Dot(ray.dir, ray.o - o);
-    const float c   = Dot(ray.o - o, ray.o - o) - r * r;
+    const float a = Dot(ray.dir, ray.dir);
+    const float b_2 = Dot(ray.dir, ray.o - m_origin);
+    const float c =
+      Dot(ray.o - m_origin, ray.o - m_origin) - m_radius * m_radius;
     const float D_4 = b_2 * b_2 - a * c;
     if (D_4 < 0.0f)
     {
@@ -62,25 +63,34 @@ Sphere::Intersect(const Ray& ray) const
         return std::nullopt;
     }
 
-    float distance = std::min(std::max(l1, 0.0f), std::max(l2, 0.0f));
-
     HitInfo hitInfo;
-    hitInfo.distance = distance;
-    hitInfo.pos      = ray.o + ray.dir * hitInfo.distance;
+    hitInfo.distance = std::min(std::max(l1, 0.0f), std::max(l2, 0.0f));
+    hitInfo.hitObj = this;
+    return hitInfo;
+}
 
-    if (Math::ApproxEq(hitInfo.distance, l1))
+ShadingInfo
+Sphere::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
+{
+    ShadingInfo shadingInfo;
+    shadingInfo.pos = ray.o + ray.dir * hitInfo.distance;
+
+    const float l2 = (ray.o - m_origin).SquaredLength();
+
+    if (l2 > m_radius * m_radius)
     {
         // 球の外側からの衝突
-        hitInfo.normal = (hitInfo.pos - o).Normalized();
+        shadingInfo.normal = (shadingInfo.pos - m_origin).Normalized();
     }
     else
     {
         // 球内部からの衝突
-        hitInfo.normal = -(hitInfo.pos - o).Normalized();
+        shadingInfo.normal = -(shadingInfo.pos - m_origin).Normalized();
     }
 
-    hitInfo.hitObj = this;
-    return hitInfo;
+    // #TODO: UV
+
+    return shadingInfo;
 }
 
 void
@@ -92,7 +102,7 @@ Sphere::SampleSurface(Math::Vector3f p,
 
     Math::OrthonormalBasis onb;
 
-    Math::Vector3f originToPoint = p - o;
+    Math::Vector3f originToPoint = p - m_origin;
 
     onb.Build(originToPoint);
 
@@ -100,17 +110,18 @@ Sphere::SampleSurface(Math::Vector3f p,
 
     float l = originToPoint.Length();
     // TODO: 点pが球の中にある場合に破綻するのでチェック
-    ASSERT(l >= r);
+    ASSERT(l >= m_radius);
 
-    float theta = acos(1.0f - std::get<0>(pointSampled) * (1.0f - r / l));
-    float phi   = 2.0f * Math::kPi * std::get<1>(pointSampled);
+    float theta =
+      acos(1.0f - std::get<0>(pointSampled) * (1.0f - m_radius / l));
+    float phi = 2.0f * Math::kPi * std::get<1>(pointSampled);
 
-    auto dir            = onb.GetDir(theta, phi);
-    auto pointOnSurface = o + r * dir;
+    auto dir = onb.GetDir(theta, phi);
+    auto pointOnSurface = m_origin + m_radius * dir;
 
-    pointData->pos    = pointOnSurface;
+    pointData->pos = pointOnSurface;
     pointData->normal = dir;
-    *pdfArea          = l / (2.0f * Math::kPi * r * r * (l - r));
+    *pdfArea = l / (2.0f * Math::kPi * m_radius * m_radius * (l - m_radius));
 }
 
 } // namespace Core

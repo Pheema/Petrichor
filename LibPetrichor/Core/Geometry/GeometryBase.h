@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Accel/Bound.h"
+#include "Core/HitInfo.h"
 #include "Core/Material/MaterialBase.h"
 #include <optional>
 
@@ -9,7 +10,6 @@ namespace Petrichor
 namespace Core
 {
 
-struct HitInfo;
 struct Ray;
 class ISampler2D;
 
@@ -36,9 +36,18 @@ public:
         return Bound();
     }
 
-    // レイとの交差判定
+    // レイとの簡易交差判定
     virtual std::optional<HitInfo>
     Intersect(const Ray& ray) const = 0;
+
+    // シェーディングに必要な情報をヒット情報から取得
+    // (交差しないレイと図形の組み合わせに対して実行すると、正しい結果を得られないので注意)
+    virtual ShadingInfo
+    Interpolate(const Ray& ray, const HitInfo& hitInfo) const
+    {
+        std::logic_error("No impl.");
+        return ShadingInfo();
+    }
 
     // ライト表面をサンプルリングする
     virtual void
@@ -87,7 +96,7 @@ public:
 protected:
     // TODO: 苦肉の策
     // あとでCalcBound()とは別にSetBound()を作って分ける
-    mutable Bound m_bound          = Bound();
+    mutable Bound m_bound = Bound();
     const MaterialBase* m_material = nullptr;
 };
 

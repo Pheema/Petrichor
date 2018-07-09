@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Color3f.h"
+#include "Core/HitInfo.h"
 
 namespace Petrichor
 {
@@ -30,10 +31,14 @@ public:
     };
 
     virtual Color3f
-    BxDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const = 0;
+    BxDF(const Ray& rayIn,
+         const Ray& rayOut,
+         const ShadingInfo& shadingInfo) const = 0;
 
     virtual float
-    PDF(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
+    PDF(const Ray& rayIn,
+        const Ray& rayOut,
+        const ShadingInfo& shadingInfo) const
     {
         ASSERT(false);
         return 0.0f;
@@ -41,14 +46,14 @@ public:
 
     virtual Ray
     CreateNextRay(const Ray& rayIn,
-                  const HitInfo& hitInfo,
+                  const ShadingInfo& shadingInfo,
                   ISampler2D& sampler2D,
                   float* pdfDir) const = 0;
 
     virtual MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
-                    float* mix                = nullptr) const = 0;
+                    float* mix = nullptr) const = 0;
 
     void
     EnableImportanceSampling(bool isEnabled)

@@ -23,11 +23,9 @@ BVHNode::BVHNode(const Vector3f& vMin, const Vector3f& vMax)
 std::optional<HitInfo>
 BVHNode::Intersect(const Ray& ray) const
 {
-    // TODO: ray.dirが軸に平行だと0div
-    const Vector3f InvRayDir = Vector3f::One() / ray.dir;
-
-    const Vector3f t0 = (bound.vMin - ray.o) * InvRayDir;
-    const Vector3f t1 = (bound.vMax - ray.o) * InvRayDir;
+    Vector3f invRayDir = Vector3f::One() / ray.dir;
+    const Vector3f t0 = (bound.vMin - ray.o) * invRayDir;
+    const Vector3f t1 = (bound.vMax - ray.o) * invRayDir;
 
     constexpr uint8_t idxArray[] = { 0, 1, 2, 0 };
 
@@ -35,6 +33,12 @@ BVHNode::Intersect(const Ray& ray) const
     {
         const uint8_t axis0 = idxArray[cnt];
         const uint8_t axis1 = idxArray[cnt + 1];
+
+        if (ray.dir[axis0] == 0 || ray.dir[axis1] == 0)
+        {
+            // 軸に平行なレイが入ってきた場合
+            continue;
+        }
 
         const float tMinMax = std::max(std::min(t0[axis0], t1[axis0]),
                                        std::min(t0[axis1], t1[axis1]));
@@ -62,7 +66,6 @@ BVHNode::Intersect(const Ray& ray) const
 
     HitInfo hitInfo;
     hitInfo.distance = distance;
-    hitInfo.pos      = ray.o + ray.dir * distance;
     // BVHNodeは実際に接触する物体ではないので、その他hitInfoの更新は行わない
     return hitInfo;
 }
@@ -70,7 +73,7 @@ BVHNode::Intersect(const Ray& ray) const
 bool
 BVHNode::Contanins(const Math::Vector3f& point) const
 {
-    const Math::Vector3f diff   = bound.vMax - bound.vMin;
+    const Math::Vector3f diff = bound.vMax - bound.vMin;
     const Math::Vector3f point2 = point - bound.vMin;
 
     if (diff.x < point2.x || diff.y < point2.y || diff.z < point2.z)

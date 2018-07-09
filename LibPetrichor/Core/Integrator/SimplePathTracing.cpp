@@ -27,7 +27,7 @@ SimplePathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    const uint32_t kNumSamples    = scene.GetSceneSettings().numSamplesPerPixel;
+    const uint32_t kNumSamples = scene.GetSceneSettings().numSamplesPerPixel;
     const uint32_t kMaxNumBounces = scene.GetSceneSettings().numMaxBouces;
 
     Color3f pixelColorSum;
@@ -52,6 +52,9 @@ SimplePathTracing::Render(uint32_t pixelX,
                 break;
             }
 
+            const auto shadingInfo =
+              (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
+
             // ---- ヒットした場合 ----
             const MaterialBase* mat =
               (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
@@ -65,7 +68,7 @@ SimplePathTracing::Render(uint32_t pixelX,
             mat = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
             ASSERT(std::isfinite(ray.dir.x));
-            ray = mat->CreateNextRay(ray, hitInfo.value(), sampler2D, nullptr);
+            ray = mat->CreateNextRay(ray, shadingInfo, sampler2D, nullptr);
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
             // TODO: あとでロシアンルーレット方式に

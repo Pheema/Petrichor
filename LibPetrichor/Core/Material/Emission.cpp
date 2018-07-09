@@ -23,15 +23,15 @@ Emission::Radiance(const Ray& rayIn,
 Petrichor::Color3f
 Emission::BxDF(const Ray& rayIn,
                const Ray& rayOut,
-               const HitInfo& hitInfo) const
+               const ShadingInfo& shadingInfo) const
 {
     ASSERT(false);
     return Color3f::Zero();
 }
 
-Ray
+Petrichor::Core::Ray
 Emission::CreateNextRay(const Ray& rayIn,
-                        const HitInfo& hitInfo,
+                        const ShadingInfo& shadingInfo,
                         ISampler2D& sampler2D,
                         float* pdfDir) const
 {

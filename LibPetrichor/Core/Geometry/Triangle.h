@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
 #include <array>
@@ -10,6 +10,7 @@ namespace Core
 
 struct Vertex;
 struct HitInfo;
+struct ShadingInfo;
 
 enum class ShadingTypes
 {
@@ -35,6 +36,9 @@ public:
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const override;
+
+    virtual ShadingInfo
+    Interpolate(const Ray& ray, const HitInfo& hitInfo) const override;
 
     virtual void
     SampleSurface(Math::Vector3f p,

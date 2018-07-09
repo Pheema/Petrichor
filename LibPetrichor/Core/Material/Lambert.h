@@ -17,23 +17,23 @@ public:
     Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
-         const HitInfo& hitInfo) const override;
+         const ShadingInfo& shadingInfo) const override;
 
     float
     PDF(const Ray& rayIn,
         const Ray& rayOut,
-        const HitInfo& hitInfo) const override;
+        const ShadingInfo& shadingInfo) const override;
 
     Ray
     CreateNextRay(const Ray& rayIn,
-                  const HitInfo& hitInfo,
+                  const ShadingInfo& shadingInfo,
                   ISampler2D& sampler2D,
                   float* pdfDir) const override;
 
     MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
-                    float* mix                = nullptr) const override;
+                    float* mix = nullptr) const override;
 
     void
     SetTexAlbedo(const Texture2D* texAlbedo)

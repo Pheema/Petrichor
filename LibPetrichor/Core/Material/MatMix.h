@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Core/HitInfo.h"
 #include "Core/Ray.h"
 #include "MaterialBase.h"
 
@@ -18,7 +19,7 @@ public:
     virtual Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
-         const HitInfo& hitInfo) const override
+         const ShadingInfo& shadingInfo) const override
     {
         ASSERT(false);
         return Color3f();
@@ -26,7 +27,7 @@ public:
 
     virtual Ray
     CreateNextRay(const Ray& rayIn,
-                  const HitInfo& hitInfo,
+                  const ShadingInfo& shadingInfo,
                   ISampler2D& sampler2D,
                   float* pdfDir) const override
     {
@@ -37,12 +38,12 @@ public:
     virtual MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
-                    float* mix                = nullptr) const override;
+                    float* mix = nullptr) const override;
 
 private:
     const MaterialBase* m_mat0 = nullptr;
     const MaterialBase* m_mat1 = nullptr;
-    float m_mix                = 0.0f;
+    float m_mix = 0.0f;
 };
 
 } // namespace Core
