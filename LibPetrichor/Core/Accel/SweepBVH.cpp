@@ -38,9 +38,11 @@ SweepBVH::Build(const Scene& scene)
         bvhNodeIndexStack.pop();
         depth--;
 
-        auto geometryPtrs = m_bvhNodes[nodeIndex].GetChildArray();
-        const size_t numGeometryInNode =
-          m_bvhNodes[nodeIndex].GetNumChildGeoms();
+        const auto& currentNode = m_bvhNodes[nodeIndex];
+        auto geometryPtrs       = currentNode.GetChildArray();
+        const float invArea     = currentNode.bound.GetSurfaceArea();
+
+        const size_t numGeometryInNode = currentNode.GetNumChildGeoms();
 
         {
             float minSAH = std::numeric_limits<float>::infinity();
@@ -83,39 +85,36 @@ SweepBVH::Build(const Scene& scene)
                     constexpr float timeTri  = 1.0f;
                     constexpr float timeAABB = 1.0f;
 
-                    const float areaRoot =
-                      m_bvhNodes[nodeIndex].bound.GetSurfaceArea();
-
                     const size_t n0 = node0.GetNumChildGeoms();
                     const size_t n1 = node1.GetNumChildGeoms();
 
                     const float a0 = n0 ? node0.bound.GetSurfaceArea() : 0.0f;
                     const float a1 = n1 ? node1.bound.GetSurfaceArea() : 0.0f;
 
-                    const float sah = 2.0f * timeAABB +
-                                      (a0 * n0 + a1 * n1) * timeTri / areaRoot;
+                    const float sah =
+                      2.0f * timeAABB + (a0 * n0 + a1 * n1) * timeTri * invArea;
 
                     const bool willDivide =
                       (i != 0 && i != numGeometryInNode - 1);
                     if (sah < minSAH)
                     {
                         minSAH = sah;
+                        isLeaf = !willDivide;
 
                         if (willDivide)
                         {
-                            isLeaf        = false;
                             childNodes[0] = node0;
                             childNodes[1] = node1;
-                        }
-                        else
-                        {
-                            isLeaf = true;
                         }
                     }
                 }
             }
 
-            if (isLeaf == false)
+            if (isLeaf)
+            {
+                m_bvhNodes[nodeIndex].SetLeaf(true);
+            }
+            else
             {
                 m_bvhNodes.emplace_back(childNodes[0]);
                 m_bvhNodes.emplace_back(childNodes[1]);
@@ -129,10 +128,6 @@ SweepBVH::Build(const Scene& scene)
                 depth += 2;
 
                 m_bvhNodes[nodeIndex].ClearAndShrink();
-            }
-            else
-            {
-                m_bvhNodes[nodeIndex].SetLeaf(true);
             }
         }
     }

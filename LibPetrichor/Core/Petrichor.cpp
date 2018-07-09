@@ -181,8 +181,8 @@ Petrichor::Initialize()
 #endif
 
     // 環境マップの設定
-    // m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
-    // m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+    m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
