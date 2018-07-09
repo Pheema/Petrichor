@@ -1,16 +1,11 @@
 ﻿#include "SimplePathTracing.h"
 
-#include "Core/Accel/BVH.h"
-#include "Core/Accel/BruteForce.h"
 #include "Core/HitInfo.h"
 #include "Core/Sampler/MicroJitteredSampler.h"
 #include "Core/Scene.h"
-#include "Core/Texture2D.h"
 #include <Random/XorShift.h>
 #include <algorithm>
 #include <sstream>
-
-#define BALANCE_HEURISTIC
 
 namespace Petrichor
 {
@@ -67,12 +62,10 @@ SimplePathTracing::Render(uint32_t pixelX,
             }
 
             // 次のレイを生成
-            float pdfDir = 0.0f;
-            mat          = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
+            mat = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
             ASSERT(std::isfinite(ray.dir.x));
-            ray = mat->CreateNextRay(ray, hitInfo.value(), sampler2D, &pdfDir);
-            ASSERT(std::isfinite(ray.dir.x));
+            ray = mat->CreateNextRay(ray, hitInfo.value(), sampler2D, nullptr);
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
             // TODO: あとでロシアンルーレット方式に
@@ -85,7 +78,8 @@ SimplePathTracing::Render(uint32_t pixelX,
         pixelColorSum += color;
     }
 
-    Color3f averagedColor = pixelColorSum / static_cast<float>(kNumSamples);
+    const Color3f averagedColor =
+      pixelColorSum / static_cast<float>(kNumSamples);
     targetTex->SetPixel(pixelX, pixelY, averagedColor);
 }
 

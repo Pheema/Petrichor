@@ -164,6 +164,7 @@
     <ClCompile Include="Core\Accel\BruteForce.cpp" />
     <ClCompile Include="Core\Accel\BVH.cpp" />
     <ClCompile Include="Core\Accel\BVHNode.cpp" />
+    <ClCompile Include="Core\Accel\SweepBVH.cpp" />
     <ClCompile Include="Core\Camera.cpp" />
     <ClCompile Include="Core\Environment.cpp" />
     <ClCompile Include="Core\Geometry\Mesh.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Core\Accel\BVH.h" />
     <ClInclude Include="Core\Accel\BVHNode.h" />
     <ClInclude Include="Core\Accel\AccelBase.h" />
+    <ClInclude Include="Core\Accel\SweepBVH.h" />
     <ClInclude Include="Core\Assert.h" />
     <ClInclude Include="Core\Camera.h" />
     <ClInclude Include="Core\Color3f.h" />

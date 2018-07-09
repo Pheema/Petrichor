@@ -29,7 +29,7 @@ BVHNode::Intersect(const Ray& ray) const
     const Vector3f t0 = (bound.vMin - ray.o) * InvRayDir;
     const Vector3f t1 = (bound.vMax - ray.o) * InvRayDir;
 
-    const uint8_t idxArray[] = { 0, 1, 2, 0 };
+    constexpr uint8_t idxArray[] = { 0, 1, 2, 0 };
 
     for (uint8_t cnt = 0; cnt < 3; cnt++)
     {
@@ -65,6 +65,20 @@ BVHNode::Intersect(const Ray& ray) const
     hitInfo.pos      = ray.o + ray.dir * distance;
     // BVHNodeは実際に接触する物体ではないので、その他hitInfoの更新は行わない
     return hitInfo;
+}
+
+bool
+BVHNode::Contanins(const Math::Vector3f& point) const
+{
+    const Math::Vector3f diff   = bound.vMax - bound.vMin;
+    const Math::Vector3f point2 = point - bound.vMin;
+
+    if (diff.x < point2.x || diff.y < point2.y || diff.z < point2.z)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 size_t

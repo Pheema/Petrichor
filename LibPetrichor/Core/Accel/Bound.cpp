@@ -20,6 +20,13 @@ Bound::Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax)
 {
 }
 
+float
+Bound::GetSurfaceArea() const
+{
+    auto diff = vMax - vMin;
+    return 2.0f * (diff.x * diff.y + diff.y * diff.z + diff.z * diff.x);
+}
+
 void
 Bound::Merge(const Bound& other)
 {

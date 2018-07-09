@@ -3,6 +3,7 @@
 #include "Core/Accel/AccelBase.h"
 #include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
+#include "Core/Accel/SweepBVH.h"
 #include "Core/Camera.h"
 #include "Core/Environment.h"
 #include "Core/Geometry/GeometryBase.h"
@@ -111,7 +112,7 @@ public:
     {
         ASSERT(m_accel != nullptr &&
                "Acceleration structure has not been assigned.");
-        m_accel = std::make_unique<BruteForce>();
+        m_accel = std::make_unique<SweepBVH>();
         m_accel->Build(*this);
     }
 

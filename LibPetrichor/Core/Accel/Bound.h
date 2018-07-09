@@ -18,6 +18,10 @@ public:
     Math::Vector3f
     Center() const;
 
+    // 表面積を求める
+    float
+    GetSurfaceArea() const;
+
     // 複数のBoundをマージする
     void
     Merge(const Bound& bound);

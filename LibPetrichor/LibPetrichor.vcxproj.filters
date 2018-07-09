@@ -7,18 +7,15 @@
     <Filter Include="Core\Integrator">
       <UniqueIdentifier>{9da7eed4-5eda-4aa0-99a4-daad65d8e402}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Accel">
+      <UniqueIdentifier>{7deb30bc-8247-4b2e-b4b9-8e66ca4d7415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Geometry">
+      <UniqueIdentifier>{774cad15-dd72-4215-aac1-1eb829a362af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Accel\Bound.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Accel\BruteForce.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Accel\BVH.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Accel\BVHNode.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\Camera.cpp">
@@ -51,19 +48,10 @@
     <ClCompile Include="Core\Sampler\RandomSampler2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Geometry\Sphere.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Texture2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\TileManager.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Geometry\Triangle.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Geometry\Vertex.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Math\Halton.cpp">
@@ -84,21 +72,31 @@
     <ClCompile Include="Core\Integrator\SimplePathTracing.cpp">
       <Filter>Core\Integrator</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Accel\BruteForce.cpp">
+      <Filter>Core\Accel</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\BVH.cpp">
+      <Filter>Core\Accel</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Sphere.cpp">
+      <Filter>Core\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Triangle.cpp">
+      <Filter>Core\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Geometry\Vertex.cpp">
+      <Filter>Core\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\BVHNode.cpp">
+      <Filter>Core\Accel</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Accel\SweepBVH.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Assert.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Accel\Bound.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Accel\BruteForce.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Accel\BVH.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Accel\BVHNode.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Camera.h">
@@ -111,9 +109,6 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Environment.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Geometry\GeometryBase.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Material\GGX.h">
@@ -152,19 +147,10 @@
     <ClInclude Include="Core\Scene.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Geometry\Sphere.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Texture2D.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\TileManager.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Geometry\Triangle.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Geometry\Vertex.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Color3f.h">
@@ -194,14 +180,38 @@
     <ClInclude Include="Core\SceneSettings.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Accel\AccelBase.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Integrator\PathTracing.h">
       <Filter>Core\Integrator</Filter>
     </ClInclude>
     <ClInclude Include="Core\Integrator\SimplePathTracing.h">
       <Filter>Core\Integrator</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\AccelBase.h">
+      <Filter>Core\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BruteForce.h">
+      <Filter>Core\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BVH.h">
+      <Filter>Core\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Sphere.h">
+      <Filter>Core\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Triangle.h">
+      <Filter>Core\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\Vertex.h">
+      <Filter>Core\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Geometry\GeometryBase.h">
+      <Filter>Core\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\BVHNode.h">
+      <Filter>Core\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\SweepBVH.h">
+      <Filter>Core\Accel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

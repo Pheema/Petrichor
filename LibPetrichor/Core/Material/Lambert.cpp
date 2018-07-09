@@ -61,14 +61,15 @@ Lambert::CreateNextRay(const Ray& rayIn,
 
     if (IsImportanceSamplingEnabled())
     {
-        float theta = asin(sqrt(rand0));
-        float phi   = 2.0f * Math::kPi * rand1;
+        const float theta = asin(sqrt(rand0));
+        const float phi   = 2.0f * Math::kPi * rand1;
 
-        auto outDir = onb.GetDir(theta, phi);
+        const auto outDir = onb.GetDir(theta, phi);
 
+        const float pdf = cos(theta) * Math::kInvPi;
         if (pdfDir)
         {
-            *pdfDir = cos(theta) * Math::kInvPi;
+            *pdfDir = pdf;
         }
 
         auto outWeight = rayIn.weight * m_kd;
@@ -83,14 +84,15 @@ Lambert::CreateNextRay(const Ray& rayIn,
     }
     else
     {
-        float theta = acos(rand0);
-        float phi   = 2.0f * Math::kPi * rand1;
+        const float theta = acos(rand0);
+        const float phi   = 2.0f * Math::kPi * rand1;
 
-        auto outDir = onb.GetDir(theta, phi);
+        const auto outDir = onb.GetDir(theta, phi);
 
+        const float pdf = 0.5f * Math::kInvPi;
         if (pdfDir)
         {
-            *pdfDir = 0.5f * Math::kInvPi;
+            *pdfDir = pdf;
         }
 
         Ray rayOut(hitInfo.pos,
@@ -99,8 +101,8 @@ Lambert::CreateNextRay(const Ray& rayIn,
                    rayIn.weight,
                    rayIn.bounce + 1);
 
-        auto f = BxDF(rayIn, rayOut, hitInfo);
-        rayOut.weight *= (f * cos(theta) / *pdfDir);
+        const auto f = BxDF(rayIn, rayOut, hitInfo);
+        rayOut.weight *= (f * cos(theta) / pdf);
 
         return rayOut;
     }
