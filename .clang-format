@@ -1,7 +1,7 @@
 ﻿---
 BasedOnStyle: Mozilla
 AccessModifierOffset: -4
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AlwaysBreakAfterReturnType: All
