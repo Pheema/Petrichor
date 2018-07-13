@@ -128,7 +128,11 @@ std::cout << "[O]" << outDir << std::endl;*/
     const float g2 = 1.0f / (1.0f + lambdaIn + lambdaOut);
     const float g1 = 1.0f / (1.0f + lambdaIn);
 
-    *pdfDir = PDF(rayIn, ray, shadingInfo);
+    if (pdfDir)
+    {
+        *pdfDir = PDF(rayIn, ray, shadingInfo);
+    }
+
     ray.weight *= (fTerm * g2 / g1);
 
 #else

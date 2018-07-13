@@ -16,6 +16,7 @@
 #include "Core/Sampler/RandomSampler2D.h"
 #include "Core/TileManager.h"
 #include "Random/XorShift.h"
+#include "Thread/ThreadPool.h"
 #include <fstream>
 #include <iomanip>
 #include <mutex>
@@ -35,7 +36,7 @@ Petrichor::Initialize()
     // シーンの定義
     auto sphere = new Sphere(Math::Vector3f(-1.5f, 0.0f, 1.0f), 1.0f);
 
-    float r    = 1000.0f;
+    float r = 1000.0f;
     auto floor = new Sphere(-Math::Vector3f::UnitZ() * r, r);
 
     auto sphereLight = new Sphere(Math::Vector3f(2.5f, -2.0f, 1.0f), 0.5f);
@@ -45,7 +46,7 @@ Petrichor::Initialize()
 
     // ---- floorMat ----
     MaterialBase* matLambertFloor = new Lambert(0.95f * Color3f::One());
-    MaterialBase* matGGXFloor     = new GGX(0.05f * Color3f::One(), 0.05f);
+    MaterialBase* matGGXFloor = new GGX(0.05f * Color3f::One(), 0.05f);
     MaterialBase* matMixFloor = new MatMix(matLambertFloor, matGGXFloor, 0.3f);
 
     // ---- matBody ----
@@ -63,27 +64,27 @@ Petrichor::Initialize()
 
     // ---- matCover ----
     MaterialBase* matLambertCover = new Lambert(1.5f * Color3f::One());
-    MaterialBase* matGGXCover     = new GGX(0.05f * Color3f::One(), 0.31f);
+    MaterialBase* matGGXCover = new GGX(0.05f * Color3f::One(), 0.31f);
     MaterialBase* matMixCover = new MatMix(matLambertCover, matGGXCover, 0.1f);
-    auto* texCover            = new Texture2D();
+    auto* texCover = new Texture2D();
     texCover->Load("Resource/fabric_01_diffuse.jpg");
     static_cast<Lambert*>(matLambertCover)->SetTexAlbedo(texCover);
 
     // ---- matCode ----
     MaterialBase* matLambertCode = new Lambert(0.03f * Color3f::One());
-    MaterialBase* matGGXCode     = new GGX(0.05f * Color3f::One(), 0.1f);
-    MaterialBase* matMixCode     = new MatMix(matLambertCode, matGGXCode, 0.1f);
+    MaterialBase* matGGXCode = new GGX(0.05f * Color3f::One(), 0.1f);
+    MaterialBase* matMixCode = new MatMix(matLambertCode, matGGXCode, 0.1f);
 
     // ---- panelLight ----
     MaterialBase* matLightLU = new Emission(5.0f * Color3f::One());
-    MaterialBase* matLightR  = new Emission(2.0f * Color3f::One());
+    MaterialBase* matLightR = new Emission(2.0f * Color3f::One());
 
-    auto meshFloor   = new Mesh();
-    auto meshBody    = new Mesh();
-    auto meshCode    = new Mesh();
-    auto meshCover   = new Mesh();
+    auto meshFloor = new Mesh();
+    auto meshBody = new Mesh();
+    auto meshCode = new Mesh();
+    auto meshCover = new Mesh();
     auto meshLightLU = new Mesh();
-    auto meshLightR  = new Mesh();
+    auto meshLightR = new Mesh();
 
     meshBody->Load(
       "Resource/SpeakerDiv3.obj", matArrayBody, 2, ShadingTypes::Smooth);
@@ -100,9 +101,9 @@ Petrichor::Initialize()
     // sphere->SetMaterial(matMixFloor);
     floor->SetMaterial(matMixFloor);
 
-    m_scene.AppendMesh(*meshBody);
+    // m_scene.AppendMesh(*meshBody);
     m_scene.AppendMesh(*meshCode);
-    m_scene.AppendMesh(*meshCover);
+    // m_scene.AppendMesh(*meshCover);
     m_scene.AppendLightMesh(*meshLightLU);
     m_scene.AppendLightMesh(*meshLightR);
 
@@ -123,14 +124,14 @@ Petrichor::Initialize()
     // camera->SetFNumber(1.8f);
     // camera->SetLens(10e-3f);
     camera->SetLens(80e-3f);
-    camera->FocusTo(sphere->o);
+    camera->FocusTo(sphere->GetOrigin());
     m_scene.SetMainCamera(*camera);
 
 #else
 
-    MaterialBase* matLambertRed    = new Lambert(Color3f(1.0f, 0, 0));
-    MaterialBase* matLambertGreen  = new Lambert(Color3f(0, 1.0f, 0));
-    MaterialBase* matLamberWhite   = new Lambert(Color3f::One());
+    MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
+    MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
+    MaterialBase* matLamberWhite = new Lambert(Color3f::One());
     MaterialBase* matEmissionWhite = new Emission(Color3f::One());
 
     Mesh* const leftWall = new Mesh();
@@ -180,6 +181,8 @@ Petrichor::Initialize()
 
 #endif
 
+    m_scene.LoadSceneSettings();
+
     // 環境マップの設定
     m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
@@ -195,7 +198,7 @@ Petrichor::Render()
 {
     SimplePathTracing pt;
 
-    const uint32_t tileWidth  = m_scene.GetSceneSettings().tileWidth;
+    const uint32_t tileWidth = m_scene.GetSceneSettings().tileWidth;
     const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;
 
     Texture2D* const targetTexure = m_scene.GetTargetTexture();
@@ -204,7 +207,7 @@ Petrichor::Render()
         std::cerr << "[Error] Target texture has not been set." << std::endl;
         return;
     }
-    const uint32_t outputWidth  = targetTexure->GetWidth();
+    const uint32_t outputWidth = targetTexure->GetWidth();
     const uint32_t outputHeight = targetTexure->GetHeight();
     TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
 
@@ -212,42 +215,55 @@ Petrichor::Render()
 
     std::mutex mtx;
     uint32_t maxIdxTile = 0;
-#pragma omp parallel for num_threads(4) schedule(dynamic)
-    for (int idxTile = 0; idxTile < static_cast<int>(tileManager.GetNumTiles());
-         idxTile++)
+
+    const uint32_t kNumThreads = std::thread::hardware_concurrency() - 1;
+
     {
-        const Tile tile     = tileManager.GetTile();
-        const auto pixelPos = tile.GetInitialPixel();
+        ThreadPool<void> threadPool(kNumThreads);
 
-        const uint32_t i0 = pixelPos.first;
-        const uint32_t j0 = pixelPos.second;
-
-        RandomSampler1D sampler1D(idxTile);
-        RandomSampler2D sampler2D(idxTile);
-
-        for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
+        for (int idxTile = 0;
+             idxTile < static_cast<int>(tileManager.GetNumTiles());
+             idxTile++)
         {
-            for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
-            {
-                pt.Render(i, j, m_scene, targetTexure, sampler1D, sampler2D);
-            }
-        }
+            threadPool.Run([&, idxTile] {
+                const Tile tile = tileManager.GetTile();
+                const auto pixelPos = tile.GetInitialPixel();
 
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            maxIdxTile = std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
+                const uint32_t i0 = pixelPos.first;
+                const uint32_t j0 = pixelPos.second;
 
-            const float ratio = 100.0f * static_cast<float>(maxIdxTile) /
-                                tileManager.GetNumTiles();
+                RandomSampler1D sampler1D(idxTile);
+                RandomSampler2D sampler2D(idxTile);
 
-            std::stringstream ss;
-            ss << "[PT: Rendering] " << (maxIdxTile + 1) << "/"
-               << tileManager.GetNumTiles() << "(" << std::fixed
-               << std::setprecision(2) << ratio << "%)"
-               << "\r" << std::flush;
-            std::cout << ss.str();
+                for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
+                {
+                    for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
+                    {
+                        pt.Render(
+                          i, j, m_scene, targetTexure, sampler1D, sampler2D);
+                    }
+                }
+
+                {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    maxIdxTile =
+                      std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
+
+                    const float ratio = 100.0f *
+                                        static_cast<float>(maxIdxTile) /
+                                        tileManager.GetNumTiles();
+
+                    std::stringstream ss;
+                    ss << "[PT: Rendering] " << (maxIdxTile + 1) << "/"
+                       << tileManager.GetNumTiles() << "(" << std::fixed
+                       << std::setprecision(2) << ratio << "%)"
+                       << "\r" << std::flush;
+                    std::cout << ss.str();
+                }
+            });
         }
     }
+    std::cout << "End of Render()." << std::endl;
 }
 
 void

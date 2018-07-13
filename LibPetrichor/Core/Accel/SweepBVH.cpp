@@ -3,6 +3,7 @@
 #include "Core/Accel/BVHNode.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Scene.h"
+#include <execution>
 #include <stack>
 
 namespace Petrichor
@@ -60,6 +61,7 @@ SweepBVH::Build(const Scene& scene)
                     auto end = std::end(geometryPtrs);
 
                     std::nth_element(
+                      std::execution::par,
                       begin,
                       mid,
                       end,

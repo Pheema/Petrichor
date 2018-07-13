@@ -13,6 +13,9 @@
     <Filter Include="Core\Geometry">
       <UniqueIdentifier>{774cad15-dd72-4215-aac1-1eb829a362af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Thread">
+      <UniqueIdentifier>{eadf7e69-5b28-4c5b-a47b-a54dc3b3fc44}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Accel\Bound.cpp">
@@ -91,6 +94,7 @@
       <Filter>Core\Accel</Filter>
     </ClCompile>
     <ClCompile Include="Core\Accel\SweepBVH.cpp" />
+    <ClCompile Include="Core\Thread\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Assert.h">
@@ -212,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="Core\Accel\SweepBVH.h">
       <Filter>Core\Accel</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Thread\ThreadPool.h">
+      <Filter>Core\Thread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

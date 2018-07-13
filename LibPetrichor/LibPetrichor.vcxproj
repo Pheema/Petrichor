@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <OpenMPSupport>true</OpenMPSupport>
+      <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -111,6 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,6 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -142,8 +144,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <OpenMPSupport>true</OpenMPSupport>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -183,6 +185,7 @@
     <ClCompile Include="Core\Scene.cpp" />
     <ClCompile Include="Core\SceneSettings.cpp" />
     <ClCompile Include="Core\Texture2D.cpp" />
+    <ClCompile Include="Core\Thread\ThreadPool.cpp" />
     <ClCompile Include="Core\TileManager.cpp" />
     <ClCompile Include="Math\Halton.cpp" />
     <ClCompile Include="Math\OrthonormalBasis.cpp" />
@@ -222,6 +225,7 @@
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Core\SceneSettings.h" />
     <ClInclude Include="Core\Texture2D.h" />
+    <ClInclude Include="Core\Thread\ThreadPool.h" />
     <ClInclude Include="Core\TileManager.h" />
     <ClInclude Include="Math\Halton.h" />
     <ClInclude Include="Math\MathUtils.h" />

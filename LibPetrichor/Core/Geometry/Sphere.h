@@ -30,6 +30,12 @@ public:
                   PointData* pointData,
                   float* pdfArea) const override;
 
+    const Math::Vector3f&
+    GetOrigin() const
+    {
+        return m_origin;
+    }
+
 private:
     Math::Vector3f m_origin;
     float m_radius;
