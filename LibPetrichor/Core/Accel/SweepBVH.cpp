@@ -167,7 +167,7 @@ SweepBVH::Intersect(const Ray& ray,
         }
 
         // 自ノードより手前で既に衝突している
-        if (hitInfoResult && currentNode.Contanins(ray.o) == false)
+        if (hitInfoResult && currentNode.Contains(ray.o) == false)
         {
             if (hitInfoResult->distance < hitInfoNode->distance)
             {

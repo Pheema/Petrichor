@@ -25,7 +25,7 @@ public:
     Intersect(const Ray& ray) const;
 
     bool
-    Contanins(const Math::Vector3f& point) const;
+    Contains(const Math::Vector3f& point) const;
 
     size_t
     Partition(int axis);
