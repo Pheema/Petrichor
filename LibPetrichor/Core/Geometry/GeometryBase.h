@@ -29,11 +29,10 @@ class GeometryBase
 {
 public:
     // AABBの計算
-    virtual Bound
+    virtual void
     CalcBound() const
     {
         ASSERT(false);
-        return Bound();
     }
 
     // レイとの簡易交差判定
@@ -93,10 +92,17 @@ public:
         return m_material;
     }
 
+    const Bound&
+    GetBound() const
+    {
+        ASSERT((m_bound.vMax - m_bound.vMin).MinElem() >= 0.0f);
+        return m_bound;
+    }
+
 protected:
     // TODO: 苦肉の策
     // あとでCalcBound()とは別にSetBound()を作って分ける
-    mutable Bound m_bound = Bound();
+    mutable Bound m_bound{};
     const MaterialBase* m_material = nullptr;
 };
 

@@ -93,7 +93,7 @@ BVHNode::Partition(int axis)
       std::partition(m_childGeometries.begin(),
                      m_childGeometries.end(),
                      [center, axis](const GeometryBase* obj) {
-                         return (obj->CalcBound().Center()[axis] < center);
+                         return (obj->GetBound().Center()[axis] < center);
                      });
 
     return std::distance(m_childGeometries.begin(), iterMid);
@@ -107,8 +107,8 @@ BVHNode::SortByNthElement(int widestAxis, float center, size_t nth)
       m_childGeometries.begin() + nth,
       m_childGeometries.end(),
       [center, widestAxis](const GeometryBase* g0, const GeometryBase* g1) {
-          return g0->CalcBound().Center()[widestAxis] <
-                 g1->CalcBound().Center()[widestAxis];
+          return g0->GetBound().Center()[widestAxis] <
+                 g1->GetBound().Center()[widestAxis];
       });
 }
 

@@ -19,7 +19,9 @@ BVH::Build(const Scene& scene)
         rootNode.ReserveChildArray(scene.GetGeometries().size());
         for (const auto* geometry : scene.GetGeometries())
         {
-            rootNode.bound.Merge(geometry->CalcBound());
+            geometry->CalcBound();
+
+            rootNode.bound.Merge(geometry->GetBound());
             rootNode.AppendChild(geometry);
         }
         m_bvhNodes.emplace_back(rootNode);
@@ -49,7 +51,7 @@ BVH::Build(const Scene& scene)
         }
 
         int widestAxis = m_bvhNodes[nodeIndex].bound.GetWidestAxis();
-        float center   = m_bvhNodes[nodeIndex].bound.Center()[widestAxis];
+        float center = m_bvhNodes[nodeIndex].bound.Center()[widestAxis];
 #if 0
         // 座標の中心で2分割する
         auto offsetMid = m_bvhNodes[nodeIndex].Partition(widestAxis);
@@ -81,7 +83,7 @@ BVH::Build(const Scene& scene)
         childNodes[0].ReserveChildArray(numChildren0);
         for (auto iter = iterBegin; iter != iterMid; ++iter)
         {
-            childNodes[0].bound.Merge((*iter)->CalcBound());
+            childNodes[0].bound.Merge((*iter)->GetBound());
             childNodes[0].AppendChild(*iter);
         }
 
@@ -90,7 +92,7 @@ BVH::Build(const Scene& scene)
         childNodes[1].ReserveChildArray(numChildren1);
         for (auto iter = iterMid; iter != iterEnd; ++iter)
         {
-            childNodes[1].bound.Merge((*iter)->CalcBound());
+            childNodes[1].bound.Merge((*iter)->GetBound());
             childNodes[1].AppendChild(*iter);
         }
 

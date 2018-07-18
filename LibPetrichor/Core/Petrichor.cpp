@@ -101,9 +101,9 @@ Petrichor::Initialize()
     // sphere->SetMaterial(matMixFloor);
     floor->SetMaterial(matMixFloor);
 
-    // m_scene.AppendMesh(*meshBody);
+    m_scene.AppendMesh(*meshBody);
     m_scene.AppendMesh(*meshCode);
-    // m_scene.AppendMesh(*meshCover);
+    m_scene.AppendMesh(*meshCover);
     m_scene.AppendLightMesh(*meshLightLU);
     m_scene.AppendLightMesh(*meshLightR);
 

@@ -21,7 +21,9 @@ SweepBVH::Build(const Scene& scene)
         rootNode.ReserveChildArray(scene.GetGeometries().size());
         for (const auto* geometry : scene.GetGeometries())
         {
-            rootNode.bound.Merge(geometry->CalcBound());
+            geometry->CalcBound();
+
+            rootNode.bound.Merge(geometry->GetBound());
             rootNode.AppendChild(geometry);
         }
         m_bvhNodes.emplace_back(std::move(rootNode));
@@ -66,21 +68,21 @@ SweepBVH::Build(const Scene& scene)
                       mid,
                       end,
                       [axis](const GeometryBase* lhs, const GeometryBase* rhs) {
-                          return lhs->CalcBound().Center()[axis] <
-                                 rhs->CalcBound().Center()[axis];
+                          return lhs->GetBound().Center()[axis] <
+                                 rhs->GetBound().Center()[axis];
                       });
 
                     BVHNode node0;
                     for (auto iter = begin; iter != mid; iter++)
                     {
-                        node0.bound.Merge((*iter)->CalcBound());
+                        node0.bound.Merge((*iter)->GetBound());
                         node0.AppendChild(*iter);
                     }
 
                     BVHNode node1;
                     for (auto iter = mid; iter != end; iter++)
                     {
-                        node1.bound.Merge((*iter)->CalcBound());
+                        node1.bound.Merge((*iter)->GetBound());
                         node1.AppendChild(*iter);
                     }
 

@@ -34,7 +34,7 @@ Triangle::SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2)
     m_vertices[2] = v2;
 }
 
-Bound
+void
 Triangle::CalcBound() const
 {
     Bound bound;
@@ -43,7 +43,6 @@ Triangle::CalcBound() const
         bound.Merge(vertex->pos);
     }
     m_bound = bound;
-    return m_bound;
 }
 
 std::optional<HitInfo>

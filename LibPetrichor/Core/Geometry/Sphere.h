@@ -15,7 +15,7 @@ public:
 
     Sphere(const Math::Vector3f& o, float r);
 
-    virtual Bound
+    virtual void
     CalcBound() const override;
 
     virtual std::optional<HitInfo>
