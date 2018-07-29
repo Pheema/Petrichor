@@ -132,6 +132,7 @@ Petrichor::Initialize()
     MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite = new Lambert(Color3f::One());
+    MaterialBase* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
     MaterialBase* matEmissionWhite = new Emission(Color3f::One());
 
     Mesh* const leftWall = new Mesh();
@@ -154,7 +155,7 @@ Petrichor::Initialize()
 
     Mesh* const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
-                   &matLamberWhite,
+                   &matGGX,
                    1,
                    ShadingTypes::Flat);
 

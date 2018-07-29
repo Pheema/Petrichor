@@ -295,8 +295,5 @@ __pycache__/
 *.xsd.cs
 
 # User settings
-Output/**
-!.placeholder
-!/Resource/**
 !/External/**
 /settings.json
