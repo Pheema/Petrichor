@@ -80,22 +80,16 @@ GGX::PDF(const Ray& rayIn,
     return dTerm; // * g1 / (4.0f * abs(Math::Dot(-rayIn.dir, hitInfo.normal)));
 }
 
-Petrichor::Core::Ray
+Ray
 GGX::CreateNextRay(const Ray& rayIn,
                    const ShadingInfo& shadingInfo,
                    ISampler2D& sampler2D,
                    float* pdfDir) const
 {
-    Math::Vector3f normal;
+    const float hitSign = -Math::Dot(rayIn.dir, shadingInfo.normal);
 
-    if (Math::Dot(rayIn.dir, shadingInfo.normal) >= 0)
-    {
-        normal = -shadingInfo.normal;
-    }
-    else
-    {
-        normal = shadingInfo.normal;
-    }
+    const Math::Vector3f normal =
+      shadingInfo.normal * std::copysign(1.0f, hitSign);
 
 #if 1 // USE_VNDF_SAMPLING
     Math::Vector3f sampledHalfVec =
@@ -161,7 +155,7 @@ std::cout << "[O]" << outDir << std::endl;*/
     return ray;
 }
 
-Petrichor::Core::MaterialTypes
+MaterialTypes
 GGX::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
                      const MaterialBase** mat1 /*= nullptr*/,
                      float* mix /*= nullptr*/) const
@@ -180,21 +174,15 @@ GGX::Lambda(const Math::Vector3f& dir, const Math::Vector3f& halfDir) const
     return lambda;
 }
 
-Petrichor::Math::Vector3f
+Math::Vector3f
 GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
                    const ShadingInfo& shadingInfo,
                    ISampler2D& rng2D) const
 {
-    Math::Vector3f normal;
+    const float hitSign = Math::Dot(dirView, shadingInfo.normal);
 
-    if (Math::Dot(dirView, shadingInfo.normal) >= 0)
-    {
-        normal = shadingInfo.normal;
-    }
-    else
-    {
-        normal = -shadingInfo.normal;
-    }
+    const Math::Vector3f normal =
+      shadingInfo.normal * std::copysign(1.0f, hitSign);
 
     // ---- vを算出 ----
     Math::OrthonormalBasis onbOnSurface;
