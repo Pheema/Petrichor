@@ -185,7 +185,7 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    m_scene.GetEnvironment().Load("Resource/balcony_2k.png");
+    m_scene.GetEnvironment().Load("Resource/SampleScene/CornellBox/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
