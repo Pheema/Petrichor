@@ -178,7 +178,7 @@ Vector3f::Normalize()
 {
     *this /= Length();
 }
-inline Vector3f
+[[nodiscard]] inline Vector3f
 Vector3f::Normalized() const
 {
     return *this / Length();
