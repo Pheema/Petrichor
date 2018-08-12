@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Core/Accel/AccelBase.h"
-#include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
 #include "Core/Accel/SweepBVH.h"
 #include "Core/Camera.h"

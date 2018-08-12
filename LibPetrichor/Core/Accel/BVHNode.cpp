@@ -13,19 +13,31 @@ namespace Core
 using namespace Math;
 
 BVHNode::BVHNode()
-  : bound()
+  : m_bounds()
 {
 }
 
-BVHNode::BVHNode(const Vector3f& vMin, const Vector3f& vMax)
-  : bound(vMin, vMax){};
+BVHNode::BVHNode(const InternalNodeData& internalNodeData)
+  : m_bounds(internalNodeData.bounds)
+  , m_childNodes(internalNodeData.childNodes)
+  , m_isLeaf(false)
+{
+}
+
+BVHNode::BVHNode(const LeafNodeData& leafNodeData)
+  : m_bounds(leafNodeData.bounds)
+  , m_numPrimitives(leafNodeData.numPrimitives)
+  , m_indexOffset(leafNodeData.indexOffset)
+  , m_isLeaf(true)
+{
+}
 
 std::optional<HitInfo>
 BVHNode::Intersect(const Ray& ray) const
 {
     Vector3f invRayDir = Vector3f::One() / ray.dir;
-    const Vector3f t0 = (bound.vMin - ray.o) * invRayDir;
-    const Vector3f t1 = (bound.vMax - ray.o) * invRayDir;
+    const Vector3f t0 = (GetBounds().vMin - ray.o) * invRayDir;
+    const Vector3f t1 = (GetBounds().vMax - ray.o) * invRayDir;
 
     constexpr uint8_t idxArray[] = { 0, 1, 2, 0 };
 
@@ -73,8 +85,8 @@ BVHNode::Intersect(const Ray& ray) const
 bool
 BVHNode::Contains(const Math::Vector3f& point) const
 {
-    const Math::Vector3f diff = bound.vMax - bound.vMin;
-    const Math::Vector3f point2 = point - bound.vMin;
+    const Math::Vector3f diff = GetBounds().vMax - GetBounds().vMin;
+    const Math::Vector3f point2 = point - GetBounds().vMin;
 
     if (diff.x < point2.x || diff.y < point2.y || diff.z < point2.z)
     {
@@ -82,34 +94,6 @@ BVHNode::Contains(const Math::Vector3f& point) const
     }
 
     return true;
-}
-
-size_t
-BVHNode::Partition(int axis)
-{
-    const float center = bound.Center()[axis];
-
-    const auto iterMid =
-      std::partition(m_childGeometries.begin(),
-                     m_childGeometries.end(),
-                     [center, axis](const GeometryBase* obj) {
-                         return (obj->GetBound().Center()[axis] < center);
-                     });
-
-    return std::distance(m_childGeometries.begin(), iterMid);
-}
-
-void
-BVHNode::SortByNthElement(int widestAxis, float center, size_t nth)
-{
-    std::nth_element(
-      m_childGeometries.begin(),
-      m_childGeometries.begin() + nth,
-      m_childGeometries.end(),
-      [center, widestAxis](const GeometryBase* g0, const GeometryBase* g1) {
-          return g0->GetBound().Center()[widestAxis] <
-                 g1->GetBound().Center()[widestAxis];
-      });
 }
 
 } // namespace Core

@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core\Accel\Bound.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Camera.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
     <ClCompile Include="Core\Accel\BruteForce.cpp">
       <Filter>Core\Accel</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Accel\BVH.cpp">
-      <Filter>Core\Accel</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Geometry\Sphere.cpp">
       <Filter>Core\Geometry</Filter>
     </ClCompile>
@@ -95,12 +89,12 @@
     </ClCompile>
     <ClCompile Include="Core\Accel\SweepBVH.cpp" />
     <ClCompile Include="Core\Thread\ThreadPool.cpp" />
+    <ClCompile Include="Core\Accel\Bounds.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Assert.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Accel\Bound.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Camera.h">
@@ -196,9 +190,6 @@
     <ClInclude Include="Core\Accel\BruteForce.h">
       <Filter>Core\Accel</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Accel\BVH.h">
-      <Filter>Core\Accel</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Geometry\Sphere.h">
       <Filter>Core\Geometry</Filter>
     </ClInclude>
@@ -219,6 +210,9 @@
     </ClInclude>
     <ClInclude Include="Core\Thread\ThreadPool.h">
       <Filter>Core\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Accel\Bounds.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

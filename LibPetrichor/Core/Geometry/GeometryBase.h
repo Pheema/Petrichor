@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Core/Accel/Bound.h"
+#include "Core/Accel/Bounds.h"
 #include "Core/HitInfo.h"
 #include "Core/Material/MaterialBase.h"
 #include <optional>
@@ -29,10 +29,11 @@ class GeometryBase
 {
 public:
     // AABBの計算
-    virtual void
+    virtual Bounds
     CalcBound() const
     {
         ASSERT(false);
+        return Bounds{};
     }
 
     // レイとの簡易交差判定
@@ -92,17 +93,7 @@ public:
         return m_material;
     }
 
-    const Bound&
-    GetBound() const
-    {
-        ASSERT((m_bound.vMax - m_bound.vMin).MinElem() >= 0.0f);
-        return m_bound;
-    }
-
 protected:
-    // TODO: 苦肉の策
-    // あとでCalcBound()とは別にSetBound()を作って分ける
-    mutable Bound m_bound{};
     const MaterialBase* m_material = nullptr;
 };
 

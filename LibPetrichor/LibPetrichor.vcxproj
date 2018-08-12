@@ -107,9 +107,8 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Core\Accel\Bound.cpp" />
+    <ClCompile Include="Core\Accel\Bounds.cpp" />
     <ClCompile Include="Core\Accel\BruteForce.cpp" />
-    <ClCompile Include="Core\Accel\BVH.cpp" />
     <ClCompile Include="Core\Accel\BVHNode.cpp" />
     <ClCompile Include="Core\Accel\SweepBVH.cpp" />
     <ClCompile Include="Core\Camera.cpp" />
@@ -136,9 +135,8 @@
     <ClCompile Include="Math\OrthonormalBasis.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core\Accel\Bound.h" />
+    <ClInclude Include="Core\Accel\Bounds.h" />
     <ClInclude Include="Core\Accel\BruteForce.h" />
-    <ClInclude Include="Core\Accel\BVH.h" />
     <ClInclude Include="Core\Accel\BVHNode.h" />
     <ClInclude Include="Core\Accel\AccelBase.h" />
     <ClInclude Include="Core\Accel\SweepBVH.h" />

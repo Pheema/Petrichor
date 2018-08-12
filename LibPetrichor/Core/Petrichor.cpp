@@ -1,6 +1,5 @@
 ﻿#include "Petrichor.h"
 
-#include "Core/Accel/BVH.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Geometry/Sphere.h"
@@ -67,7 +66,7 @@ Petrichor::Initialize()
     MaterialBase* matGGXCover = new GGX(0.05f * Color3f::One(), 0.31f);
     MaterialBase* matMixCover = new MatMix(matLambertCover, matGGXCover, 0.1f);
     auto* texCover = new Texture2D();
-    texCover->Load("Resource/fabric_01_diffuse.jpg");
+    texCover->Load("Resource/Speaker/fabric_01_diffuse.jpg");
     static_cast<Lambert*>(matLambertCover)->SetTexAlbedo(texCover);
 
     // ---- matCode ----
@@ -86,17 +85,21 @@ Petrichor::Initialize()
     auto meshLightLU = new Mesh();
     auto meshLightR = new Mesh();
 
-    meshBody->Load(
-      "Resource/SpeakerDiv3.obj", matArrayBody, 2, ShadingTypes::Smooth);
+    meshBody->Load("Resource/Speaker/SpeakerDiv3.obj",
+                   matArrayBody,
+                   2,
+                   ShadingTypes::Smooth);
     meshCover->Load(
-      "Resource/CoverMesh.obj", &matMixCover, 1, ShadingTypes::Smooth);
-    meshCode->Load("Resource/Code.obj", &matMixCode, 1, ShadingTypes::Smooth);
+      "Resource/Speaker/CoverMesh.obj", &matMixCover, 1, ShadingTypes::Smooth);
+    meshCode->Load(
+      "Resource/Speaker/Code.obj", &matMixCode, 1, ShadingTypes::Smooth);
     meshLightLU->Load(
-      "Resource/PanelLightLU.obj", &matLightLU, 1, ShadingTypes::Flat);
+      "Resource/Speaker/PanelLightLU.obj", &matLightLU, 1, ShadingTypes::Flat);
     meshLightR->Load(
-      "Resource/PanelLightR.obj", &matLightR, 1, ShadingTypes::Flat);
+      "Resource/Speaker/PanelLightR.obj", &matLightR, 1, ShadingTypes::Flat);
 
-    meshFloor->Load("Resource/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
+    meshFloor->Load(
+      "Resource/Speaker/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
 
     // sphere->SetMaterial(matMixFloor);
     floor->SetMaterial(matMixFloor);
@@ -155,7 +158,7 @@ Petrichor::Initialize()
 
     Mesh* const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
-                   &matGGX,
+                   &matLamberWhite,
                    1,
                    ShadingTypes::Flat);
 
@@ -185,7 +188,8 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    m_scene.GetEnvironment().Load("Resource/SampleScene/CornellBox/balcony_2k.png");
+    m_scene.GetEnvironment().Load(
+      "Resource/SampleScene/CornellBox/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定

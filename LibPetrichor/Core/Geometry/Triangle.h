@@ -31,7 +31,7 @@ public:
     void
     SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2);
 
-    virtual void
+    virtual Bounds
     CalcBound() const override;
 
     std::optional<HitInfo>

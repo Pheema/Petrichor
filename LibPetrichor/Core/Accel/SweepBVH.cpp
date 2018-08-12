@@ -14,92 +14,99 @@ namespace Core
 void
 SweepBVH::Build(const Scene& scene)
 {
+    m_scene = &scene;
+
     m_bvhNodes.clear();
+    m_entityIDs.clear();
 
     {
-        BVHNode rootNode;
-        rootNode.ReserveChildArray(scene.GetGeometries().size());
+        Bounds rootBounds;
+        uint32_t boundsID = 0;
         for (const auto* geometry : scene.GetGeometries())
         {
-            geometry->CalcBound();
-
-            rootNode.bound.Merge(geometry->GetBound());
-            rootNode.AppendChild(geometry);
+            Bounds bounds = geometry->CalcBound();
+            m_bounds.emplace_back(bounds);
+            m_entityIDs.emplace_back(boundsID++);
+            rootBounds.Merge(bounds);
         }
-        m_bvhNodes.emplace_back(std::move(rootNode));
+
+        BVHNode::LeafNodeData leafNodeData{ rootBounds,
+                                            0,
+                                            scene.GetGeometries().size() };
+
+        m_bvhNodes.emplace_back(leafNodeData);
     }
 
-    std::stack<uint32_t> bvhNodeIndexStack;
-    bvhNodeIndexStack.emplace(0);
+    std::stack<BVHNode*> bvhNodeStack;
+    bvhNodeStack.emplace(&m_bvhNodes[0]);
 
     uint32_t index = 0;
     uint32_t depth = 1;
 
-    while (!bvhNodeIndexStack.empty())
+    while (!bvhNodeStack.empty())
     {
-        const uint32_t nodeIndex = bvhNodeIndexStack.top();
-        bvhNodeIndexStack.pop();
+        auto* currentNode = bvhNodeStack.top();
+        bvhNodeStack.pop();
         depth--;
 
-        const auto& currentNode = m_bvhNodes[nodeIndex];
-        auto geometryPtrs = currentNode.GetChildArray();
-        const float invArea = currentNode.bound.GetSurfaceArea();
-
-        const size_t numGeometryInNode = currentNode.GetNumChildGeoms();
+        const auto idxBoundsBegin = currentNode->GetIndexOffset();
+        const auto idxBoundsEnd =
+          idxBoundsBegin + currentNode->GetNumPrimitives();
 
         {
             float minSAH = std::numeric_limits<float>::infinity();
             float isLeaf = false;
-            BVHNode childNodes[2];
+            BVHNode::LeafNodeData leafNodesData[2];
 
             // ---- 各軸で分割 ----
             for (uint32_t axis = 0; axis < 3; axis++)
             {
                 // 各パーティション位置において
-                for (uint32_t i = 0; i < numGeometryInNode; i++)
+                for (uint32_t idxBoundsMid = idxBoundsBegin;
+                     idxBoundsMid < idxBoundsEnd;
+                     idxBoundsMid++)
                 {
-                    auto begin = std::begin(geometryPtrs);
-                    auto mid = std::begin(geometryPtrs) + i;
-                    auto end = std::end(geometryPtrs);
-
                     std::nth_element(
                       std::execution::par,
-                      begin,
-                      mid,
-                      end,
-                      [axis](const GeometryBase* lhs, const GeometryBase* rhs) {
-                          return lhs->GetBound().Center()[axis] <
-                                 rhs->GetBound().Center()[axis];
+                      &m_bounds[idxBoundsBegin],
+                      &m_bounds[idxBoundsMid],
+                      &m_bounds[idxBoundsBegin] +
+                        currentNode->GetNumPrimitives(),
+                      [axis](const Bounds& lhs, const Bounds& rhs) {
+                          return lhs.GetCenter()[axis] < rhs.GetCenter()[axis];
                       });
 
-                    BVHNode node0;
-                    for (auto iter = begin; iter != mid; iter++)
+                    std::sort(std::execution::par,
+                              &m_entityIDs[idxBoundsBegin],
+                              &m_entityIDs[idxBoundsBegin] +
+                                currentNode->GetNumPrimitives(),
+                              [axis, this](uint32_t lhs, uint32_t rhs) {
+                                  return m_bounds[lhs].GetCenter()[axis] <
+                                         m_bounds[rhs].GetCenter()[axis];
+                              });
+
+                    Bounds bounds0;
+                    for (auto idx = idxBoundsBegin; idx < idxBoundsMid; idx++)
                     {
-                        node0.bound.Merge((*iter)->GetBound());
-                        node0.AppendChild(*iter);
+                        bounds0.Merge(m_bounds[idx]);
                     }
 
-                    BVHNode node1;
-                    for (auto iter = mid; iter != end; iter++)
+                    Bounds bounds1;
+                    for (auto idx = idxBoundsMid; idx < idxBoundsEnd; idx++)
                     {
-                        node1.bound.Merge((*iter)->GetBound());
-                        node1.AppendChild(*iter);
+                        bounds1.Merge(m_bounds[idx]);
                     }
 
-                    constexpr float timeTri = 1.0f;
-                    constexpr float timeAABB = 1.0f;
+                    const auto n0 = idxBoundsMid - idxBoundsBegin;
+                    const auto n1 = idxBoundsEnd - idxBoundsMid;
 
-                    const size_t n0 = node0.GetNumChildGeoms();
-                    const size_t n1 = node1.GetNumChildGeoms();
+                    const float a0 = bounds0.GetSurfaceArea();
+                    const float a1 = bounds1.GetSurfaceArea();
 
-                    const float a0 = n0 ? node0.bound.GetSurfaceArea() : 0.0f;
-                    const float a1 = n1 ? node1.bound.GetSurfaceArea() : 0.0f;
-
-                    const float sah =
-                      2.0f * timeAABB + (a0 * n0 + a1 * n1) * timeTri * invArea;
+                    const float sah = a0 * n0 + a1 * n1;
 
                     const bool willDivide =
-                      (i != 0 && i != numGeometryInNode - 1);
+                      (idxBoundsMid != 0 && idxBoundsMid != idxBoundsEnd - 1);
                     if (sah < minSAH)
                     {
                         minSAH = sah;
@@ -107,31 +114,34 @@ SweepBVH::Build(const Scene& scene)
 
                         if (willDivide)
                         {
-                            childNodes[0] = node0;
-                            childNodes[1] = node1;
+                            leafNodesData[0] = BVHNode::LeafNodeData{
+                                bounds0, idxBoundsBegin, n0
+                            };
+
+                            leafNodesData[1] = BVHNode::LeafNodeData{
+                                bounds1, idxBoundsMid, n1
+                            };
                         }
                     }
                 }
             }
 
-            if (isLeaf)
+            if (isLeaf == false)
             {
-                m_bvhNodes[nodeIndex].SetLeaf(true);
-            }
-            else
-            {
-                m_bvhNodes.emplace_back(childNodes[0]);
-                m_bvhNodes.emplace_back(childNodes[1]);
+                std::array<BVHNode*, 2> childNodes{
+                    &m_bvhNodes.emplace_back(leafNodesData[0]),
+                    &m_bvhNodes.emplace_back(leafNodesData[1])
+                };
 
-                const size_t childIndicies[2]{ ++index, ++index };
-                m_bvhNodes[nodeIndex].SetChildNode(0, childIndicies[0]);
-                m_bvhNodes[nodeIndex].SetChildNode(1, childIndicies[1]);
+                BVHNode::InternalNodeData internalNodeData{
+                    currentNode->GetBounds(), childNodes
+                };
 
-                bvhNodeIndexStack.emplace(childIndicies[0]);
-                bvhNodeIndexStack.emplace(childIndicies[1]);
+                *currentNode = BVHNode(internalNodeData);
+
+                bvhNodeStack.emplace(childNodes[0]);
+                bvhNodeStack.emplace(childNodes[1]);
                 depth += 2;
-
-                m_bvhNodes[nodeIndex].ClearAndShrink();
             }
         }
     }
@@ -139,26 +149,25 @@ SweepBVH::Build(const Scene& scene)
     std::cout << "[Done] BVH Construction" << std::endl;
 }
 
-std::optional<Petrichor::Core::HitInfo>
+std::optional<HitInfo>
 SweepBVH::Intersect(const Ray& ray,
                     float distMin /*= 0.0f*/,
                     float distMax /*= kInfinity*/) const
 {
-    std::stack<size_t> bvhNodeIndexQueue;
-    bvhNodeIndexQueue.emplace(0);
+    std::stack<const BVHNode*> bvhNodeStack;
+    bvhNodeStack.emplace(&m_bvhNodes[0]);
 
     // ---- BVHのトラバーサル ----
     std::optional<HitInfo> hitInfoResult;
 
     // 2つの子ノード又は子オブジェクトに対して
-    while (!bvhNodeIndexQueue.empty())
+    while (!bvhNodeStack.empty())
     {
         // 葉ノードに対して
-        const size_t bvhNodeIndex = bvhNodeIndexQueue.top();
-        bvhNodeIndexQueue.pop();
-        const BVHNode& currentNode = m_bvhNodes[bvhNodeIndex];
+        const auto* currentNode = bvhNodeStack.top();
+        bvhNodeStack.pop();
 
-        const auto hitInfoNode = m_bvhNodes[bvhNodeIndex].Intersect(ray);
+        const auto hitInfoNode = currentNode->Intersect(ray);
 
         // そもそもBVHノードに当たる軌道ではない
         if (hitInfoNode == std::nullopt)
@@ -167,7 +176,7 @@ SweepBVH::Intersect(const Ray& ray,
         }
 
         // 自ノードより手前で既に衝突している
-        if (hitInfoResult && currentNode.Contains(ray.o) == false)
+        if (hitInfoResult && currentNode->Contains(ray.o) == false)
         {
             if (hitInfoResult->distance < hitInfoNode->distance)
             {
@@ -175,10 +184,17 @@ SweepBVH::Intersect(const Ray& ray,
             }
         }
 
-        if (currentNode.IsLeaf())
+        if (currentNode->IsLeaf())
         {
-            for (const auto* geometry : currentNode.GetChildArray())
+            // for (const auto* geometry : currentNode.GetChildArray())
+            for (uint32_t idx = currentNode->GetIndexOffset();
+                 idx < currentNode->GetIndexOffset() +
+                         currentNode->GetNumPrimitives();
+                 idx++)
             {
+                const GeometryBase* const geometry =
+                  m_scene->GetGeometries()[m_entityIDs[idx]];
+
                 const auto hitInfoGeometry = geometry->Intersect(ray);
                 if (hitInfoGeometry)
                 {
@@ -199,9 +215,9 @@ SweepBVH::Intersect(const Ray& ray,
         else
         {
             // 枝ノードの場合
-            for (const auto childNodeIndex : currentNode.GetChildNodeIndicies())
+            for (const auto childNode : currentNode->GetChildNodes())
             {
-                bvhNodeIndexQueue.emplace(childNodeIndex);
+                bvhNodeStack.emplace(childNode);
             }
         }
     }

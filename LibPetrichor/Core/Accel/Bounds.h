@@ -7,16 +7,16 @@ namespace Petrichor
 namespace Core
 {
 
-class Bound
+class Bounds
 {
 public:
-    Bound();
+    Bounds();
 
-    Bound(const Math::Vector3f& vMin, const Math::Vector3f& vMax);
+    Bounds(const Math::Vector3f& vMin, const Math::Vector3f& vMax);
 
     // Boundの中心を求める
     Math::Vector3f
-    Center() const;
+    GetCenter() const;
 
     // 表面積を求める
     float
@@ -24,7 +24,7 @@ public:
 
     // 複数のBoundをマージする
     void
-    Merge(const Bound& bound);
+    Merge(const Bounds& bound);
 
     void
     Merge(const Math::Vector3f& point);
@@ -39,7 +39,7 @@ public:
 #pragma region Inline functions
 
 inline Math::Vector3f
-Bound::Center() const
+Bounds::GetCenter() const
 {
     return 0.5f * (vMin + vMax);
 }

@@ -28,12 +28,12 @@ Sphere::Sphere(const Math::Vector3f& o, float r)
     // Do nothing
 }
 
-void
+Bounds
 Sphere::CalcBound() const
 {
     const auto vMin = m_origin - Math::Vector3f::One() * m_radius;
     const auto vMax = m_origin + Math::Vector3f::One() * m_radius;
-    m_bound = Bound(vMin, vMax);
+    return Bounds(vMin, vMax);
 }
 
 std::optional<HitInfo>

@@ -30,6 +30,9 @@ public:
 
 private:
     std::vector<BVHNode> m_bvhNodes;
+    std::vector<Bounds> m_bounds;
+    std::vector<uint32_t> m_entityIDs;
+    const Scene* m_scene = nullptr;
 };
 
 } // namespace Core

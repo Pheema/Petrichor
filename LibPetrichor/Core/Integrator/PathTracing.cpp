@@ -1,6 +1,5 @@
 ﻿#include "PathTracing.h"
 
-#include "Core/Accel/BVH.h"
 #include "Core/Accel/BruteForce.h"
 #include "Core/HitInfo.h"
 #include "Core/Sampler/MicroJitteredSampler.h"
