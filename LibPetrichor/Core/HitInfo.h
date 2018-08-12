@@ -20,6 +20,7 @@ struct HitInfo
 struct ShadingInfo
 {
     Math::Vector3f normal;
+    Math::Vector3f tangent;
     Math::Vector3f pos;
     Math::Vector3f uv;
     const MaterialBase* material = nullptr;

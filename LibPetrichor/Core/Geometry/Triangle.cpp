@@ -99,6 +99,16 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     const float weightE1 = Dot(vec, Cross(ray.dir, e2)) * invDet;
     const float weightE2 = Dot(vec, Cross(e1, ray.dir)) * invDet;
 
+    const Math::Vector3f diffUV1 = m_vertices[1]->uv - m_vertices[0]->uv;
+    const Math::Vector3f diffUV2 = m_vertices[2]->uv - m_vertices[0]->uv;
+
+    shadingInfo.uv =
+      weightE1 * diffUV1 + weightE2 * diffUV2 + m_vertices[0]->uv;
+
+    {
+        shadingInfo.tangent = diffUV2.y * e1 - diffUV1.y * e2;
+    }
+
     switch (m_shadingType)
     {
     case ShadingTypes::Flat:
@@ -114,6 +124,10 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
           weightE2 * (m_vertices[2]->normal - m_vertices[0]->normal) +
           m_vertices[0]->normal;
         shadingInfo.normal.Normalize();
+
+        shadingInfo.tangent -=
+          Dot(shadingInfo.normal, shadingInfo.tangent) * shadingInfo.normal;
+
         break;
     }
 
@@ -124,10 +138,7 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     }
     }
 
-    shadingInfo.uv = weightE1 * (m_vertices[1]->uv - m_vertices[0]->uv) +
-                     weightE2 * (m_vertices[2]->uv - m_vertices[0]->uv) +
-                     m_vertices[0]->uv;
-
+    shadingInfo.tangent.Normalize();
     return shadingInfo;
 }
 
