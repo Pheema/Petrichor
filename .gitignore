@@ -297,3 +297,8 @@ __pycache__/
 # User settings
 !/External/**
 /settings.json
+
+# Conan Package Manager
+conanbuildinfo.txt
+conanbuildinfo.cmake
+conaninfo.txt

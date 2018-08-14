@@ -1,0 +1,8 @@
+[requires]
+Assimp/4.1.0@jacmoe/stable
+stb/20180214@conan/stable
+jsonformoderncpp/3.1.2@vthiery/stable
+
+[generators]
+cmake
+visual_studio

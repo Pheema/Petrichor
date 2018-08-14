@@ -1,9 +1,9 @@
 ﻿#include "Texture2D.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "Stb/stb_image.h"
+#include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "Stb/stb_image_write.h"
+#include "stb_image_write.h"
 
 namespace Petrichor
 {
@@ -34,8 +34,8 @@ ApplyGamma(unsigned char val)
 unsigned char
 ApplyDegamma(float val)
 {
-    val                   = ACESFilm(val);
-    val                   = std::pow(val, 1 / 2.2f);
+    val = ACESFilm(val);
+    val = std::pow(val, 1 / 2.2f);
     const float kDepthMax = 255.9999f;
     return static_cast<unsigned char>(kDepthMax * val);
 }
