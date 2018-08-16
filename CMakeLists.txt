@@ -23,10 +23,18 @@ target_include_directories(
 set_target_properties(
     AppPetrichor
     PROPERTIES
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"        
         VS_USER_PROPS "${CMAKE_BINARY_DIR}/conanbuildinfo_multi.props"
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
+
 target_link_libraries(
     AppPetrichor
     LibPetrichor
+)
+
+# Set the startup project
+set_property(
+    DIRECTORY
+    PROPERTY
+        VS_STARTUP_PROJECT AppPetrichor
 )
