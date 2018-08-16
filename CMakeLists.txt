@@ -5,7 +5,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 add_compile_options(
-    $<$<CXX_COMPILER_ID:MSVC>: /MP>
+    $<$<CXX_COMPILER_ID:MSVC>:/MP>
 )
 
 include_directories(LibPetrichor)

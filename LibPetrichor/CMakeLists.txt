@@ -34,15 +34,15 @@ add_library(LibPetrichor STATIC
 
 target_compile_features(
     LibPetrichor
-    PRIVATE
+    PUBLIC
         cxx_std_17
 )
 
 target_compile_options(
     LibPetrichor
     PUBLIC
-        $<$<CONFIG:DEBUG>: /MTd>
-        $<$<CONFIG:RELEASE>: /MT>
+        $<$<CONFIG:DEBUG>:/MTd>
+        $<$<CONFIG:RELEASE>:/MT>
 )
 
 target_link_libraries(LibPetrichor ${CONAN_LIBS})
