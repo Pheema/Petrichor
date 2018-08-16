@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
 conan_basic_setup()
 
 add_library(LibPetrichor STATIC
@@ -31,7 +31,6 @@ add_library(LibPetrichor STATIC
     Math/Halton.cpp
     Math/OrthonormalBasis.cpp
 )
-
 target_compile_features(
     LibPetrichor
     PUBLIC
@@ -42,7 +41,20 @@ target_compile_options(
     LibPetrichor
     PUBLIC
         $<$<CONFIG:DEBUG>:/MTd>
+        $<$<CONFIG:RELWITHDEBINFO>:/MT>
         $<$<CONFIG:RELEASE>:/MT>
 )
 
-target_link_libraries(LibPetrichor ${CONAN_LIBS})
+target_include_directories(
+    LibPetrichor
+    PRIVATE
+        /
+)
+conan_target_link_libraries(LibPetrichor)
+
+# [stb_image] Use secure CRT functions
+target_compile_definitions(
+    LibPetrichor
+    PRIVATE
+        STBI_MSC_SECURE_CRT
+)
