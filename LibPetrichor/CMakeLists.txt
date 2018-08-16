@@ -3,11 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-include_directories(
-    /
-    ${CONAN_INCLUDE_DIRS}
-)
-
 add_library(LibPetrichor STATIC
     Core/Accel/Bounds.cpp
     Core/Accel/BruteForce.cpp
@@ -35,6 +30,19 @@ add_library(LibPetrichor STATIC
     Core/TileManager.cpp
     Math/Halton.cpp
     Math/OrthonormalBasis.cpp
+)
+
+target_compile_features(
+    LibPetrichor
+    PRIVATE
+        cxx_std_17
+)
+
+target_compile_options(
+    LibPetrichor
+    PUBLIC
+        $<$<CONFIG:DEBUG>: /MTd>
+        $<$<CONFIG:RELEASE>: /MT>
 )
 
 target_link_libraries(LibPetrichor ${CONAN_LIBS})
