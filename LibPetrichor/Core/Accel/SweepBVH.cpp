@@ -30,9 +30,9 @@ SweepBVH::Build(const Scene& scene)
             rootBounds.Merge(bounds);
         }
 
-        BVHNode::LeafNodeData leafNodeData{ rootBounds,
-                                            0,
-                                            scene.GetGeometries().size() };
+        BVHNode::LeafNodeData leafNodeData{
+            rootBounds, 0, static_cast<uint32_t>(scene.GetGeometries().size())
+        };
 
         m_bvhNodes.emplace_back(leafNodeData);
     }
@@ -222,5 +222,5 @@ SweepBVH::Intersect(const Ray& ray,
     }
     return hitInfoResult;
 }
-} // Core
-} // Petrichor
+} // namespace Core
+} // namespace Petrichor
