@@ -14,11 +14,7 @@ class Tile
     friend class TileManager;
 
 public:
-    Tile()
-      : m_width(0)
-      , m_height(0)
-    {
-    }
+    Tile() = default;
 
     Tile(uint32_t width, uint32_t height)
       : m_width(width)

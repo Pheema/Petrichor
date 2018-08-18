@@ -19,19 +19,15 @@ enum class RayTypes
 struct Ray
 {
 
-    Ray()
-      : o()
-      , dir()
-    {
-    }
+    constexpr Ray() = default;
 
     Ray(const Math::Vector3f& o,
         const Math::Vector3f& dir,
         RayTypes rayType = RayTypes::Camera,
-        Color3f weight   = Color3f::One(),
-        uint32_t bounce  = 0,
-        float prob       = 1.0f,
-        float ior        = 1.0f)
+        Color3f weight = Color3f::One(),
+        uint32_t bounce = 0,
+        float prob = 1.0f,
+        float ior = 1.0f)
       : o(o)
       , dir(dir)
       , rayType(rayType)
@@ -46,8 +42,8 @@ struct Ray
     Math::Vector3f o;                    // レイの原点
     Math::Vector3f dir;                  // レイの単位方向ベクトル
     RayTypes rayType = RayTypes::Camera; // レイの種類
-    Color3f weight  = Color3f::One(); // ピクセルの輝度に対する寄与
-    uint32_t bounce = 0;              // レイが今まで何回反射したか
+    Color3f weight = Color3f::One(); // ピクセルの輝度に対する寄与
+    uint32_t bounce = 0;             // レイが今まで何回反射したか
     float prob = 1.0f; // 反射確率（ロシアンルーレット打ち切り用）
     float ior = 1.0f; // レイが進行している媒質の絶対屈折率
 };

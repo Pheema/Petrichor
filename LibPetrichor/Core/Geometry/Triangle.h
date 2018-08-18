@@ -33,16 +33,16 @@ public:
     void
     SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2);
 
-    virtual Bounds
+    Bounds
     CalcBound() const override;
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const override;
 
-    virtual ShadingInfo
+    ShadingInfo
     Interpolate(const Ray& ray, const HitInfo& hitInfo) const override;
 
-    virtual void
+    void
     SampleSurface(Math::Vector3f p,
                   ISampler2D& sampler2D,
                   PointData* pointData,

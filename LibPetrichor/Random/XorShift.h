@@ -12,7 +12,8 @@ namespace Math
 class XorShift128
 {
 public:
-    XorShift128(){};
+    XorShift128() = default;
+
     explicit XorShift128(unsigned seed)
       : w(seed){};
 
@@ -56,5 +57,5 @@ private:
     unsigned z = 521288629u;
     unsigned w = 486213789u;
 };
-}
-}
+} // namespace Math
+} // namespace Petrichor

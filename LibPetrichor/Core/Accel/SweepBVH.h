@@ -20,10 +20,10 @@ class SweepBVH : public AccelBase
 public:
     SweepBVH() = default;
 
-    virtual void
+    void
     Build(const Scene& scene) override;
 
-    virtual std::optional<HitInfo>
+    std::optional<HitInfo>
     Intersect(const Ray& ray,
               float distMin = 0.0f,
               float distMax = kInfinity) const override;

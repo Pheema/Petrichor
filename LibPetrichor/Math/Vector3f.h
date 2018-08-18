@@ -13,12 +13,7 @@ namespace Math
 class Vector3f
 {
 public:
-    constexpr Vector3f()
-      : x(0.0f)
-      , y(0.0f)
-      , z(0.0f)
-    {
-    }
+    constexpr Vector3f() = default;
 
     constexpr Vector3f(float x, float y, float z)
       : x(x)
@@ -68,7 +63,9 @@ public:
     Vector3f
     Refracted(const Vector3f& normal, float relativeIOR) const;
 
-    float x, y, z;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 
 #pragma region Operator overloading
 
@@ -100,17 +97,21 @@ public:
     // Division
     Vector3f
     operator/(const Vector3f& v) const;
+
     Vector3f
     operator/(float c) const;
+
     const Vector3f&
     operator/=(const Vector3f& v);
+
     const Vector3f&
     operator/=(float c);
-    static friend Vector3f
+
+    friend Vector3f
     operator/(float c, const Vector3f& v);
 
     // インデックスでアクセス
-    float operator[](int i) const;
+    constexpr float operator[](int i) const;
 
     // iostream
     friend std::ostream&
@@ -302,7 +303,7 @@ Vector3f::operator/=(float c)
     return *this;
 }
 
-inline float Vector3f::operator[](int i) const
+constexpr float Vector3f::operator[](int i) const
 {
     ASSERT(0 <= i && i < 3);
     return *(&x + i);

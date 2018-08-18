@@ -24,7 +24,7 @@ public:
     Render(uint32_t pixelX,
            uint32_t pixelY,
            const Scene& scene,
-           Texture2D* const targetTex,
+           Texture2D* targetTex,
            ISampler1D& sampler1D,
            ISampler2D& sampler2D);
 

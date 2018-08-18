@@ -20,14 +20,14 @@ public:
     struct InternalNodeData
     {
         Bounds bounds;
-        std::array<BVHNode*, 2> childNodes;
+        std::array<BVHNode*, 2> childNodes{};
     };
 
     struct LeafNodeData
     {
         Bounds bounds;
-        uint32_t indexOffset;
-        uint32_t numPrimitives;
+        uint32_t indexOffset = 0;
+        uint32_t numPrimitives = 0;
     };
 
     BVHNode();

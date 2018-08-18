@@ -9,7 +9,7 @@ namespace Core
 
 struct Vertex
 {
-    Vertex();
+    constexpr Vertex() = default;
 
     Vertex(float x, float y, float z);
 
@@ -19,7 +19,7 @@ struct Vertex
 
     Math::Vector3f pos;
     Math::Vector3f normal = Math::Vector3f::UnitZ();
-    Math::Vector3f uv     = Math::Vector3f::Zero();
+    Math::Vector3f uv;
 };
 
 } // namespace Core

@@ -39,7 +39,7 @@ ApplyDegamma(float val)
     const float kDepthMax = 255.9999f;
     return static_cast<unsigned char>(kDepthMax * val);
 }
-}
+} // namespace
 
 Texture2D::Texture2D()
   : m_width(0)

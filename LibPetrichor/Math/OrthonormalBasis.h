@@ -12,15 +12,15 @@ namespace Math
 class OrthonormalBasis
 {
 public:
-    OrthonormalBasis();
+    constexpr OrthonormalBasis() = default;
 
     // 法線ベクトルを指定した正規直交基底の構築
     void
-    Build(const Vector3f& localZ);
+    Build(const Vector3f& w);
 
     // 法線ベクトル、接線ベクトルを指定した正規直交基底の構築
     void
-    Build(const Vector3f& normal, const Vector3f& tangent);
+    Build(const Vector3f& w, const Vector3f& u);
 
     // 球面座標の(θ, φ)から単位方向ベクトルを取得する
     Vector3f
@@ -35,38 +35,38 @@ public:
     LocalToWorld(const Vector3f& vecLocal) const;
 
     inline const Vector3f&
-    GetBaseX() const;
+    GetU() const;
 
     inline const Vector3f&
-    GetBaseY() const;
+    GetV() const;
 
     inline const Vector3f&
-    GetBaseZ() const;
+    GetW() const;
 
 private:
-    Vector3f m_baseX; // 接線方向
-    Vector3f m_baseY; // 従法線方向
-    Vector3f m_baseZ; // 法線方向
+    Vector3f m_u; //!< 接線方向(LocalX)
+    Vector3f m_v; //!< 従法線方向(LocalY)
+    Vector3f m_w; //!< 法線方向(LocalZ)
 };
 
 #pragma region Inline functions
 
-const Vector3f&
-OrthonormalBasis::GetBaseX() const
+inline const Vector3f&
+OrthonormalBasis::GetU() const
 {
-    return m_baseX;
+    return m_u;
 }
 
-const Vector3f&
-OrthonormalBasis::GetBaseY() const
+inline const Vector3f&
+OrthonormalBasis::GetV() const
 {
-    return m_baseY;
+    return m_v;
 }
 
-const Vector3f&
-OrthonormalBasis::GetBaseZ() const
+inline const Vector3f&
+OrthonormalBasis::GetW() const
 {
-    return m_baseZ;
+    return m_w;
 }
 
 #pragma endregion

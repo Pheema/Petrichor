@@ -76,12 +76,15 @@ public:
 
 private:
     // TODO: RGBAに対応させる（現在はRGB）
-    static const int kNumChannelsInPixel = 3;
+    static constexpr int kNumChannelsInPixel = 3;
 
-    int m_width;                          // 画像の横幅[px]
-    int m_height;                         // 画像の縦幅[px]
-    InterplationTypes m_interplationType; // 画像の補間タイプ
-    std::vector<Color3f> m_pixels;        // 画素値の配列
+    int m_width = 0;  //!< 画像の横幅[px]
+    int m_height = 0; //!< 画像の縦幅[px]
+
+    //! 画像の補間タイプ
+    InterplationTypes m_interplationType = InterplationTypes::Bilinear;
+
+    std::vector<Color3f> m_pixels; //!< 画素値の配列
 };
 
 } // namespace Core

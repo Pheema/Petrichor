@@ -43,8 +43,11 @@ public:
 
     //! カメラ原点から画素(i, j)に向かう正規化されたベクトルを求める
     Ray
-    PixelToRay(
-      int i, int j, int imageWidth, int imageHeight, ISampler2D& rng2D) const;
+    PixelToRay(int i,
+               int j,
+               int imageWidth,
+               int imageHeight,
+               ISampler2D& sampler2D) const;
 
     //! 焦点距離を返す
     float
@@ -115,9 +118,9 @@ private:
     Math::Vector3f m_up;
     Math::Vector3f m_forward;
 
-    float m_focusDist    = 1.0f;
-    float m_sensorHeight = 24e-3f; //! 標準センサーサイズ
-    float m_hPerf        = m_sensorHeight / 55e-3f; //! 初期レンズは55mm
+    float m_focusDist = 1.0f;
+    float m_sensorHeight = 24e-3f;           //! 標準センサーサイズ
+    float m_hPerf = m_sensorHeight / 55e-3f; //! 初期レンズは55mm
     float m_apeture = 25e-3f; //! 有効口径(焦点距離(55mm)/F値(2.2))
 
     constexpr static Math::Vector3f m_worldUp = Math::Vector3f::UnitZ();

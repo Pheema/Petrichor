@@ -16,7 +16,7 @@ class MatMix : public MaterialBase
 public:
     MatMix(const MaterialBase* mat0, const MaterialBase* mat1, float mix);
 
-    virtual Color3f
+    Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const ShadingInfo& shadingInfo) const override
@@ -25,7 +25,7 @@ public:
         return Color3f();
     }
 
-    virtual Ray
+    Ray
     CreateNextRay(const Ray& rayIn,
                   const ShadingInfo& shadingInfo,
                   ISampler2D& sampler2D,
@@ -35,7 +35,7 @@ public:
         return Ray();
     }
 
-    virtual MaterialTypes
+    MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
                     float* mix = nullptr) const override;

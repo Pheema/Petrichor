@@ -15,16 +15,16 @@ public:
 
     Sphere(const Math::Vector3f& o, float r);
 
-    virtual Bounds
+    Bounds
     CalcBound() const override;
 
-    virtual std::optional<HitInfo>
+    std::optional<HitInfo>
     Intersect(const Ray& ray) const override;
 
-    virtual ShadingInfo
+    ShadingInfo
     Interpolate(const Ray& ray, const HitInfo& hitInfo) const override;
 
-    virtual void
+    void
     SampleSurface(Math::Vector3f p,
                   ISampler2D& sampler2D,
                   PointData* pointData,

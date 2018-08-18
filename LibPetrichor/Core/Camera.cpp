@@ -1,4 +1,4 @@
-#include "Camera.h"
+﻿#include "Camera.h"
 
 #include "Core/Sampler/ISampler2D.h"
 #include "Random/XorShift.h"
@@ -39,8 +39,8 @@ void
 Camera::SetViewDir(const Vector3f& dir)
 {
     m_forward = dir.Normalized();
-    m_right   = Cross(m_forward, m_worldUp);
-    m_up      = Cross(m_right, m_forward);
+    m_right = Cross(m_forward, m_worldUp);
+    m_up = Cross(m_right, m_forward);
 }
 
 void
@@ -51,31 +51,31 @@ Camera::LookAt(const Vector3f& target)
 
 Ray
 Camera::PixelToRay(
-  int i, int j, int imageWidth, int imageHeight, ISampler2D& rng2D) const
+  int i, int j, int imageWidth, int imageHeight, ISampler2D& sampler2D) const
 {
     // Random
-    auto samplingPoint = rng2D.Next();
+    auto samplingPoint = sampler2D.Next();
     const float aspect = static_cast<float>(imageWidth) / imageHeight;
-    const float u      = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
-    const float v      = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
-    // 0.5f -> uniDist(xor)
+    const float u = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
+    const float v = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
+
     Vector3f pointOnSensor =
       pos + m_right * u * m_hPerf * m_focusDist * aspect +
       -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
 
-    samplingPoint        = rng2D.Next();
-    float r              = sqrt(std::get<0>(samplingPoint));
-    float theta          = 2.0f * Math::kPi * std::get<1>(samplingPoint);
+    samplingPoint = sampler2D.Next();
+    float r = sqrt(std::get<0>(samplingPoint));
+    float theta = 2.0f * Math::kPi * std::get<1>(samplingPoint);
     Vector3f pointOnLens = pos + m_right * 0.5f * m_apeture * r * cos(theta) +
                            -m_up * 0.5f * m_apeture * r * sin(theta);
 
     const Vector3f rayDir = (pointOnSensor - pointOnLens).Normalized();
 
-    float dot   = Dot(rayDir, Forward());
+    float dot = Dot(rayDir, Forward());
     auto weight = Color3f::One() * dot * dot * m_focusDist * m_focusDist /
                   (pointOnSensor - pointOnLens).SquaredLength();
 
-    Ray cameraRay    = Ray(pointOnLens, rayDir, RayTypes::Camera);
+    Ray cameraRay = Ray(pointOnLens, rayDir, RayTypes::Camera);
     cameraRay.weight = weight;
 
     return cameraRay;

@@ -138,31 +138,31 @@ Petrichor::Initialize()
     MaterialBase* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
     MaterialBase* matEmissionWhite = new Emission(Color3f::One());
 
-    Mesh* const leftWall = new Mesh();
+    auto const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
                    &matLambertRed,
                    1,
                    ShadingTypes::Flat);
 
-    Mesh* const rightWall = new Mesh();
+    auto const rightWall = new Mesh();
     rightWall->Load("Resource/SampleScene/CornellBox/RightWall.obj",
                     &matLambertGreen,
                     1,
                     ShadingTypes::Flat);
 
-    Mesh* const whiteWall = new Mesh();
+    auto const whiteWall = new Mesh();
     whiteWall->Load("Resource/SampleScene/CornellBox/WhiteWall.obj",
                     &matLamberWhite,
                     1,
                     ShadingTypes::Flat);
 
-    Mesh* const whiteBox = new Mesh();
+    auto const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
                    &matLamberWhite,
                    1,
                    ShadingTypes::Flat);
 
-    Mesh* const ceilLight = new Mesh();
+    auto const ceilLight = new Mesh();
     ceilLight->Load("Resource/SampleScene/CornellBox/CeilLight.obj",
                     &matEmissionWhite,
                     1,
@@ -176,7 +176,7 @@ Petrichor::Initialize()
     m_scene.AppendMesh(*whiteBox);
     m_scene.AppendLightMesh(*ceilLight);
 
-    Camera* const camera =
+    auto const camera =
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());

@@ -20,7 +20,7 @@ void
 PathTracing::Render(uint32_t pixelX,
                     uint32_t pixelY,
                     const Scene& scene,
-                    Texture2D* const targetTex,
+                    Texture2D* targetTex,
                     ISampler1D& sampler1D,
                     ISampler2D& sampler2D)
 {
@@ -231,7 +231,7 @@ PathTracing::SampleLight(const Scene& scene,
 {
     const auto& lights = scene.GetLights();
 
-    size_t index = static_cast<size_t>(randomVal * lights.size());
+    auto index = static_cast<size_t>(randomVal * lights.size());
     if (index >= lights.size())
     {
         std::cout << index << std::endl;

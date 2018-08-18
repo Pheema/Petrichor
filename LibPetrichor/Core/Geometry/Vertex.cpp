@@ -5,17 +5,8 @@ namespace Petrichor
 namespace Core
 {
 
-Petrichor::Core::Vertex::Vertex()
-  : pos()
-  , normal()
-  , uv()
-{
-}
-
 Vertex::Vertex(float x, float y, float z)
-  : pos(Math::Vector3f(x, y, z))
-  , normal()
-  , uv()
+  : pos{ x, y, z }
 {
 }
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
@@ -31,5 +31,5 @@ private:
     std::vector<Vertex> m_vertices;
     std::vector<Triangle> m_triangles;
 };
-}
-}
+} // namespace Core
+} // namespace Petrichor

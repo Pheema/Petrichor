@@ -15,12 +15,6 @@ class ISampler2D;
 
 struct PointData
 {
-    PointData()
-      : pos()
-      , normal()
-    {
-    }
-
     Math::Vector3f pos;
     Math::Vector3f normal;
 };
@@ -45,8 +39,7 @@ public:
     virtual ShadingInfo
     Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     {
-        std::logic_error("No impl.");
-        return ShadingInfo();
+        throw std::logic_error("No impl.");
     }
 
     // ライト表面をサンプルリングする
@@ -82,11 +75,6 @@ public:
             {
                 return mat1;
             }
-            else
-            {
-                return mat0;
-            }
-            ASSERT(false);
             return mat0;
         }
 
