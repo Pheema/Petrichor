@@ -11,7 +11,7 @@ namespace Core
 class RandomSampler1D : public ISampler1D
 {
 public:
-    RandomSampler1D(unsigned seed)
+    explicit RandomSampler1D(unsigned seed)
       : m_xorShift(seed){};
 
     float

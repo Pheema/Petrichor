@@ -38,9 +38,9 @@ public:
 
 private:
     std::vector<float> m_values; // ハルトン列
-    bool m_isInitialized;
+    bool m_isInitialized = false;
 
-    unsigned m_base;
+    unsigned m_base = 0;
 };
 
 } // namespace Math

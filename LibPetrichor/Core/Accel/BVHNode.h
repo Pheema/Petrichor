@@ -32,9 +32,9 @@ public:
 
     BVHNode();
 
-    BVHNode(const InternalNodeData& internalNodeData);
+    explicit BVHNode(const InternalNodeData& internalNodeData);
 
-    BVHNode(const LeafNodeData& leafNodeData);
+    explicit BVHNode(const LeafNodeData& leafNodeData);
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const;

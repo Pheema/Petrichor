@@ -68,8 +68,10 @@ private:
         m_height = height;
     }
 
-    uint32_t m_initPixelX, m_initPixelY;    // タイル左上のコーナーを示す座標
-    uint32_t m_width, m_height;             // タイルの幅、高さ
+    uint32_t m_initPixelX = 0; //!< タイル左上のコーナーを示すX座標
+    uint32_t m_initPixelY = 0; //!< タイル左上のコーナーを示すY座標
+    uint32_t m_width = 0;      //!< タイルの幅
+    uint32_t m_height = 0;     //!< タイルの高さ
 };
 
 class TileManager
@@ -93,9 +95,11 @@ public:
     }
 
 private:
-    int m_renderWidth, m_renderHeight;
-    int m_tileWidth, m_tileHeight;
-    int m_numTiles;
+    int m_renderWidth = 0;
+    int m_renderHeight = 0;
+    int m_tileWidth = 0;
+    int m_tileHeight = 0;
+    int m_numTiles = 0;
 
     std::queue<Tile> m_tiles;
 

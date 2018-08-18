@@ -40,7 +40,6 @@ SweepBVH::Build(const Scene& scene)
     std::stack<BVHNode*> bvhNodeStack;
     bvhNodeStack.emplace(&m_bvhNodes[0]);
 
-    uint32_t index = 0;
     uint32_t depth = 1;
 
     while (!bvhNodeStack.empty())
@@ -55,7 +54,7 @@ SweepBVH::Build(const Scene& scene)
 
         {
             float minSAH = std::numeric_limits<float>::infinity();
-            float isLeaf = false;
+            bool isLeaf = false;
             BVHNode::LeafNodeData leafNodesData[2];
 
             // ---- 各軸で分割 ----

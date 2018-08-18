@@ -18,10 +18,10 @@ TileManager::TileManager(int renderWidth,
     // 正方ピクセルの個数
     const int numTileX = m_renderWidth / m_tileWidth;
     const int numTileY = m_renderHeight / m_tileHeight;
-    m_numTiles         = (numTileX + 1) * (numTileY + 1);
+    m_numTiles = (numTileX + 1) * (numTileY + 1);
 
     // 画面端に生じる非正方ピクセルの幅、高さ
-    const int remainedWidth  = m_renderWidth - numTileX * m_tileWidth;
+    const int remainedWidth = m_renderWidth - numTileX * m_tileWidth;
     const int remainedHeight = m_renderHeight - numTileY * m_tileHeight;
 
     for (int j = 0; j < numTileY + 1; j++)
@@ -31,7 +31,7 @@ TileManager::TileManager(int renderWidth,
             Tile tile;
             tile.SetInitPixel(i * m_tileWidth, j * m_tileHeight);
 
-            int tileWidth  = m_tileWidth;
+            int tileWidth = m_tileWidth;
             int tileHeight = m_tileHeight;
             if (i == numTileX)
             {

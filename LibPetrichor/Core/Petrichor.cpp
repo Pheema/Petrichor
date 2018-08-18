@@ -219,11 +219,11 @@ Petrichor::Render()
     m_scene.BuildAccel();
 
     std::mutex mtx;
-    uint32_t maxIdxTile = 0;
 
     const uint32_t kNumThreads = std::thread::hardware_concurrency() - 1;
 
     {
+        uint32_t maxIdxTile = 0;
         ThreadPool<void> threadPool(kNumThreads);
 
         for (int idxTile = 0;

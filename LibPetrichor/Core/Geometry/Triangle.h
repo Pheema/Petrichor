@@ -21,12 +21,14 @@ enum class ShadingTypes
 class Triangle : public GeometryBase
 {
 public:
-    Triangle(ShadingTypes shadingType = ShadingTypes::Flat);
+    explicit Triangle(ShadingTypes shadingType);
+
+    Triangle(const Vertex* v0, const Vertex* v1, const Vertex* v2);
 
     Triangle(const Vertex* v0,
              const Vertex* v1,
              const Vertex* v2,
-             ShadingTypes shadingType = ShadingTypes::Flat);
+             ShadingTypes shadingType);
 
     void
     SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2);
@@ -47,8 +49,8 @@ public:
                   float* pdfArea) const override;
 
 protected:
-    std::array<const Vertex*, 3> m_vertices;
-    ShadingTypes m_shadingType;
+    std::array<const Vertex*, 3> m_vertices{};
+    ShadingTypes m_shadingType = ShadingTypes::Flat;
 };
 
 } // namespace Core

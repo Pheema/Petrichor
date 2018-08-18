@@ -1,7 +1,7 @@
 ﻿#include "Mesh.h"
 
-#include "Assimp/mesh.h"
 #include "Assimp/Importer.hpp"
+#include "Assimp/mesh.h"
 #include "Assimp/postprocess.h"
 #include "Assimp/scene.h"
 #include "Core/Geometry/Triangle.h"

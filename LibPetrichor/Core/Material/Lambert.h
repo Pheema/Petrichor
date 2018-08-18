@@ -12,7 +12,7 @@ class Texture2D;
 class Lambert : public MaterialBase
 {
 public:
-    Lambert(const Color3f& m_kd);
+    explicit Lambert(const Color3f& m_kd);
 
     Color3f
     BxDF(const Ray& rayIn,

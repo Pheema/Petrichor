@@ -11,9 +11,10 @@ namespace Core
 class RandomSampler2D : public ISampler2D
 {
 public:
-    RandomSampler2D(unsigned seed);
+    explicit RandomSampler2D(unsigned seed);
 
-    std::tuple<float, float> Next() final;
+    std::tuple<float, float>
+    Next() final;
 
 private:
     Math::XorShift128 m_xorShift;

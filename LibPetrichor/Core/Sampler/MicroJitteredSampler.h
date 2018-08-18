@@ -12,7 +12,7 @@ namespace Core
 class MicroJitteredSampler : public ISampler2D
 {
 public:
-    MicroJitteredSampler(unsigned seed);
+    explicit MicroJitteredSampler(unsigned seed);
 
     void
     Initialize(int lengthSeq);

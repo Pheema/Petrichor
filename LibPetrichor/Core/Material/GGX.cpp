@@ -29,7 +29,6 @@ GGX::BxDF(const Ray& rayIn,
 
     const float alpha2 = m_alpha * m_alpha;
     const float hDotN2 = hDotN * hDotN;
-    const float tan2 = (1.0f / hDotN2) - 1.0f;
     const float k = (alpha2 - 1.0f) * hDotN2 + 1.0f;
 
     // D

@@ -240,7 +240,6 @@ PathTracing::SampleLight(const Scene& scene,
     ASSERT(index < lights.size());
 
     float sumArea = 0.0f;
-    float area = 0.0f;
 
     PointData result;
     for (size_t i = 0; i < lights.size(); i++)
@@ -252,7 +251,6 @@ PathTracing::SampleLight(const Scene& scene,
 
         if (i == index)
         {
-            area = 1.0f / pdfAreaEach;
             result = pointOnSurface;
         }
     }
