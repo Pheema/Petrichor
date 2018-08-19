@@ -51,8 +51,7 @@ Lambert::PDF(const Ray& rayIn,
 Ray
 Lambert::CreateNextRay(const Ray& rayIn,
                        const ShadingInfo& shadingInfo,
-                       ISampler2D& sampler2D,
-                       float* pdfDir) const
+                       ISampler2D& sampler2D) const
 {
     const float hitSign = -Math::Dot(rayIn.dir, shadingInfo.normal);
 
@@ -71,20 +70,14 @@ Lambert::CreateNextRay(const Ray& rayIn,
 
         const auto outDir = onb.GetDir(theta, phi);
 
-        const float pdf = cos(theta) * Math::kInvPi;
-        if (pdfDir)
-        {
-            *pdfDir = pdf;
-        }
-
-        auto outWeight = rayIn.weight * m_kd;
+        Color3f outWeight = rayIn.weight * m_kd;
         if (m_texAlbedo)
         {
             outWeight *=
               m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
         }
 
-        return { shadingInfo.pos,
+        return { shadingInfo.pos + kEps * normal,
                  outDir,
                  RayTypes::Diffuse,
                  outWeight,
@@ -97,20 +90,14 @@ Lambert::CreateNextRay(const Ray& rayIn,
 
         const auto outDir = onb.GetDir(theta, phi);
 
-        constexpr float pdf = 0.5f * Math::kInvPi;
-        if (pdfDir)
-        {
-            *pdfDir = pdf;
-        }
-
-        Ray rayOut(shadingInfo.pos,
+        Ray rayOut(shadingInfo.pos + kEps * normal,
                    outDir,
                    RayTypes::Diffuse,
                    rayIn.weight,
                    rayIn.bounce + 1);
 
         const auto f = BxDF(rayIn, rayOut, shadingInfo);
-        rayOut.weight *= (f * cos(theta) / pdf);
+        rayOut.weight *= (f * cos(theta) / PDF(rayIn, rayOut, shadingInfo));
 
         return rayOut;
     }

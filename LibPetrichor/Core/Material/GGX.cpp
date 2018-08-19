@@ -76,14 +76,13 @@ GGX::PDF(const Ray& rayIn,
         return kInfinity;
     }
 
-    return dTerm; // * g1 / (4.0f * abs(Math::Dot(-rayIn.dir, hitInfo.normal)));
+    return dTerm;
 }
 
 Ray
 GGX::CreateNextRay(const Ray& rayIn,
                    const ShadingInfo& shadingInfo,
-                   ISampler2D& sampler2D,
-                   float* pdfDir) const
+                   ISampler2D& sampler2D) const
 {
     const float hitSign = -Math::Dot(rayIn.dir, shadingInfo.normal);
 
@@ -95,11 +94,6 @@ GGX::CreateNextRay(const Ray& rayIn,
       SampleGGXVNDF(-rayIn.dir, shadingInfo, sampler2D);
     // sampledHalfVec = hitInfo.normal;
     Math::Vector3f outDir = (rayIn.dir).Reflected(sampledHalfVec);
-
-    /*std::cout << "[N]: " << hitInfo.normal << std::endl;
-std::cout << "[H]" << sampledHalfVec << std::endl;
-std::cout << "[I]" << rayIn.dir << std::endl;
-std::cout << "[O]" << outDir << std::endl;*/
 
     // TODO: あとでFresnel()にまとめる
     const float hDotL = abs(Math::Dot(sampledHalfVec, outDir));
@@ -120,11 +114,6 @@ std::cout << "[O]" << outDir << std::endl;*/
     const float lambdaOut = Lambda(-rayIn.dir, sampledHalfVec);
     const float g2 = 1.0f / (1.0f + lambdaIn + lambdaOut);
     const float g1 = 1.0f / (1.0f + lambdaIn);
-
-    if (pdfDir)
-    {
-        *pdfDir = PDF(rayIn, ray, shadingInfo);
-    }
 
     ray.weight *= (fTerm * g2 / g1);
 
@@ -151,6 +140,8 @@ std::cout << "[O]" << outDir << std::endl;*/
     ray.weight *= (f * cos / *pdfDir);
 
 #endif
+
+    ray.o += kEps * normal;
     return ray;
 }
 

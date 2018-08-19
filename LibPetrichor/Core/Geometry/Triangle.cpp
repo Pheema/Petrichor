@@ -142,7 +142,11 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     }
     }
 
-    shadingInfo.tangent.Normalize();
+    // #TODO
+    if (shadingInfo.tangent.SquaredLength == 0.0f)
+    {
+        shadingInfo.tangent = Math::Vector3f::UnitX();
+    }
 
     // #TODO: MixMaterial
     shadingInfo.material = hitInfo.hitObj->GetMaterial(0.0f);
@@ -166,10 +170,16 @@ Triangle::SampleSurface(Math::Vector3f p,
     float sqrtu0 = sqrt(u0);
     const auto v = m_vertices[0]->pos + (1.0f - sqrtu0) * e0 + sqrtu0 * u1 * e1;
 
-    pointData->pos = v;
-    pointData->normal = Math::Cross(e0, e1).Normalized();
+    if (pointData)
+    {
+        pointData->pos = v;
+        pointData->normal = Math::Cross(e0, e1).Normalized();
+    }
 
-    *pdfArea = 1.0f / (0.5f * Math::Cross(e0, e1).Length());
+    if (pdfArea)
+    {
+        *pdfArea = 1.0f / (0.5f * Math::Cross(e0, e1).Length());
+    }
 }
 
 } // namespace Core

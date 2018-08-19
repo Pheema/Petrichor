@@ -33,15 +33,13 @@ public:
                           const ShadingInfo& shadingInfo,
                           ISampler1D& sampler1D,
                           ISampler2D& sampler2D,
-                          const Ray& ray,
-                          const std::optional<HitInfo>& hitInfo,
-                          const MaterialBase* mat);
+                          const Ray& ray);
 
 private:
     // ランダムにライト上をサンプリング
     PointData
     SampleLight(const Scene& scene,
-                const Math::Vector3f& p,
+                const Math::Vector3f& shadowRayOrigin,
                 float randomVal,
                 ISampler2D& sampler2D,
                 float* pdfArea);

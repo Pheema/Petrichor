@@ -53,6 +53,8 @@ SceneSettingsLoader::Load(const std::filesystem::path& path, FileType fileType)
           &sceneSettings.tileWidth, "tileWidth", sceneSettingsJson);
         ReadValueIfKeyExists(
           &sceneSettings.tileHeight, "tileHeight", sceneSettingsJson);
+        ReadValueIfKeyExists(
+          &sceneSettings.numThreads, "numThreads", sceneSettingsJson);
 
         break;
     }
@@ -66,5 +68,5 @@ SceneSettingsLoader::Load(const std::filesystem::path& path, FileType fileType)
 
     return sceneSettings;
 }
-}
-}
+} // namespace Core
+} // namespace Petrichor

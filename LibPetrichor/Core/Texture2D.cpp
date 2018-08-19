@@ -31,13 +31,14 @@ ApplyGamma(unsigned char val)
     return std::pow(val / kDepthMax, 2.2f);
 }
 
-unsigned char
+uint8_t
 ApplyDegamma(float val)
 {
     // val = ACESFilm(val);
     val = std::pow(val, 1 / 2.2f);
-    const float kDepthMax = 255.9999f;
-    return static_cast<unsigned char>(kDepthMax * val);
+    val = std::clamp(val, 0.0f, 1.0f);
+    constexpr float kDepthMax = 255.9999f;
+    return static_cast<uint8_t>(kDepthMax * val);
 }
 } // namespace
 
@@ -92,18 +93,18 @@ Texture2D::Save(std::string path, ImageTypes imageType) const
     {
     case ImageTypes::Png:
     {
-        std::vector<unsigned char> outPixels;
+        std::vector<uint8_t> outPixels;
         outPixels.reserve(m_width * m_height);
 
         for (auto& pixel : m_pixels)
         {
-            auto degammaR = ApplyDegamma(pixel.x);
-            auto degammaG = ApplyDegamma(pixel.y);
-            auto degammaB = ApplyDegamma(pixel.z);
+            int degammaR = ApplyDegamma(pixel.x);
+            int degammaG = ApplyDegamma(pixel.y);
+            int degammaB = ApplyDegamma(pixel.z);
 
-            outPixels.emplace_back(degammaR);
-            outPixels.emplace_back(degammaG);
-            outPixels.emplace_back(degammaB);
+            outPixels.emplace_back(static_cast<uint8_t>(degammaR));
+            outPixels.emplace_back(static_cast<uint8_t>(degammaG));
+            outPixels.emplace_back(static_cast<uint8_t>(degammaB));
         }
 
         stbi_write_png(path.c_str(),

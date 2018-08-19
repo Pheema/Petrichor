@@ -40,8 +40,7 @@ public:
     virtual Ray
     CreateNextRay(const Ray& rayIn,
                   const ShadingInfo& shadingInfo,
-                  ISampler2D& sampler2D,
-                  float* pdfDir) const = 0;
+                  ISampler2D& sampler2D) const = 0;
 
     virtual MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,

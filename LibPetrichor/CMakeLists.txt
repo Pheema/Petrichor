@@ -35,7 +35,8 @@ target_compile_definitions(
     LibPetrichor
     PRIVATE
         STBI_MSC_SECURE_CRT	# [stb_image] Use secure CRT functions
-        PHM_DEBUG
+        $<$<CONFIG:Debug>:PHM_DEBUG>
+        $<$<CONFIG:RelWithDebInfo>:PHM_DEBUG>
 )
 
 target_compile_features(
@@ -47,9 +48,9 @@ target_compile_features(
 target_compile_options(
     LibPetrichor
     PUBLIC
-        $<$<CONFIG:DEBUG>:/MTd>
-        $<$<CONFIG:RELWITHDEBINFO>:/MT>
-        $<$<CONFIG:RELEASE>:/MT>
+        $<$<CONFIG:Debug>:/MTd>
+        $<$<CONFIG:RelWithDebInfo>:/MT>
+        $<$<CONFIG:Release>:/MT>
 )
 
 target_include_directories(

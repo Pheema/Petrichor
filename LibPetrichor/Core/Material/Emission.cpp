@@ -24,8 +24,7 @@ Emission::BxDF(const Ray& rayIn,
 Ray
 Emission::CreateNextRay(const Ray& rayIn,
                         const ShadingInfo& shadingInfo,
-                        ISampler2D& sampler2D,
-                        float* pdfDir) const
+                        ISampler2D& sampler2D) const
 {
     ASSERT(false);
     return Ray();

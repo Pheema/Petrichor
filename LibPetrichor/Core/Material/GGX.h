@@ -29,8 +29,7 @@ public:
     Ray
     CreateNextRay(const Ray& rayIn,
                   const ShadingInfo& shadingInfo,
-                  ISampler2D& sampler2D,
-                  float* pdfDir) const override;
+                  ISampler2D& sampler2D) const override;
 
     MaterialTypes
     GetMaterialType(const MaterialBase** mat0 = nullptr,

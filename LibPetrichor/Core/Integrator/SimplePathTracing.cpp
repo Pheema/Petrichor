@@ -71,7 +71,7 @@ SimplePathTracing::Render(uint32_t pixelX,
 
             const auto shadingInfo =
               (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
-            ray = mat->CreateNextRay(ray, shadingInfo, sampler2D, nullptr);
+            ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
             // TODO: あとでロシアンルーレット方式に

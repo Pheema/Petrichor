@@ -136,7 +136,7 @@ Petrichor::Initialize()
     MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite = new Lambert(Color3f::One());
     MaterialBase* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
-    MaterialBase* matEmissionWhite = new Emission(Color3f::One());
+    MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
     auto const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
@@ -158,7 +158,7 @@ Petrichor::Initialize()
 
     auto const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
-                   &matLamberWhite,
+                   &matGGX,
                    1,
                    ShadingTypes::Flat);
 
@@ -180,6 +180,7 @@ Petrichor::Initialize()
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
+    camera->SetApeture(0.0f);
 
     m_scene.SetMainCamera(*camera);
 
@@ -188,9 +189,9 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    /*m_scene.GetEnvironment().Load(
+    m_scene.GetEnvironment().Load(
       "Resource/SampleScene/CornellBox/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(Color3f::One());*/
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
@@ -220,11 +221,12 @@ Petrichor::Render()
 
     std::mutex mtx;
 
-    const uint32_t kNumThreads = std::thread::hardware_concurrency() - 1;
-
+    const uint32_t numThreads = m_scene.GetSceneSettings().numThreads > 0
+                                  ? m_scene.GetSceneSettings().numThreads
+                                  : std::thread::hardware_concurrency();
     {
         uint32_t maxIdxTile = 0;
-        ThreadPool<void> threadPool(kNumThreads);
+        ThreadPool<void> threadPool(numThreads);
 
         for (int idxTile = 0;
              idxTile < static_cast<int>(tileManager.GetNumTiles());
@@ -238,7 +240,7 @@ Petrichor::Render()
                 const uint32_t j0 = pixelPos.second;
 
                 RandomSampler1D sampler1D(idxTile);
-                RandomSampler2D sampler2D(idxTile);
+                RandomSampler2D sampler2D(idxTile, idxTile + 123456u);
 
                 for (uint32_t j = j0; j < j0 + tile.GetHeight(); j++)
                 {

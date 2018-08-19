@@ -25,7 +25,7 @@ BruteForce::Intersect(const Ray& ray,
 {
     std::optional<HitInfo> hitInfoResult;
 
-    for (const auto* geometry : m_geometries)
+    for (const auto geometry : m_geometries)
     {
         if (const auto geoHitInfo = geometry->Intersect(ray); geoHitInfo)
         {
