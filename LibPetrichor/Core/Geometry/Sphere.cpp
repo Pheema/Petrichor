@@ -85,6 +85,10 @@ Sphere::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     }
 
     // #TODO: UV
+    if (hitInfo.hitObj)
+    {
+        shadingInfo.material = hitInfo.hitObj->GetMaterial(0.0f);
+    }
 
     return shadingInfo;
 }

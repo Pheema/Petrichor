@@ -13,14 +13,6 @@ Emission::Emission(const Color3f& color)
 }
 
 Color3f
-Emission::Radiance(const Ray& rayIn,
-                   const Ray& rayOut,
-                   const HitInfo& hitInfo) const
-{
-    return m_color;
-}
-
-Petrichor::Color3f
 Emission::BxDF(const Ray& rayIn,
                const Ray& rayOut,
                const ShadingInfo& shadingInfo) const
@@ -29,7 +21,7 @@ Emission::BxDF(const Ray& rayIn,
     return Color3f::Zero();
 }
 
-Petrichor::Core::Ray
+Ray
 Emission::CreateNextRay(const Ray& rayIn,
                         const ShadingInfo& shadingInfo,
                         ISampler2D& sampler2D,
@@ -39,7 +31,7 @@ Emission::CreateNextRay(const Ray& rayIn,
     return Ray();
 }
 
-Petrichor::Core::MaterialTypes
+MaterialTypes
 Emission::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
                           const MaterialBase** mat1 /*= nullptr*/,
                           float* mix /*= nullptr*/) const

@@ -13,11 +13,6 @@ public:
     Emission(const Color3f& color);
 
     Color3f
-    Radiance(const Ray& rayIn,
-             const Ray& rayOut,
-             const HitInfo& hitInfo) const override;
-
-    Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const ShadingInfo& shadingInfo) const override;
@@ -32,6 +27,12 @@ public:
     GetMaterialType(const MaterialBase** mat0 = nullptr,
                     const MaterialBase** mat1 = nullptr,
                     float* mix = nullptr) const override;
+
+    const Color3f&
+    GetLightColor() const
+    {
+        return m_color;
+    }
 
 private:
     Color3f m_color;

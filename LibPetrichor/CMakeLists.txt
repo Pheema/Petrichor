@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.8)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
 conan_basic_setup()
@@ -20,7 +20,6 @@ add_library(LibPetrichor STATIC
     Core/Material/MatMix.cpp
     Core/Sampler/MicroJitteredSampler.cpp
     Core/Sampler/RandomSampler2D.cpp
-    Core/Thread/ThreadPool.cpp
     Core/Camera.cpp
     Core/Environment.cpp
     Core/Petrichor.cpp
@@ -31,6 +30,14 @@ add_library(LibPetrichor STATIC
     Math/Halton.cpp
     Math/OrthonormalBasis.cpp
 )
+
+target_compile_definitions(
+    LibPetrichor
+    PRIVATE
+        STBI_MSC_SECURE_CRT	# [stb_image] Use secure CRT functions
+        PHM_DEBUG
+)
+
 target_compile_features(
     LibPetrichor
     PUBLIC
@@ -51,10 +58,3 @@ target_include_directories(
         /
 )
 conan_target_link_libraries(LibPetrichor)
-
-# [stb_image] Use secure CRT functions
-target_compile_definitions(
-    LibPetrichor
-    PRIVATE
-        STBI_MSC_SECURE_CRT
-)

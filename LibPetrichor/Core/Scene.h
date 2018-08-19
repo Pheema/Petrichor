@@ -109,9 +109,7 @@ public:
     void
     BuildAccel()
     {
-        ASSERT(m_accel != nullptr &&
-               "Acceleration structure has not been assigned.");
-        m_accel = std::make_unique<SweepBVH>();
+        m_accel = std::make_unique<BruteForce>();
         m_accel->Build(*this);
     }
 

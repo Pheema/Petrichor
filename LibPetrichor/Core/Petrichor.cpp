@@ -188,9 +188,9 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    m_scene.GetEnvironment().Load(
+    /*m_scene.GetEnvironment().Load(
       "Resource/SampleScene/CornellBox/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());*/
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
@@ -201,7 +201,7 @@ Petrichor::Initialize()
 void
 Petrichor::Render()
 {
-    SimplePathTracing pt;
+    PathTracing pt;
 
     const uint32_t tileWidth = m_scene.GetSceneSettings().tileWidth;
     const uint32_t tileHeight = m_scene.GetSceneSettings().tileHeight;

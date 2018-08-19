@@ -1,11 +1,11 @@
-project(Petrichor)
+﻿project(Petrichor)
 cmake_minimum_required(VERSION 3.8)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "" FORCE)
 
-add_compile_options(
-    $<$<CXX_COMPILER_ID:MSVC>:/MP>
-)
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
+add_compile_options($<$<C_COMPILER_ID:MSVC>:/utf-8>)
 
 add_subdirectory(LibPetrichor)
 

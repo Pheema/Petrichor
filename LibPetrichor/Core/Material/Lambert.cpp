@@ -48,7 +48,7 @@ Lambert::PDF(const Ray& rayIn,
     }
 }
 
-Petrichor::Core::Ray
+Ray
 Lambert::CreateNextRay(const Ray& rayIn,
                        const ShadingInfo& shadingInfo,
                        ISampler2D& sampler2D,
@@ -62,7 +62,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
     Math::OrthonormalBasis onb;
     onb.Build(normal);
 
-    auto[rand0, rand1] = sampler2D.Next();
+    auto [rand0, rand1] = sampler2D.Next();
 
     if (IsImportanceSamplingEnabled())
     {
@@ -97,7 +97,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
 
         const auto outDir = onb.GetDir(theta, phi);
 
-        const float pdf = 0.5f * Math::kInvPi;
+        constexpr float pdf = 0.5f * Math::kInvPi;
         if (pdfDir)
         {
             *pdfDir = pdf;

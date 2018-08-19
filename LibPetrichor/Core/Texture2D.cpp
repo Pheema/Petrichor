@@ -34,7 +34,7 @@ ApplyGamma(unsigned char val)
 unsigned char
 ApplyDegamma(float val)
 {
-    val = ACESFilm(val);
+    // val = ACESFilm(val);
     val = std::pow(val, 1 / 2.2f);
     const float kDepthMax = 255.9999f;
     return static_cast<unsigned char>(kDepthMax * val);

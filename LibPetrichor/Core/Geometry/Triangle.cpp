@@ -143,6 +143,9 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     }
 
     shadingInfo.tangent.Normalize();
+
+    // #TODO: MixMaterial
+    shadingInfo.material = hitInfo.hitObj->GetMaterial(0.0f);
     return shadingInfo;
 }
 

@@ -1,6 +1,7 @@
 ﻿#include "SimplePathTracing.h"
 
 #include "Core/HitInfo.h"
+#include "Core/Material/Emission.h"
 #include "Core/Sampler/MicroJitteredSampler.h"
 #include "Core/Scene.h"
 #include <Random/XorShift.h>
@@ -40,7 +41,8 @@ SimplePathTracing::Render(uint32_t pixelX,
                                           targetTex->GetHeight(),
                                           sampler2D);
 
-        for (uint32_t bounce = 0; bounce < kMaxNumBounces; bounce++)
+        bool isOverBounced = false;
+        for (uint32_t bounce = 0;; bounce++)
         {
             const auto hitInfo = scene.Intersect(ray, kEps);
 
@@ -52,15 +54,13 @@ SimplePathTracing::Render(uint32_t pixelX,
                 break;
             }
 
-            const auto shadingInfo =
-              (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
-
             // ---- ヒットした場合 ----
             const MaterialBase* mat =
               (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             if (mat->GetMaterialType() == MaterialTypes::Emission)
             {
-                color += ray.weight * mat->Radiance(ray, ray, hitInfo.value());
+                auto matEmission = static_cast<const Emission*>(mat);
+                color += ray.weight * matEmission->GetLightColor();
                 break;
             }
 
@@ -68,17 +68,25 @@ SimplePathTracing::Render(uint32_t pixelX,
             mat = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
             ASSERT(std::isfinite(ray.dir.x));
+
+            const auto shadingInfo =
+              (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D, nullptr);
 
             // 最大反射回数未満の場合はロシアンルーレットを行わない
             // TODO: あとでロシアンルーレット方式に
-            if (ray.bounce >= scene.GetSceneSettings().numMaxBouces)
+            if (ray.bounce >= kMaxNumBounces)
             {
+                isOverBounced = true;
                 break;
             }
         }
+
         ASSERT(color.MinElem() >= 0.0f);
-        pixelColorSum += color;
+        if (!isOverBounced)
+        {
+            pixelColorSum += color;
+        }
     }
 
     const Color3f averagedColor =

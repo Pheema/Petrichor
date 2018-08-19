@@ -49,9 +49,6 @@ public:
                   PointData* pointData,
                   float* pdfArea) const
     {
-        *pdfArea = 0.0f;
-        PointData pd;
-        *pointData = pd;
         ASSERT(false);
     }
 

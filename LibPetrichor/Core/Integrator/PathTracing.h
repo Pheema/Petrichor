@@ -28,6 +28,15 @@ public:
            ISampler1D& sampler1D,
            ISampler2D& sampler2D);
 
+    Color3f
+    CalcLightContribution(const Scene& scene,
+                          const ShadingInfo& shadingInfo,
+                          ISampler1D& sampler1D,
+                          ISampler2D& sampler2D,
+                          const Ray& ray,
+                          const std::optional<HitInfo>& hitInfo,
+                          const MaterialBase* mat);
+
 private:
     // ランダムにライト上をサンプリング
     PointData

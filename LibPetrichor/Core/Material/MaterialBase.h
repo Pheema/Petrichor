@@ -24,13 +24,6 @@ class MaterialBase
 {
 public:
     virtual Color3f
-    Radiance(const Ray& rayIn, const Ray& rayOut, const HitInfo& hitInfo) const
-    {
-        ASSERT(false);
-        return Color3f();
-    };
-
-    virtual Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
          const ShadingInfo& shadingInfo) const = 0;

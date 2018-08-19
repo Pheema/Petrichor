@@ -18,7 +18,7 @@ BruteForce::Build(const Scene& scene)
     }
 }
 
-std::optional<Petrichor::Core::HitInfo>
+std::optional<HitInfo>
 BruteForce::Intersect(const Ray& ray,
                       float distMin /*= 0.0f*/,
                       float distMax /*= kInfinity*/) const
