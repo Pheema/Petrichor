@@ -24,11 +24,7 @@ class GeometryBase
 public:
     // AABBの計算
     virtual Bounds
-    CalcBound() const
-    {
-        ASSERT(false);
-        return Bounds{};
-    }
+    GetBounds() const = 0;
 
     // レイとの簡易交差判定
     virtual std::optional<HitInfo>

@@ -29,7 +29,7 @@ Sphere::Sphere(const Math::Vector3f& o, float r)
 }
 
 Bounds
-Sphere::CalcBound() const
+Sphere::GetBounds() const
 {
     const auto vMin = m_origin - Math::Vector3f::One() * m_radius;
     const auto vMax = m_origin + Math::Vector3f::One() * m_radius;

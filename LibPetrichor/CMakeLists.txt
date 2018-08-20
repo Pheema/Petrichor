@@ -7,7 +7,7 @@ add_library(LibPetrichor STATIC
     Core/Accel/Bounds.cpp
     Core/Accel/BruteForce.cpp
     Core/Accel/BVHNode.cpp
-    Core/Accel/SweepBVH.cpp
+    Core/Accel/BinnedSAHBVH.cpp
     Core/Geometry/Mesh.cpp
     Core/Geometry/Sphere.cpp
     Core/Geometry/Triangle.cpp

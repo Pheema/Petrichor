@@ -12,26 +12,6 @@ namespace Core
 
 using namespace Math;
 
-BVHNode::BVHNode()
-  : m_bounds()
-{
-}
-
-BVHNode::BVHNode(const InternalNodeData& internalNodeData)
-  : m_bounds(internalNodeData.bounds)
-  , m_childNodes(internalNodeData.childNodes)
-  , m_isLeaf(false)
-{
-}
-
-BVHNode::BVHNode(const LeafNodeData& leafNodeData)
-  : m_bounds(leafNodeData.bounds)
-  , m_numPrimitives(leafNodeData.numPrimitives)
-  , m_indexOffset(leafNodeData.indexOffset)
-  , m_isLeaf(true)
-{
-}
-
 std::optional<HitInfo>
 BVHNode::Intersect(const Ray& ray) const
 {

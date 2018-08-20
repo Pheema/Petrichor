@@ -39,14 +39,13 @@ Triangle::SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2)
 }
 
 Bounds
-Triangle::CalcBound() const
+Triangle::GetBounds() const
 {
-    Bounds bound;
-    for (const auto& vertex : m_vertices)
-    {
-        bound.Merge(vertex->pos);
-    }
-    return bound;
+    Bounds bounds;
+    bounds.Merge(m_vertices[0]->pos);
+    bounds.Merge(m_vertices[1]->pos);
+    bounds.Merge(m_vertices[2]->pos);
+    return bounds;
 }
 
 std::optional<HitInfo>

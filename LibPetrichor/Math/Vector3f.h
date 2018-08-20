@@ -10,6 +10,7 @@ namespace Petrichor
 {
 namespace Math
 {
+
 class Vector3f
 {
 public:

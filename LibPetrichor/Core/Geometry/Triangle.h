@@ -34,7 +34,7 @@ public:
     SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2);
 
     Bounds
-    CalcBound() const override;
+    GetBounds() const override;
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const override;

@@ -30,7 +30,7 @@ void
 Petrichor::Initialize()
 {
 
-#if 0
+#if 1
 
     // シーンの定義
     auto sphere = new Sphere(Math::Vector3f(-1.5f, 0.0f, 1.0f), 1.0f);

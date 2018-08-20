@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "Core/Accel/AccelBase.h"
+#include "Core/Accel/BinnedSAHBVH.h"
 #include "Core/Accel/BruteForce.h"
-#include "Core/Accel/SweepBVH.h"
 #include "Core/Camera.h"
 #include "Core/Environment.h"
 #include "Core/Geometry/GeometryBase.h"
@@ -109,7 +109,7 @@ public:
     void
     BuildAccel()
     {
-        m_accel = std::make_unique<BruteForce>();
+        m_accel = std::make_unique<BinnedSAHBVH>();
         m_accel->Build(*this);
     }
 

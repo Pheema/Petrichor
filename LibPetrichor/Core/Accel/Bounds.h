@@ -29,8 +29,9 @@ public:
     void
     Merge(const Math::Vector3f& point);
 
-    // 一番広い辺を取得する
-    uint8_t
+    //! どの軸に対して一番辺が広いかを取得する
+    //! @return 軸番号(X: 0, Y: 1, Z: 2)
+    int
     GetWidestAxis() const;
 
     Math::Vector3f vMin, vMax;

@@ -51,23 +51,23 @@ Bounds::Merge(const Math::Vector3f& point)
     vMax.z = std::max(vMax.z, point.z);
 }
 
-uint8_t
+int
 Bounds::GetWidestAxis() const
 {
-    float widest = 0.0f;
-    uint8_t axisResult = 0;
+    float widestWidth = 0.0f;
+    int widestAxis = 0;
 
-    for (uint8_t axis = 0; axis < 3; ++axis)
+    for (int axis = 0; axis < 3; ++axis)
     {
         const float width = vMax[axis] - vMin[axis];
-        if (width > widest)
+        if (width > widestWidth)
         {
-            widest = width;
-            axisResult = axis;
+            widestWidth = width;
+            widestAxis = axis;
         }
     }
 
-    return axisResult;
+    return widestAxis;
 }
 
 } // namespace Core

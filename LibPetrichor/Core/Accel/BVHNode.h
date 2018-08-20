@@ -17,24 +17,18 @@ struct Ray;
 class BVHNode
 {
 public:
-    struct InternalNodeData
+    BVHNode(const Bounds& bounds,
+            const std::array<int, 2>& childIndicies,
+            int indexBegin,
+            int indexEnd,
+            bool isLeaf)
+      : m_bounds(bounds)
+      , m_childNodeIndicies(childIndicies)
+      , m_indexBegin(indexBegin)
+      , m_indexEnd(indexEnd)
+      , m_isLeaf(isLeaf)
     {
-        Bounds bounds;
-        std::array<BVHNode*, 2> childNodes{};
-    };
-
-    struct LeafNodeData
-    {
-        Bounds bounds;
-        uint32_t indexOffset = 0;
-        uint32_t numPrimitives = 0;
-    };
-
-    BVHNode();
-
-    explicit BVHNode(const InternalNodeData& internalNodeData);
-
-    explicit BVHNode(const LeafNodeData& leafNodeData);
+    }
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const;
@@ -42,10 +36,23 @@ public:
     bool
     Contains(const Math::Vector3f& point) const;
 
-    const std::array<BVHNode*, 2>&
+    const std::array<int, 2>&
     GetChildNodes() const
     {
-        return m_childNodes;
+        return m_childNodeIndicies;
+    }
+
+    void
+    SetChildNode(int bvhNodeIndex, int childIndex)
+    {
+        ASSERT(0 <= childIndex && childIndex < 2);
+        m_childNodeIndicies[childIndex] = bvhNodeIndex;
+    }
+
+    void
+    SetLeaf(bool isLeaf)
+    {
+        m_isLeaf = isLeaf;
     }
 
     bool
@@ -54,18 +61,16 @@ public:
         return m_isLeaf;
     }
 
-    uint32_t
-    GetIndexOffset() const
+    int
+    GetIndexBegin() const
     {
-        ASSERT(IsLeaf() == false);
-        return m_indexOffset;
+        return m_indexBegin;
     }
 
-    uint32_t
-    GetNumPrimitives() const
+    int
+    GetIndexEnd() const
     {
-        ASSERT(IsLeaf());
-        return m_numPrimitives;
+        return m_indexEnd;
     }
 
     const Bounds&
@@ -76,9 +81,9 @@ public:
 
 private:
     Bounds m_bounds{};
-    std::array<BVHNode*, 2> m_childNodes{ 0, 0 };
-    uint32_t m_indexOffset = 0;
-    uint32_t m_numPrimitives = 0;
+    std::array<int, 2> m_childNodeIndicies{ -1, -1 };
+    int m_indexBegin = -1;
+    int m_indexEnd = -1;
     bool m_isLeaf = false;
 };
 
