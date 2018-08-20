@@ -37,20 +37,19 @@ public:
     // シェーディングに必要な情報をヒット情報から取得
     // (交差しないレイと図形の組み合わせに対して実行すると、正しい結果を得られないので注意)
     virtual ShadingInfo
-    Interpolate(const Ray& ray, const HitInfo& hitInfo) const
-    {
-        throw std::logic_error("No impl.");
-    }
+    Interpolate(const Ray& ray, const HitInfo& hitInfo) const = 0;
 
-    // ライト表面をサンプルリングする
+    //! ジオメトリの重心を取得する
+    //! @return 重心座標
+    virtual Math::Vector3f
+    GetCentroid() const = 0;
+
+    // 表面をサンプルリングする
     virtual void
     SampleSurface(Math::Vector3f p,
                   ISampler2D& sampler2D,
                   PointData* pointData,
-                  float* pdfArea) const
-    {
-        ASSERT(false);
-    }
+                  float* pdfArea) const = 0;
 
     // ジオメトリにマテリアルを設定
     inline void

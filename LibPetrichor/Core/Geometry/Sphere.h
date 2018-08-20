@@ -30,6 +30,12 @@ public:
                   PointData* pointData,
                   float* pdfArea) const override;
 
+    Math::Vector3f
+    GetCentroid() const override
+    {
+        return GetOrigin();
+    }
+
     const Math::Vector3f&
     GetOrigin() const
     {

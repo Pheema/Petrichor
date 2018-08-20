@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
+#include "Core/Geometry/Vertex.h"
 #include <array>
 
 namespace Petrichor
@@ -8,7 +9,6 @@ namespace Petrichor
 namespace Core
 {
 
-struct Vertex;
 struct HitInfo;
 struct ShadingInfo;
 
@@ -41,6 +41,13 @@ public:
 
     ShadingInfo
     Interpolate(const Ray& ray, const HitInfo& hitInfo) const override;
+
+    Math::Vector3f
+    GetCentroid() const override
+    {
+        return (m_vertices[0]->pos + m_vertices[1]->pos + m_vertices[2]->pos) /
+               3.0f;
+    }
 
     void
     SampleSurface(Math::Vector3f p,
