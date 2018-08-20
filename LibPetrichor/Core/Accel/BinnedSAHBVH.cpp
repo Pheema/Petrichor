@@ -43,7 +43,7 @@ BinnedSAHBVH::Build(const Scene& scene)
         Bounds rootBounds;
         for (auto* primitive : scene.GetGeometries())
         {
-            rootBounds.Merge(primitive->GetCentroid());
+            rootBounds.Merge(primitive->GetBounds());
         }
 
         BVHNode& rootNode = m_bvhNodes.emplace_back(
@@ -87,6 +87,14 @@ BinnedSAHBVH::Build(const Scene& scene)
                    m_primitiveData[id1].centroid[widestAxis];
         });
 
+        // ビンをアップデート
+        Bounds binBounds;
+        for (auto iter = iterBegin; iter != iterEnd; iter++)
+        {
+            const int primitiveID = *iter;
+            binBounds.Merge(m_primitiveData[primitiveID].centroid);
+        }
+
         // どのビンに属しているかを番号付け
         for (auto iter = iterBegin; iter != iterEnd; iter++)
         {
@@ -94,11 +102,10 @@ BinnedSAHBVH::Build(const Scene& scene)
 
             PrimitiveData* const primitiveData = &m_primitiveData[primitiveID];
             const float widestEdgeLength =
-              currentNode->GetBounds().vMax[widestAxis] -
-              currentNode->GetBounds().vMin[widestAxis];
+              binBounds.vMax[widestAxis] - binBounds.vMin[widestAxis];
 
-            const float l = primitiveData->centroid[widestAxis] -
-                            currentNode->GetBounds().vMin[widestAxis];
+            const float l =
+              primitiveData->centroid[widestAxis] - binBounds.vMin[widestAxis];
 
             const int binID = kNumBins * (1.0f - kEps) * l / widestEdgeLength;
             ASSERT(binID >= 0);
@@ -150,11 +157,11 @@ BinnedSAHBVH::Build(const Scene& scene)
                   (primitiveData.binID < bestBinPartitionIndex);
                 if (isInLeftNode)
                 {
-                    leftBounds.Merge(primitiveData.centroid);
+                    leftBounds.Merge(primitiveData.bounds);
                 }
                 else
                 {
-                    rightBounds.Merge(primitiveData.centroid);
+                    rightBounds.Merge(primitiveData.bounds);
                 }
             }
 
@@ -239,73 +246,75 @@ BinnedSAHBVH::Intersect(const Ray& ray,
                         float distMin /*= 0.0f*/,
                         float distMax /*= kInfinity*/) const
 {
-    std::stack<const BVHNode*> bvhNodeStack;
-    bvhNodeStack.emplace(&m_bvhNodes[0]);
+    std::stack<const BVHNode*> nodeStack;
+    nodeStack.emplace(&m_bvhNodes[0]);
 
     // ---- BVHのトラバーサル ----
     std::optional<HitInfo> hitInfoResult;
 
-    //// 2つの子ノード又は子オブジェクトに対して
-    // while (!bvhNodeStack.empty())
-    //{
-    //    // 葉ノードに対して
-    //    const auto* currentNode = bvhNodeStack.top();
-    //    bvhNodeStack.pop();
+    // 2つの子ノード又は子オブジェクトに対して
+    while (!nodeStack.empty())
+    {
+        // 葉ノードに対して
+        const auto* currentNode = nodeStack.top();
+        nodeStack.pop();
 
-    //    const auto hitInfoNode = currentNode->Intersect(ray);
+        const auto hitInfoNode = currentNode->Intersect(ray);
 
-    //    // そもそもBVHノードに当たる軌道ではない
-    //    if (hitInfoNode == std::nullopt)
-    //    {
-    //        continue;
-    //    }
+        // そもそもBVHノードに当たる軌道ではない
+        if (hitInfoNode == std::nullopt)
+        {
+            continue;
+        }
 
-    //    // 自ノードより手前で既に衝突している
-    //    if (hitInfoResult && currentNode->Contains(ray.o) == false)
-    //    {
-    //        if (hitInfoResult->distance < hitInfoNode->distance)
-    //        {
-    //            continue;
-    //        }
-    //    }
+        // 自ノードより手前で既に衝突している
+        if (hitInfoResult && currentNode->Contains(ray.o) == false)
+        {
+            if (hitInfoResult->distance < hitInfoNode->distance)
+            {
+                continue;
+            }
+        }
 
-    //    if (currentNode->IsLeaf())
-    //    {
-    //        // for (const auto* geometry : currentNode.GetChildArray())
-    //        for (uint32_t idx = currentNode->GetIndexBegin();
-    //             idx <
-    //             currentNode->GetIndexBegin() + currentNode->GetIndexEnd();
-    //             idx++)
-    //        {
-    //            const GeometryBase* const geometry =
-    //              m_scene->GetGeometries()[m_primitiveIDs[idx]];
+        if (currentNode->IsLeaf())
+        {
+            for (int index = currentNode->GetIndexBegin();
+                 index < currentNode->GetIndexEnd();
+                 index++)
+            {
+                const int primitiveID = m_primitiveIDs[index];
 
-    //            const auto hitInfoGeometry = geometry->Intersect(ray);
-    //            if (hitInfoGeometry)
-    //            {
-    //                if (hitInfoGeometry->distance < distMin ||
-    //                    hitInfoGeometry->distance > distMax)
-    //                {
-    //                    continue;
-    //                }
+                const GeometryBase* const geometry =
+                  m_scene->GetGeometries()[primitiveID];
 
-    //                if (hitInfoResult == std::nullopt ||
-    //                    hitInfoGeometry->distance < hitInfoResult->distance)
-    //                {
-    //                    hitInfoResult = hitInfoGeometry;
-    //                }
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        // 枝ノードの場合
-    //        for (const auto childNode : currentNode->GetChildNodes())
-    //        {
-    //            bvhNodeStack.emplace(childNode);
-    //        }
-    //    }
-    //}
+                const auto hitInfoGeometry = geometry->Intersect(ray);
+                if (hitInfoGeometry)
+                {
+                    if (hitInfoGeometry->distance < distMin ||
+                        hitInfoGeometry->distance > distMax)
+                    {
+                        continue;
+                    }
+
+                    if (hitInfoResult == std::nullopt ||
+                        hitInfoGeometry->distance < hitInfoResult->distance)
+                    {
+                        hitInfoResult = hitInfoGeometry;
+                    }
+                }
+            }
+        }
+        else
+        {
+            const BVHNode* const leftNode =
+              &m_bvhNodes[currentNode->GetChildNodes()[0]];
+            nodeStack.emplace(leftNode);
+
+            const BVHNode* const rightNode =
+              &m_bvhNodes[currentNode->GetChildNodes()[1]];
+            nodeStack.emplace(rightNode);
+        }
+    }
     return hitInfoResult;
 }
 } // namespace Core

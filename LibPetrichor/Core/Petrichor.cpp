@@ -30,7 +30,7 @@ void
 Petrichor::Initialize()
 {
 
-#if 1
+#if 0
 
     // シーンの定義
     auto sphere = new Sphere(Math::Vector3f(-1.5f, 0.0f, 1.0f), 1.0f);
@@ -102,7 +102,7 @@ Petrichor::Initialize()
       "Resource/Speaker/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
 
     // sphere->SetMaterial(matMixFloor);
-    floor->SetMaterial(matMixFloor);
+    floor->SetMaterial(matLambertFloor);
 
     m_scene.AppendMesh(*meshBody);
     m_scene.AppendMesh(*meshCode);
@@ -110,7 +110,7 @@ Petrichor::Initialize()
     m_scene.AppendLightMesh(*meshLightLU);
     m_scene.AppendLightMesh(*meshLightR);
 
-    // m_scene.AppendMesh(*meshFloor);
+    m_scene.AppendMesh(*meshFloor);
 
     // m_scene.AppendGeometry(sphere);
     m_scene.AppendGeometry(floor);
@@ -189,9 +189,9 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    m_scene.GetEnvironment().Load(
+    /*m_scene.GetEnvironment().Load(
       "Resource/SampleScene/CornellBox/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());*/
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
