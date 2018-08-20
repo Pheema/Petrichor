@@ -143,7 +143,7 @@ Triangle::Interpolate(const Ray& ray, const HitInfo& hitInfo) const
     }
 
     // #TODO
-    if (shadingInfo.tangent.SquaredLength == 0.0f)
+    if (shadingInfo.tangent.SquaredLength() == 0.0f)
     {
         shadingInfo.tangent = Math::Vector3f::UnitX();
     }
