@@ -17,8 +17,7 @@ class Mesh
 public:
     void
     Load(const std::string& path,
-         MaterialBase** ppMaterial,
-         size_t numMaterials,
+         const MaterialBase* material,
          ShadingTypes shadingType = ShadingTypes::Flat);
 
     const std::vector<Triangle>&

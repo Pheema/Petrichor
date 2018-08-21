@@ -27,7 +27,8 @@ GGX::BxDF(const Ray& rayIn,
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
     const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
 
-    const float alpha2 = m_alpha * m_alpha;
+    const float alpha = GetAlpha(shadingInfo);
+    const float alpha2 = alpha * alpha;
     const float hDotN2 = hDotN * hDotN;
     const float k = (alpha2 - 1.0f) * hDotN2 + 1.0f;
 
@@ -35,8 +36,8 @@ GGX::BxDF(const Ray& rayIn,
     const float dTerm = alpha2 / (Math::kPi * k * k);
 
     // G
-    const float lambdaIn = Lambda(rayOut.dir, halfVec);
-    const float lambdaOut = Lambda(-rayIn.dir, halfVec);
+    const float lambdaIn = Lambda(rayOut.dir, halfVec, alpha);
+    const float lambdaOut = Lambda(-rayIn.dir, halfVec, alpha);
     const float gTerm = 1.0f / (1.0f + lambdaIn + lambdaOut);
 
     // F
@@ -59,10 +60,12 @@ GGX::PDF(const Ray& rayIn,
          const Ray& rayOut,
          const ShadingInfo& shadingInfo) const
 {
+
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
     const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
 
-    const float alpha2 = m_alpha * m_alpha;
+    const float alpha = GetAlpha(shadingInfo);
+    const float alpha2 = alpha * alpha;
     const float hDotN2 = hDotN * hDotN;
     const float tan2 = (1.0f / hDotN2) - 1.0f;
     const float k = 1.0f + tan2 / alpha2;
@@ -110,8 +113,9 @@ GGX::CreateNextRay(const Ray& rayIn,
 
     ASSERT(std::isfinite(ray.dir.x));
 
-    const float lambdaIn = Lambda(outDir, sampledHalfVec);
-    const float lambdaOut = Lambda(-rayIn.dir, sampledHalfVec);
+    const float alpha = GetAlpha(shadingInfo);
+    const float lambdaIn = Lambda(outDir, sampledHalfVec, alpha);
+    const float lambdaOut = Lambda(-rayIn.dir, sampledHalfVec, alpha);
     const float g2 = 1.0f / (1.0f + lambdaIn + lambdaOut);
     const float g1 = 1.0f / (1.0f + lambdaIn);
 
@@ -154,9 +158,11 @@ GGX::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
 }
 
 float
-GGX::Lambda(const Math::Vector3f& dir, const Math::Vector3f& halfDir) const
+GGX::Lambda(const Math::Vector3f& dir,
+            const Math::Vector3f& halfDir,
+            float alpha) const
 {
-    const float alpha2 = m_alpha * m_alpha;
+    const float alpha2 = alpha * alpha;
     const float cos = abs(Dot(dir, halfDir));
     const float tan2 = 1.0f / (cos * cos) - 1.0f;
 
@@ -183,7 +189,8 @@ GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
     onbOnSurface.Build(normal, t);
 
     auto v = onbOnSurface.WorldToLocal(dirView);
-    v *= Math::Vector3f(m_alpha, m_alpha, 1.0f);
+    const float alpha = GetAlpha(shadingInfo);
+    v *= Math::Vector3f(alpha, alpha, 1.0f);
     v.Normalize();
 
     // ---- サンプリング ----
@@ -210,7 +217,7 @@ GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
       p1 * t1 + p2 * t2 + sqrt(std::max(0.0f, 1.0f - p1 * p1 - p2 * p2)) * v;
 
     // ---- unstretch ----
-    n = Math::Vector3f(m_alpha * n.x, m_alpha * n.y, std::max(0.0f, n.z));
+    n = Math::Vector3f(alpha * n.x, alpha * n.y, std::max(0.0f, n.z));
 
     // ---- local normal to world normal ----
     n = onbOnSurface.LocalToWorld(n);

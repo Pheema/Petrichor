@@ -27,7 +27,7 @@ ACESFilm(float x)
 float
 ApplyGamma(unsigned char val)
 {
-    const float kDepthMax = 255.0f;
+    constexpr float kDepthMax = 255.0f;
     return std::pow(val / kDepthMax, 2.2f);
 }
 

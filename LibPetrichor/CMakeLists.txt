@@ -21,6 +21,7 @@ add_library(LibPetrichor STATIC
     Core/Sampler/MicroJitteredSampler.cpp
     Core/Sampler/RandomSampler2D.cpp
     Core/Camera.cpp
+    Core/Color3f.cpp
     Core/Environment.cpp
     Core/Petrichor.cpp
     Core/Scene.cpp

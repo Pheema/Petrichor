@@ -132,40 +132,39 @@ Petrichor::Initialize()
 
 #else
 
+    auto* roughnessTex = new Texture2D();
+    roughnessTex->Load("Resource/SampleScene/CornellBox/MetalRoughness.png");
+
     MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite = new Lambert(Color3f::One());
-    MaterialBase* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
+    GGX* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
+    matGGX->SetRoughnessTexture(roughnessTex);
     MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
     auto const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
-                   &matLambertRed,
-                   1,
+                   matLambertRed,
                    ShadingTypes::Flat);
 
     auto const rightWall = new Mesh();
     rightWall->Load("Resource/SampleScene/CornellBox/RightWall.obj",
-                    &matLambertGreen,
-                    1,
+                    matLambertGreen,
                     ShadingTypes::Flat);
 
     auto const whiteWall = new Mesh();
     whiteWall->Load("Resource/SampleScene/CornellBox/WhiteWall.obj",
-                    &matLamberWhite,
-                    1,
+                    matLamberWhite,
                     ShadingTypes::Flat);
 
     auto const whiteBox = new Mesh();
     whiteBox->Load("Resource/SampleScene/CornellBox/WhiteBox.obj",
-                   &matGGX,
-                   1,
+                   matGGX,
                    ShadingTypes::Flat);
 
     auto const ceilLight = new Mesh();
     ceilLight->Load("Resource/SampleScene/CornellBox/CeilLight.obj",
-                    &matEmissionWhite,
-                    1,
+                    matEmissionWhite,
                     ShadingTypes::Flat);
 
     m_scene.LoadSceneSettings();
@@ -180,7 +179,7 @@ Petrichor::Initialize()
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
-    camera->SetApeture(0.0f);
+    camera->SetLens(120e-3f);
 
     m_scene.SetMainCamera(*camera);
 

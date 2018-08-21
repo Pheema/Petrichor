@@ -16,9 +16,8 @@ namespace Core
 
 void
 Mesh::Load(const std::string& path,
-           MaterialBase** ppMaterial,
-           size_t numMaterials,
-           ShadingTypes shadingType /*= ShadingTypes::Flat */
+           const MaterialBase* material,
+           ShadingTypes shadingType /*= ShadingTypes::Flat*/
 )
 {
     using namespace Math;
@@ -109,15 +108,9 @@ Mesh::Load(const std::string& path,
 
                     triangle.SetVertices(v0, v1, v2);
 
+                    // #TODO: 複数マテリアル
                     const size_t idxMaterial = pMesh->mMaterialIndex;
-                    if (idxMaterial < numMaterials)
-                    {
-                        triangle.SetMaterial(ppMaterial[idxMaterial]);
-                    }
-                    else
-                    {
-                        triangle.SetMaterial(ppMaterial[0]);
-                    }
+                    triangle.SetMaterial(material);
 
                     m_triangles.emplace_back(std::move(triangle));
                 }
