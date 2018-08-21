@@ -17,8 +17,8 @@ public:
     void
     Initialize(int lengthSeq);
 
-    virtual std::tuple<float, float>
-    SampleNext2D() final;
+    std::tuple<float, float>
+    Next() override;
 
     unsigned
     GetIndex() const

@@ -21,13 +21,13 @@ void
 MicroJitteredSampler::Initialize(int lengthSeq)
 {
     m_lengthSeq = lengthSeq;
-    m_mu        = kStarDiscrepancy / sqrt(static_cast<float>(lengthSeq));
+    m_mu = kStarDiscrepancy / sqrt(static_cast<float>(lengthSeq));
     m_haltonBase2.Initialize(m_lengthSeq, 2);
     m_haltonBase3.Initialize(m_lengthSeq, 3);
 }
 
 std::tuple<float, float>
-MicroJitteredSampler::SampleNext2D()
+MicroJitteredSampler::Next()
 {
     float x = m_haltonBase2.GetValue(m_index);
     float y = m_haltonBase3.GetValue(m_index);
@@ -42,7 +42,7 @@ MicroJitteredSampler::SampleNext2D()
     {
         m_offsetX = m_mu * (m_xorShift.next() - 0.5f);
         m_offsetY = m_mu * (m_xorShift.next() - 0.5f);
-        m_index   = 0;
+        m_index = 0;
     }
     return std::tuple<float, float>(x, y);
 }
