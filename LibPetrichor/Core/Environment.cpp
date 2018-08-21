@@ -17,7 +17,7 @@ Environment::Load(std::string path)
         // TODO: メモリリーク
         m_texEnv = new Texture2D();
     }
-    m_texEnv->Load(path);
+    m_texEnv->Load(path, Texture2D::TextureColorType::Color);
 }
 
 Color3f

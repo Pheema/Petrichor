@@ -29,13 +29,19 @@ public:
         Bilinear
     };
 
+    enum class TextureColorType
+    {
+        Color,   //!< 読み込むときにガンマ補正をする
+        NonColor //!< 読み込むときにガンマ補正をかけない
+    };
+
     Texture2D();
 
     Texture2D(int width, int height);
 
     // 画像を読み込む
     void
-    Load(std::string path);
+    Load(std::string path, TextureColorType textureColorType);
 
     //// 画像を書き出し
     void
@@ -77,6 +83,7 @@ public:
 private:
     // TODO: RGBAに対応させる（現在はRGB）
     static constexpr int kNumChannelsInPixel = 3;
+    static constexpr int kColorDepth8Bit = 255;
 
     int m_width = 0;  //!< 画像の横幅[px]
     int m_height = 0; //!< 画像の縦幅[px]

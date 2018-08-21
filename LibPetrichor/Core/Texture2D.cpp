@@ -24,22 +24,53 @@ ACESFilm(float x)
     return std::clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0f, 1.0f);
 }
 
-float
-ApplyGamma(unsigned char val)
+Color3f
+ACESFilm(const Color3f& color)
 {
-    constexpr float kDepthMax = 255.0f;
-    return std::pow(val / kDepthMax, 2.2f);
+    return { ACESFilm(color.x), ACESFilm(color.y), ACESFilm(color.z) };
 }
 
-uint8_t
-ApplyDegamma(float val)
+Color3f
+Clamp(const Color3f& color, float min, float max)
 {
-    // val = ACESFilm(val);
-    val = std::pow(val, 1 / 2.2f);
-    val = std::clamp(val, 0.0f, 1.0f);
-    constexpr float kDepthMax = 255.9999f;
-    return static_cast<uint8_t>(kDepthMax * val);
+    return { std::clamp(color.x, min, max),
+             std::clamp(color.y, min, max),
+             std::clamp(color.z, min, max) };
 }
+
+float
+ApplyGamma(float value)
+{
+    return std::pow(value, 2.2f);
+}
+
+Color3f
+ApplyGamma(const Color3f& color)
+{
+    return { ApplyGamma(color.x), ApplyGamma(color.y), ApplyGamma(color.z) };
+}
+
+Color3f
+ApplyToneMapping(const Math::Vector3f& color)
+{
+    return { ACESFilm(color.x), ACESFilm(color.y), ACESFilm(color.z) };
+}
+
+float
+ApplyDegamma(float value)
+{
+    value = std::clamp(value, 0.0f, 1.0f);
+    return std::pow(value, 1 / 2.2f);
+}
+
+Color3f
+ApplyDegamma(const Color3f& color)
+{
+    return { ApplyDegamma(color.x),
+             ApplyDegamma(color.y),
+             ApplyDegamma(color.z) };
+}
+
 } // namespace
 
 Texture2D::Texture2D()
@@ -59,7 +90,7 @@ Texture2D::Texture2D(int width, int height)
 }
 
 void
-Texture2D::Load(std::string path)
+Texture2D::Load(std::string path, TextureColorType textureColorType)
 {
     unsigned char* data = stbi_load(
       path.c_str(), &m_width, &m_height, nullptr, kNumChannelsInPixel);
@@ -74,12 +105,20 @@ Texture2D::Load(std::string path)
     for (size_t i = 0; i < numPixels; i++)
     {
         // 8Bit/Channel前提
-        Color3f color;
-        color.x = ApplyGamma(data[kNumChannelsInPixel * i]);
-        color.y = ApplyGamma(data[kNumChannelsInPixel * i + 1]);
-        color.z = ApplyGamma(data[kNumChannelsInPixel * i + 2]);
+        Color3f color{ static_cast<float>(data[kNumChannelsInPixel * i]),
+                       static_cast<float>(data[kNumChannelsInPixel * i + 1]),
+                       static_cast<float>(data[kNumChannelsInPixel * i + 2]) };
+        color /= static_cast<float>(kColorDepth8Bit);
+        m_pixels.emplace_back(color);
+    }
 
-        m_pixels.emplace_back(std::move(color));
+    // カラー用テクスチャの場合はガンマ補正
+    if (textureColorType == TextureColorType::Color)
+    {
+        for (auto& pixel : m_pixels)
+        {
+            pixel = ApplyGamma(pixel);
+        }
     }
 
     stbi_image_free(data);
@@ -94,17 +133,24 @@ Texture2D::Save(std::string path, ImageTypes imageType) const
     case ImageTypes::Png:
     {
         std::vector<uint8_t> outPixels;
-        outPixels.reserve(m_width * m_height);
+        outPixels.reserve(kNumChannelsInPixel * m_width * m_height);
 
-        for (auto& pixel : m_pixels)
+        for (const auto& pixel : m_pixels)
         {
-            int degammaR = ApplyDegamma(pixel.x);
-            int degammaG = ApplyDegamma(pixel.y);
-            int degammaB = ApplyDegamma(pixel.z);
+            const Color3f toneMapped = ACESFilm(pixel);
+            const Color3f degammaColor =
+              ApplyDegamma(Clamp(toneMapped, 0.0f, 1.0f));
 
-            outPixels.emplace_back(static_cast<uint8_t>(degammaR));
-            outPixels.emplace_back(static_cast<uint8_t>(degammaG));
-            outPixels.emplace_back(static_cast<uint8_t>(degammaB));
+            const auto r =
+              static_cast<uint8_t>((kColorDepth8Bit - kEps) * degammaColor.x);
+            const auto g =
+              static_cast<uint8_t>((kColorDepth8Bit - kEps) * degammaColor.y);
+            const auto b =
+              static_cast<uint8_t>((kColorDepth8Bit - kEps) * degammaColor.z);
+
+            outPixels.emplace_back(r);
+            outPixels.emplace_back(g);
+            outPixels.emplace_back(b);
         }
 
         stbi_write_png(path.c_str(),
@@ -139,26 +185,6 @@ Texture2D::Clear(const Color3f& color)
 Color3f
 Texture2D::GetPixel(int i, int j) const
 {
-    /*if (i < 0)
-    {
-        i = static<int>(Math::Mod(i, m_width));
-    }
-
-    if (i >= m_width)
-    {
-        i = m_width - 1;
-    }
-
-    if (j < 0)
-    {
-        j = 0;
-    }
-
-    if (j >= m_height)
-    {
-        j = m_height - 1;
-    }*/
-
     ASSERT(0 <= i && i < m_width);
     ASSERT(0 <= j && j < m_height);
     return m_pixels[m_width * j + i];

@@ -11,6 +11,7 @@
 #include "Core/Material/GGX.h"
 #include "Core/Material/Lambert.h"
 #include "Core/Material/MatMix.h"
+#include "Core/Sampler/MicroJitteredSampler.h"
 #include "Core/Sampler/RandomSampler1D.h"
 #include "Core/Sampler/RandomSampler2D.h"
 #include "Core/TileManager.h"
@@ -133,13 +134,21 @@ Petrichor::Initialize()
 #else
 
     auto* roughnessTex = new Texture2D();
-    roughnessTex->Load("Resource/SampleScene/CornellBox/MetalRoughness.png");
+    roughnessTex->Load("Resource/SampleScene/CornellBox/MetalRoughness.png",
+                       Texture2D::TextureColorType::NonColor);
+    auto* normalMap = new Texture2D();
+    normalMap->Load("Resource/SampleScene/CornellBox/MetalNormal.png",
+                    Texture2D::TextureColorType::NonColor);
 
     MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
     MaterialBase* matLamberWhite = new Lambert(Color3f::One());
     GGX* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
-    matGGX->SetRoughnessTexture(roughnessTex);
+    matGGX->SetRoughnessMap(roughnessTex);
+    matGGX->SetRoughnessMapStrength(0.4f);
+    matGGX->SetNormalMap(normalMap);
+    matGGX->SetNormalMapStrength(0.1f);
+
     MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
     auto const leftWall = new Mesh();
@@ -179,7 +188,7 @@ Petrichor::Initialize()
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
-    camera->SetLens(120e-3f);
+    // camera->SetLens(100e-3f);
 
     m_scene.SetMainCamera(*camera);
 
@@ -188,9 +197,9 @@ Petrichor::Initialize()
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
-    /*m_scene.GetEnvironment().Load(
+    m_scene.GetEnvironment().Load(
       "Resource/SampleScene/CornellBox/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(Color3f::One());*/
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,

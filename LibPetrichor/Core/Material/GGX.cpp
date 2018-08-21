@@ -24,8 +24,10 @@ GGX::BxDF(const Ray& rayIn,
           const Ray& rayOut,
           const ShadingInfo& shadingInfo) const
 {
+    const Math::Vector3f normal = GetNormal(shadingInfo);
+
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
+    const float hDotN = abs(Dot(halfVec, normal));
 
     const float alpha = GetAlpha(shadingInfo);
     const float alpha2 = alpha * alpha;
@@ -47,8 +49,8 @@ GGX::BxDF(const Ray& rayIn,
     const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
     const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
 
-    const float lDotN = abs(Dot(rayOut.dir, shadingInfo.normal));
-    const float vDotN = abs(Dot(-rayIn.dir, shadingInfo.normal));
+    const float lDotN = abs(Dot(rayOut.dir, normal));
+    const float vDotN = abs(Dot(-rayIn.dir, normal));
 
     auto f = dTerm * gTerm * fTerm / (4.0f * lDotN * vDotN);
 
@@ -60,9 +62,10 @@ GGX::PDF(const Ray& rayIn,
          const Ray& rayOut,
          const ShadingInfo& shadingInfo) const
 {
+    const Math::Vector3f normal = GetNormal(shadingInfo);
 
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN = abs(Dot(halfVec, shadingInfo.normal));
+    const float hDotN = abs(Dot(halfVec, normal));
 
     const float alpha = GetAlpha(shadingInfo);
     const float alpha2 = alpha * alpha;
@@ -87,10 +90,9 @@ GGX::CreateNextRay(const Ray& rayIn,
                    const ShadingInfo& shadingInfo,
                    ISampler2D& sampler2D) const
 {
-    const float hitSign = -Math::Dot(rayIn.dir, shadingInfo.normal);
-
-    const Math::Vector3f normal =
-      shadingInfo.normal * std::copysign(1.0f, hitSign);
+    const Math::Vector3f normal0 = GetNormal(shadingInfo);
+    const float hitSign = -Math::Dot(rayIn.dir, normal0);
+    const Math::Vector3f normal = normal0 * std::copysign(1.0f, hitSign);
 
 #if 1 // USE_VNDF_SAMPLING
     Math::Vector3f sampledHalfVec =
@@ -175,10 +177,9 @@ GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
                    const ShadingInfo& shadingInfo,
                    ISampler2D& rng2D) const
 {
-    const float hitSign = Math::Dot(dirView, shadingInfo.normal);
-
-    const Math::Vector3f normal =
-      shadingInfo.normal * std::copysign(1.0f, hitSign);
+    const Math::Vector3f normal0 = GetNormal(shadingInfo);
+    const float hitSign = Math::Dot(dirView, normal0);
+    const Math::Vector3f normal = normal0 * std::copysign(1.0f, hitSign);
 
     // ---- vを算出 ----
     Math::OrthonormalBasis onbOnSurface;

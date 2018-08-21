@@ -2,6 +2,7 @@
 
 #include "Core/Texture2D.h"
 #include "MaterialBase.h"
+#include "Math/OrthonormalBasis.h"
 
 namespace Petrichor
 {
@@ -39,9 +40,16 @@ public:
 
     //! ラフネス用のテクスチャを指定する
     void
-    SetRoughnessTexture(const Texture2D* roughnessTexture)
+    SetRoughnessMap(const Texture2D* roughnessMap)
     {
-        m_roughnessTexture = roughnessTexture;
+        m_roughnessMap = roughnessMap;
+    }
+
+    //! ノーマルマップを指定
+    void
+    SetNormalMap(const Texture2D* normalMap)
+    {
+        m_normalMap = normalMap;
     }
 
     //! ラフネス用のテクスチャを取得する
@@ -49,13 +57,13 @@ public:
     GetAlpha(const ShadingInfo& shadingInfo) const
     {
         float alpha = 0.0f;
-        if (m_roughnessTexture)
+        if (m_roughnessMap)
         {
-            const float roughness =
-              GetLuminance(m_roughnessTexture->GetPixelByUV(
-                shadingInfo.uv.x,
-                shadingInfo.uv.y,
-                Texture2D::InterplationTypes::Bilinear));
+            const float roughness = m_roughnessMapStrength *
+                                    GetLuminance(m_roughnessMap->GetPixelByUV(
+                                      shadingInfo.uv.x,
+                                      shadingInfo.uv.y,
+                                      Texture2D::InterplationTypes::Bilinear));
             alpha = roughness * roughness;
         }
         else
@@ -63,6 +71,46 @@ public:
             alpha = m_alpha;
         }
         return alpha;
+    }
+
+    void
+    SetNormalMapStrength(float strength)
+    {
+        m_normalMapStrength = std::clamp(strength, 0.0f, 1.0f);
+    }
+
+    void
+    SetRoughnessMapStrength(float strength)
+    {
+        m_roughnessMapStrength = strength;
+    }
+
+    Math::Vector3f
+    GetNormal(const ShadingInfo& shadingInfo) const
+    {
+        if (m_normalMap)
+        {
+            Math::OrthonormalBasis localBasis;
+            localBasis.Build(shadingInfo.normal, shadingInfo.tangent);
+
+            const Math::Vector3f normalMap =
+              m_normalMap->GetPixelByUV(shadingInfo.uv.x,
+                                        shadingInfo.uv.y,
+                                        Texture2D::InterplationTypes::Bilinear);
+
+            const Math::Vector3f localNormal =
+              (2.0f * normalMap - Math::Vector3f::One()).Normalized();
+
+            return (1.0f - m_normalMapStrength) * localNormal.x *
+                     localBasis.GetU() +
+                   localNormal.y * localBasis.GetV() +
+                   (1.0f - m_normalMapStrength) * localNormal.z *
+                     localBasis.GetW();
+        }
+        else
+        {
+            return shadingInfo.normal;
+        }
     }
 
 private:
@@ -79,7 +127,11 @@ private:
     Color3f m_f0 = Color3f::One(); //!< 垂直入射時の反射色
     float m_alpha = 0.0f;          //!< Roughness^2
 
-    const Texture2D* m_roughnessTexture = nullptr; //!< Roughnessテクスチャ
+    float m_normalMapStrength = 1.0f; //!< ノーマルマップの強度[0, 1]
+    float m_roughnessMapStrength = 1.0f; //!< ノーマルマップの強度[0, 1]
+
+    const Texture2D* m_roughnessMap = nullptr; //!< ラフネスマップ
+    const Texture2D* m_normalMap = nullptr;    //!< ノーマルマップ
 };
 
 } // namespace Core
