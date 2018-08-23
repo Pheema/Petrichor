@@ -7,7 +7,9 @@
 #include "Core/Environment.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
+#include "Core/Material/MaterialBase.h"
 #include "Core/SceneSettings.h"
+#include <any>
 #include <optional>
 #include <vector>
 
@@ -18,8 +20,16 @@ namespace Core
 
 class Scene
 {
+    // #TODO: マテリアルの個数をファイルから読みこんで動的に変更する
+    static constexpr int kMaxNumMaterials = 128;
+
+
 public:
-    Scene() = default;
+
+    Scene()
+    {
+        m_materials.reserve(kMaxNumMaterials);
+    };
 
     // シーンにジオメトリを追加
     void
@@ -71,11 +81,24 @@ public:
     }
 
     // メインカメラを取得
-
     const Camera*
     GetMainCamera() const
     {
         return m_mainCamera;
+    }
+
+    //! シーン内で使用しているマテリアルを登録
+    template<class T>
+    T*
+    AppendMaterial(T material)
+    {
+        static_assert(std::is_base_of<MaterialBase, T>::value);
+
+        if (m_materials.size() >= kMaxNumMaterials)
+        {
+            throw std::runtime_error("Too many materials.");
+        }
+        return std::any_cast<T>(&m_materials.emplace_back(material));
     }
 
     // メインカメラを登録
@@ -116,14 +139,22 @@ public:
     std::optional<HitInfo>
     Intersect(const Ray& ray) const
     {
-        ASSERT(m_accel != nullptr);
+        if (m_accel == nullptr)
+        {
+            return std::nullopt;
+        }
+
         return m_accel->Intersect(ray);
     }
 
     std::optional<HitInfo>
     Intersect(const Ray& ray, float distMin) const
     {
-        ASSERT(m_accel != nullptr);
+        if (m_accel == nullptr)
+        {
+            return std::nullopt;
+        }
+
         return m_accel->Intersect(ray, distMin);
     }
 
@@ -141,8 +172,11 @@ private:
     // シーンに登録されたオブジェクト
     std::vector<const GeometryBase*> m_geometries;
 
-    //シーンに登録されたライト
+    // シーンに登録されたライト
     std::vector<const GeometryBase*> m_lights;
+
+    // シーンで使用するマテリアル
+    std::vector<std::any> m_materials;
 
     mutable Environment m_environment;
 
