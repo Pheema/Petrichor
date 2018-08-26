@@ -90,42 +90,87 @@ Texture2D::Texture2D(int width, int height)
 }
 
 void
-Texture2D::Load(std::string path, TextureColorType textureColorType)
+Texture2D::Load(const std::filesystem::path& path,
+                TextureColorType textureColorType)
 {
-    unsigned char* data = stbi_load(
-      path.c_str(), &m_width, &m_height, nullptr, kNumChannelsInPixel);
-
-    if (data == nullptr)
+    // #TODO: とりあえずif
+    if (path.extension() == ".png")
     {
-        std::cerr << "[Texture Loading Error] " << path << std::endl;
+        unsigned char* data = stbi_load(path.string().c_str(),
+                                        &m_width,
+                                        &m_height,
+                                        nullptr,
+                                        kNumChannelsInPixelRGB);
+
+        if (data == nullptr)
+        {
+            std::cerr << "[Texture Loading Error] " << path << std::endl;
+            return;
+        }
+
+        const int numPixels = m_width * m_height;
+
+        m_pixels.clear();
+        m_pixels.shrink_to_fit();
+        m_pixels.reserve(numPixels);
+        for (size_t i = 0; i < numPixels; i++)
+        {
+            // 8Bit/Channel前提
+            Color3f color{
+                static_cast<float>(data[kNumChannelsInPixelRGB * i]),
+                static_cast<float>(data[kNumChannelsInPixelRGB * i + 1]),
+                static_cast<float>(data[kNumChannelsInPixelRGB * i + 2])
+            };
+            color /= static_cast<float>(kColorDepth8Bit);
+            m_pixels.emplace_back(color);
+        }
+
+        // カラー用テクスチャの場合はガンマ補正
+        if (textureColorType == TextureColorType::Color)
+        {
+            for (auto& pixel : m_pixels)
+            {
+                pixel = ApplyGamma(pixel);
+            }
+        }
+
+        stbi_image_free(data);
         return;
     }
 
-    const int numPixels = m_width * m_height;
-    for (size_t i = 0; i < numPixels; i++)
+    if (path.extension() == ".hdr")
     {
-        // 8Bit/Channel前提
-        Color3f color{ static_cast<float>(data[kNumChannelsInPixel * i]),
-                       static_cast<float>(data[kNumChannelsInPixel * i + 1]),
-                       static_cast<float>(data[kNumChannelsInPixel * i + 2]) };
-        color /= static_cast<float>(kColorDepth8Bit);
-        m_pixels.emplace_back(color);
-    }
+        stbi_hdr_to_ldr_scale(1.0f);
+        const float* const data =
+          stbi_loadf(path.string().c_str(), &m_width, &m_height, nullptr, 0);
 
-    // カラー用テクスチャの場合はガンマ補正
-    if (textureColorType == TextureColorType::Color)
-    {
-        for (auto& pixel : m_pixels)
+        if (data == nullptr)
         {
-            pixel = ApplyGamma(pixel);
+            std::cerr << "[Texture Loading Error] " << path << std::endl;
+            return;
         }
-    }
 
-    stbi_image_free(data);
+        const int numPixels = m_width * m_height;
+
+        m_pixels.clear();
+        m_pixels.shrink_to_fit();
+        m_pixels.reserve(numPixels);
+        for (size_t i = 0; i < numPixels; i++)
+        {
+            Color3f color{ data[kNumChannelsInPixelHDR * i],
+                           data[kNumChannelsInPixelHDR * i + 1],
+                           data[kNumChannelsInPixelHDR * i + 2] };
+            m_pixels.emplace_back(color);
+        }
+
+        stbi_image_free(const_cast<float*>(data));
+        return;
+    }
 }
 
 void
-Texture2D::Save(std::string path, ImageTypes imageType) const
+Texture2D::Save(std::filesystem::path path,
+                ImageTypes imageType /*= ImageTypes::Png*/) const
 {
     // TODO: png以外も実装
     switch (imageType)
@@ -133,7 +178,7 @@ Texture2D::Save(std::string path, ImageTypes imageType) const
     case ImageTypes::Png:
     {
         std::vector<uint8_t> outPixels;
-        outPixels.reserve(kNumChannelsInPixel * m_width * m_height);
+        outPixels.reserve(kNumChannelsInPixelRGB * m_width * m_height);
 
         for (const auto& pixel : m_pixels)
         {
@@ -153,12 +198,12 @@ Texture2D::Save(std::string path, ImageTypes imageType) const
             outPixels.emplace_back(b);
         }
 
-        stbi_write_png(path.c_str(),
+        stbi_write_png(path.string().c_str(),
                        m_width,
                        m_height,
-                       kNumChannelsInPixel,
+                       kNumChannelsInPixelRGB,
                        &outPixels[0],
-                       m_width * kNumChannelsInPixel);
+                       m_width * kNumChannelsInPixelRGB);
         break;
     }
 

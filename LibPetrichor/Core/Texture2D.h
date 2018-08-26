@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Color3f.h"
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -41,11 +42,12 @@ public:
 
     // 画像を読み込む
     void
-    Load(std::string path, TextureColorType textureColorType);
+    Load(const std::filesystem::path& path, TextureColorType textureColorType);
 
     //// 画像を書き出し
     void
-    Save(std::string path, ImageTypes imageType = ImageTypes::Png) const;
+    Save(std::filesystem::path path,
+         ImageTypes imageType = ImageTypes::Png) const;
 
     //// 画像をクリア
     void
@@ -82,7 +84,8 @@ public:
 
 private:
     // TODO: RGBAに対応させる（現在はRGB）
-    static constexpr int kNumChannelsInPixel = 3;
+    static constexpr int kNumChannelsInPixelRGB = 3;
+    static constexpr int kNumChannelsInPixelHDR = 3;
     static constexpr int kColorDepth8Bit = 255;
 
     int m_width = 0;  //!< 画像の横幅[px]
