@@ -140,19 +140,23 @@ Petrichor::Initialize()
     normalMap->Load("Resource/SampleScene/CornellBox/MetalNormal.png",
                     Texture2D::TextureColorType::NonColor);
 
-    const auto* const matLambertRed = m_scene.AppendMaterial(Lambert(Color3f(1.0f, 0.0f, 0.0f)));
-    const auto* const matLambertGreen = m_scene.AppendMaterial(Lambert(Color3f(0, 1.0f, 0)));
-    const auto* const matLamberWhite = m_scene.AppendMaterial(Lambert(Color3f::One()));
+    const auto* const matLambertRed =
+      m_scene.AppendMaterial(Lambert(Color3f(1.0f, 0.0f, 0.0f)));
+    const auto* const matLambertGreen =
+      m_scene.AppendMaterial(Lambert(Color3f(0, 1.0f, 0)));
+    const auto* const matLamberWhite =
+      m_scene.AppendMaterial(Lambert(Color3f::One()));
     // MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     // MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
     // MaterialBase* matLamberWhite = new Lambert(Color3f::One());
     // GGX* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
 
-    auto* const matGGX = m_scene.AppendMaterial(GGX(0.9f * Color3f::One(), 0.1f));
-    // matGGX->SetRoughnessMap(roughnessTex);
-    // matGGX->SetRoughnessMapStrength(0.4f);
-    // matGGX->SetNormalMap(normalMap);
-    // matGGX->SetNormalMapStrength(0.1f);
+    auto* const matGGX =
+      m_scene.AppendMaterial(GGX(0.9f * Color3f::One(), 0.1f));
+    matGGX->SetRoughnessMap(roughnessTex);
+    matGGX->SetRoughnessMapStrength(0.4f);
+    matGGX->SetNormalMap(normalMap);
+    matGGX->SetNormalMapStrength(0.1f);
 
     // MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
@@ -193,7 +197,7 @@ Petrichor::Initialize()
     m_scene.AppendLightMesh(*ceilLight);
 
     auto const camera =
-        new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
+      new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
     // camera->SetLens(100e-3f);
@@ -206,7 +210,7 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load(
-        "Resource/SampleScene/CornellBox/balcony_2k.png");
+      "Resource/SampleScene/CornellBox/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
@@ -240,10 +244,11 @@ Petrichor::Render()
     std::mutex mtx;
 
     const uint32_t numThreads = m_scene.GetSceneSettings().numThreads > 0
-        ? m_scene.GetSceneSettings().numThreads
-        : std::thread::hardware_concurrency();
+                                  ? m_scene.GetSceneSettings().numThreads
+                                  : std::thread::hardware_concurrency();
 
-    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency() << std::endl;
+    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency()
+              << std::endl;
     std::cout << "Number of used threads: " << numThreads << std::endl;
 
     {
@@ -269,24 +274,24 @@ Petrichor::Render()
                     for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
                     {
                         pt.Render(
-                            i, j, m_scene, targetTexure, sampler1D, sampler2D);
+                          i, j, m_scene, targetTexure, sampler1D, sampler2D);
                     }
                 }
 
                 {
                     std::lock_guard<std::mutex> lock(mtx);
                     maxIdxTile =
-                        std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
+                      std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
 
                     const float ratio = 100.0f *
-                        static_cast<float>(maxIdxTile) /
-                        tileManager.GetNumTiles();
+                                        static_cast<float>(maxIdxTile) /
+                                        tileManager.GetNumTiles();
 
                     std::stringstream ss;
                     ss << "[PT: Rendering] " << (maxIdxTile + 1) << "/"
-                        << tileManager.GetNumTiles() << "(" << std::fixed
-                        << std::setprecision(2) << ratio << "%)"
-                        << "\r" << std::flush;
+                       << tileManager.GetNumTiles() << "(" << std::fixed
+                       << std::setprecision(2) << ratio << "%)"
+                       << "\r" << std::flush;
                     std::cout << ss.str();
                 }
             });
@@ -305,14 +310,15 @@ Petrichor::SaveImage(const std::string& path)
 void
 Petrichor::Finalize()
 {
-    const std::chrono::duration<float> totalTime = ClockType::now() - m_timeRenderingBegin;
+    const std::chrono::duration<float> totalTime =
+      ClockType::now() - m_timeRenderingBegin;
 
     {
         RenderingResult renderingResult;
         renderingResult.totalSec = totalTime.count();
         m_onRenderingFinished(renderingResult);
     }
-    
+
     std::cout << "[Finished]" << std::endl;
 }
 
