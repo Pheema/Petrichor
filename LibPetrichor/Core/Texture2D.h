@@ -46,8 +46,7 @@ public:
 
     //// 画像を書き出し
     void
-    Save(std::filesystem::path path,
-         ImageTypes imageType = ImageTypes::Png) const;
+    Save(std::filesystem::path path) const;
 
     //// 画像をクリア
     void

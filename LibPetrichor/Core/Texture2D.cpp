@@ -74,17 +74,13 @@ ApplyDegamma(const Color3f& color)
 } // namespace
 
 Texture2D::Texture2D()
-  : m_width(0)
-  , m_height(0)
-  , m_interplationType(InterplationTypes::Point)
+  : Texture2D(0, 0)
 {
-    Clear();
 }
 
 Texture2D::Texture2D(int width, int height)
   : m_width(width)
   , m_height(height)
-  , m_interplationType(InterplationTypes::Point)
 {
     Clear();
 }
@@ -169,13 +165,9 @@ Texture2D::Load(const std::filesystem::path& path,
 }
 
 void
-Texture2D::Save(std::filesystem::path path,
-                ImageTypes imageType /*= ImageTypes::Png*/) const
+Texture2D::Save(std::filesystem::path path) const
 {
-    // TODO: png以外も実装
-    switch (imageType)
-    {
-    case ImageTypes::Png:
+    if (path.extension() == ".png")
     {
         std::vector<uint8_t> outPixels;
         outPixels.reserve(kNumChannelsInPixelRGB * m_width * m_height);
@@ -204,21 +196,30 @@ Texture2D::Save(std::filesystem::path path,
                        kNumChannelsInPixelRGB,
                        &outPixels[0],
                        m_width * kNumChannelsInPixelRGB);
-        break;
+        return;
     }
 
-    case ImageTypes::Jpg:
+    if (path.extension() == ".hdr")
     {
-        UNIMPLEMENTED();
-        break;
+        std::vector<float> outPixels;
+        outPixels.reserve(kNumChannelsInPixelHDR * m_width * m_height);
+
+        for (const auto& pixel : m_pixels)
+        {
+            outPixels.emplace_back(pixel.x);
+            outPixels.emplace_back(pixel.y);
+            outPixels.emplace_back(pixel.z);
+        }
+
+        stbi_write_hdr(path.string().c_str(),
+                       m_width,
+                       m_height,
+                       kNumChannelsInPixelHDR,
+                       &outPixels[0]);
+        return;
     }
 
-    default:
-    {
-        ASSERT(false && "Invalid image type.");
-        break;
-    }
-    }
+    throw std::runtime_error("Unsupported image type.");
 }
 
 void
