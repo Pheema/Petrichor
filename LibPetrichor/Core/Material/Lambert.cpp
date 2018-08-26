@@ -65,10 +65,14 @@ Lambert::CreateNextRay(const Ray& rayIn,
 
     if (IsImportanceSamplingEnabled())
     {
-        const float theta = asin(sqrt(rand0));
         const float phi = 2.0f * Math::kPi * rand1;
+        const float sinTheta = sqrt(rand0);
+        const float coffU = sinTheta * cos(phi);
+        const float coffV = sinTheta * sin(phi);
+        const float coffW = sqrt(1.0f - sinTheta * sinTheta);
 
-        const auto outDir = onb.GetDir(theta, phi);
+        const Math::Vector3f outDir =
+          coffU * onb.GetU() + coffV * onb.GetV() + coffW * onb.GetW();
 
         Color3f outWeight = rayIn.weight * m_kd;
         if (m_texAlbedo)
@@ -85,10 +89,16 @@ Lambert::CreateNextRay(const Ray& rayIn,
     }
     else
     {
-        const float theta = acos(rand0);
+        const float cosTheta = rand0;
+        const float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
         const float phi = 2.0f * Math::kPi * rand1;
 
-        const auto outDir = onb.GetDir(theta, phi);
+        const float coffU = sinTheta * cos(phi);
+        const float coffV = sinTheta * sin(phi);
+        const float coffW = cosTheta;
+
+        const Math::Vector3f outDir =
+          coffU * onb.GetU() + coffV * onb.GetV() + coffW * onb.GetW();
 
         Ray rayOut(shadingInfo.pos + kEps * normal,
                    outDir,
@@ -97,7 +107,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
                    rayIn.bounce + 1);
 
         const auto f = BxDF(rayIn, rayOut, shadingInfo);
-        rayOut.weight *= (f * cos(theta) / PDF(rayIn, rayOut, shadingInfo));
+        rayOut.weight *= (f * cosTheta / PDF(rayIn, rayOut, shadingInfo));
 
         return rayOut;
     }
