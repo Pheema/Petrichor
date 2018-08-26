@@ -226,6 +226,9 @@ PathTracing::CalcLightContribution(const Scene& scene,
               misWeight * ray.weight * (li * f * cos * cosP / (pdfArea * l2));
         }
     }
+
+    scene.GetEnvironment().ImportanceSampling(sampler2D);
+
     return lightContribution;
 }
 

@@ -210,8 +210,9 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load(
-      "Resource/SampleScene/CornellBox/balcony_2k.png");
-    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+      "Resource/SampleScene/CornellBox/cape_hill_2k.hdr");
+    m_scene.GetEnvironment().SetBaseColor(3.0f * Color3f::One());
+    m_scene.GetEnvironment().SetZAxisRotation(0.5f * Math::kPi);
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
