@@ -8,6 +8,19 @@
 // #define ENABLE_TIME_LIMITATION
 #define SAVE_IMAGE_PERIODICALLY
 
+void OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
+{
+    std::ofstream file("Output/Result.txt");
+    if (file.fail())
+    {
+        return;
+    }
+
+    file << std::fixed;
+    file << "Total time: " << std::setprecision(2) << renderingResult.totalSec << "[s]" << std::endl;
+    file.close();
+}
+
 int
 main()
 {
@@ -57,9 +70,9 @@ main()
     elapsedTimeChecker.detach();
 #endif
 
+    petrichor.SetRenderCallback(OnRenderingFinished);
+
     petrichor.Render();
     petrichor.SaveImage("Output/Result.png");
-    petrichor.Finalize();
-
     return 0;
 }

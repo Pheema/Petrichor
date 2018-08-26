@@ -58,7 +58,7 @@ public:
     inline const MaterialBase*
     GetMaterial(float randValue) const
     {
-        const MaterialBase *mat0 = nullptr, *mat1 = nullptr;
+        /*const MaterialBase *mat0 = nullptr, *mat1 = nullptr;
         float mix = 0.0f;
         if (m_material->GetMaterialType(&mat0, &mat1, &mix) ==
             MaterialTypes::Mix)
@@ -68,7 +68,7 @@ public:
                 return mat1;
             }
             return mat0;
-        }
+        }*/
 
         return m_material;
     }

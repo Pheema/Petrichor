@@ -30,6 +30,7 @@ add_library(LibPetrichor STATIC
     Core/TileManager.cpp
     Math/Halton.cpp
     Math/OrthonormalBasis.cpp
+    TestScene/TestScene.cpp
 )
 
 target_compile_definitions(
