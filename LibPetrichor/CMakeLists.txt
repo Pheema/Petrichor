@@ -35,7 +35,7 @@ add_library(LibPetrichor STATIC
 target_compile_definitions(
     LibPetrichor
     PRIVATE
-        STBI_MSC_SECURE_CRT	# [stb_image] Use secure CRT functions
+        $<$<CXX_COMPILER_ID:MSVC>:STBI_MSC_SECURE_CRT> # [stb_image] Use secure CRT functions
         $<$<CONFIG:Debug>:PHM_DEBUG>
         $<$<CONFIG:RelWithDebInfo>:PHM_DEBUG>
 )
@@ -57,6 +57,6 @@ target_compile_options(
 target_include_directories(
     LibPetrichor
     PRIVATE
-        /
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 conan_target_link_libraries(LibPetrichor)
