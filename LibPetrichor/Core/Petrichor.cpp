@@ -54,11 +54,11 @@ Petrichor::Initialize()
 
     MaterialBase* matGGXBodySmooth = new GGX(0.05f * Color3f::One(), 0.1f);
     MaterialBase* matBodySmooth =
-      new MatMix(matLambertBody, matGGXBodySmooth, 0.2f);
+        new MatMix(matLambertBody, matGGXBodySmooth, 0.2f);
 
     MaterialBase* matGGXBodyRough = new GGX(0.05f * Color3f::One(), 0.3f);
     MaterialBase* matBodyRough =
-      new MatMix(matLambertBody, matGGXBodyRough, 0.2f);
+        new MatMix(matLambertBody, matGGXBodyRough, 0.2f);
 
     MaterialBase* matArrayBody[] = { matGGXBodySmooth, matGGXBodyRough };
 
@@ -91,16 +91,16 @@ Petrichor::Initialize()
                    2,
                    ShadingTypes::Smooth);
     meshCover->Load(
-      "Resource/Speaker/CoverMesh.obj", &matMixCover, 1, ShadingTypes::Smooth);
+        "Resource/Speaker/CoverMesh.obj", &matMixCover, 1, ShadingTypes::Smooth);
     meshCode->Load(
-      "Resource/Speaker/Code.obj", &matMixCode, 1, ShadingTypes::Smooth);
+        "Resource/Speaker/Code.obj", &matMixCode, 1, ShadingTypes::Smooth);
     meshLightLU->Load(
-      "Resource/Speaker/PanelLightLU.obj", &matLightLU, 1, ShadingTypes::Flat);
+        "Resource/Speaker/PanelLightLU.obj", &matLightLU, 1, ShadingTypes::Flat);
     meshLightR->Load(
-      "Resource/Speaker/PanelLightR.obj", &matLightR, 1, ShadingTypes::Flat);
+        "Resource/Speaker/PanelLightR.obj", &matLightR, 1, ShadingTypes::Flat);
 
     meshFloor->Load(
-      "Resource/Speaker/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
+        "Resource/Speaker/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
 
     // sphere->SetMaterial(matMixFloor);
     floor->SetMaterial(matLambertFloor);
@@ -185,7 +185,7 @@ Petrichor::Initialize()
     m_scene.AppendLightMesh(*ceilLight);
 
     auto const camera =
-      new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
+        new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
     // camera->SetLens(100e-3f);
@@ -198,7 +198,7 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load(
-      "Resource/SampleScene/CornellBox/balcony_2k.png");
+        "Resource/SampleScene/CornellBox/balcony_2k.png");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
 
     // レンダリング先を指定
@@ -230,8 +230,12 @@ Petrichor::Render()
     std::mutex mtx;
 
     const uint32_t numThreads = m_scene.GetSceneSettings().numThreads > 0
-                                  ? m_scene.GetSceneSettings().numThreads
-                                  : std::thread::hardware_concurrency();
+        ? m_scene.GetSceneSettings().numThreads
+        : std::thread::hardware_concurrency();
+
+    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency() << std::endl;
+    std::cout << "Number of used threads: " << numThreads << std::endl;
+
     {
         uint32_t maxIdxTile = 0;
         ThreadPool<void> threadPool(numThreads);
@@ -255,24 +259,24 @@ Petrichor::Render()
                     for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
                     {
                         pt.Render(
-                          i, j, m_scene, targetTexure, sampler1D, sampler2D);
+                            i, j, m_scene, targetTexure, sampler1D, sampler2D);
                     }
                 }
 
                 {
                     std::lock_guard<std::mutex> lock(mtx);
                     maxIdxTile =
-                      std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
+                        std::max(maxIdxTile, static_cast<uint32_t>(idxTile));
 
                     const float ratio = 100.0f *
-                                        static_cast<float>(maxIdxTile) /
-                                        tileManager.GetNumTiles();
+                        static_cast<float>(maxIdxTile) /
+                        tileManager.GetNumTiles();
 
                     std::stringstream ss;
                     ss << "[PT: Rendering] " << (maxIdxTile + 1) << "/"
-                       << tileManager.GetNumTiles() << "(" << std::fixed
-                       << std::setprecision(2) << ratio << "%)"
-                       << "\r" << std::flush;
+                        << tileManager.GetNumTiles() << "(" << std::fixed
+                        << std::setprecision(2) << ratio << "%)"
+                        << "\r" << std::flush;
                     std::cout << ss.str();
                 }
             });
