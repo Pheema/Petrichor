@@ -30,7 +30,7 @@ Environment::GetColor(const Math::Vector3f& dir) const
 
     IS_NORMALIZED(dir);
     const float theta = acos(dir.z);
-    const float phi = atan2(dir.y, dir.x);
+    const float phi = atan2(dir.y, dir.x) - m_yAxisRot;
 
     float u = 1.0f - phi * 0.5f * Math::kInvPi;
     float v = theta * Math::kInvPi;
