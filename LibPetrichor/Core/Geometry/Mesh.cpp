@@ -1,13 +1,13 @@
 ﻿#include "Mesh.h"
 
-#include "Assimp/Importer.hpp"
-#include "Assimp/mesh.h"
-#include "Assimp/postprocess.h"
-#include "Assimp/scene.h"
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
 #include "Core/Material/MaterialBase.h"
 #include "Core/Scene.h"
+#include "assimp/Importer.hpp"
+#include "assimp/mesh.h"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
 
 namespace Petrichor
 {

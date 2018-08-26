@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Geometry/Triangle.h"
-#include "Core/Geometry/Vertex.h"
+#include "Triangle.h"
+#include "Vertex.h"
 #include <vector>
 
 namespace Petrichor
