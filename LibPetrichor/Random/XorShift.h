@@ -22,10 +22,10 @@ public:
     {
         return 0u;
     }
-    static constexpr unsigned
+    static constexpr uint64_t
     max()
     {
-        return UINT_MAX;
+        return UINT_MAX + 1llu;
     }
     unsigned
     operator()()

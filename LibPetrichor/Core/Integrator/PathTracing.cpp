@@ -138,8 +138,34 @@ PathTracing::Render(uint32_t pixelX,
             {
                 // IBL
                 // TODO: GetEnvironment()を知ってるのおかしい
-                color += ray.weight * scene.GetEnvironment().GetColor(ray.dir);
-                ASSERT(color.MinElem() >= 0.0f);
+                if (scene.GetEnvironment().UseEnvImportanceSampling())
+                {
+                    const float cos =
+                      abs(Math::Dot(shadingInfo.normal, ray.dir));
+                    const float sin = sqrt(std::max(0.0f, 1.0f - cos * cos));
+
+                    const float pdfBSDF = mat->PDF(prevRay, ray, shadingInfo);
+                    const float pdfEnv =
+                      scene.GetEnvironment().GetImportanceSamplingPDF(ray.dir) *
+                      2.0f * Math::kPi * Math::kPi * sin;
+
+#ifdef BALANCE_HEURISTIC
+                    float misWeight = pdfBSDF / (pdfEnv + pdfBSDF);
+#else
+                    float misWeight =
+                      pdfBSDF * pdfBSDF / (pdfEnv * pdfEnv + pdfBSDF * pdfBSDF);
+#endif
+
+                    color += misWeight * ray.weight *
+                             scene.GetEnvironment().GetColor(ray.dir);
+                }
+                else
+                {
+                    color +=
+                      ray.weight * scene.GetEnvironment().GetColor(ray.dir);
+                    ASSERT(color.MinElem() >= 0.0f);
+                }
+
                 break;
             }
         }
@@ -169,65 +195,107 @@ PathTracing::CalcLightContribution(const Scene& scene,
 
     Color3f lightContribution;
 
-    float pdfArea = 1.0f;
-
     const float dot = -Math::Dot(ray.dir, shadingInfo.normal);
     const Math::Vector3f p =
       shadingInfo.pos + kEps * std::copysign(1.0f, dot) * shadingInfo.normal;
     ;
+
+    float pdfArea = 1.0f;
     const PointData pointOnLight =
       SampleLight(scene, p, sampler1D.Next(), sampler2D, &pdfArea);
 
-    Ray rayToLight(p, (pointOnLight.pos - p).Normalized(), RayTypes::Shadow);
-
-    const auto hitInfoLight = scene.Intersect(rayToLight);
-    if (hitInfoLight && hitInfoLight->hitObj->GetMaterial(sampler1D.Next())
-                            ->GetMaterialType() == MaterialTypes::Emission)
     {
-        const ShadingInfo shadingInfoLight =
-          (*hitInfoLight->hitObj).Interpolate(rayToLight, *hitInfoLight);
-        const float dist =
-          (pointOnLight.pos - shadingInfoLight.pos).SquaredLength();
+        Ray rayToLight(
+          p, (pointOnLight.pos - p).Normalized(), RayTypes::Shadow);
 
-        const bool isHitToLight = Math::ApproxEq(dist, 0.0f, kEps);
-        if (isHitToLight)
+        const auto hitInfoLight = scene.Intersect(rayToLight);
+        if (hitInfoLight && hitInfoLight->hitObj->GetMaterial(sampler1D.Next())
+                                ->GetMaterialType() == MaterialTypes::Emission)
         {
-            const MaterialBase* const mat = shadingInfo.material;
+            const ShadingInfo shadingInfoLight =
+              (*hitInfoLight->hitObj).Interpolate(rayToLight, *hitInfoLight);
+            const float dist =
+              (pointOnLight.pos - shadingInfoLight.pos).SquaredLength();
 
-            const float l2 =
-              (shadingInfoLight.pos - shadingInfo.pos).SquaredLength();
-
-            const float cosP =
-              std::abs(Dot(rayToLight.dir, shadingInfoLight.normal));
-
-            float misWeight = 0.0f;
-            if (l2 > 0.0f)
+            const bool isHitToLight = Math::ApproxEq(dist, 0.0f, kEps);
+            if (isHitToLight)
             {
-                const float pdfLight = pdfArea;
-                const float pdfBSDF =
-                  mat->PDF(ray, rayToLight, shadingInfo) * cosP / l2;
+                const MaterialBase* const mat = shadingInfo.material;
+
+                const float l2 =
+                  (shadingInfoLight.pos - shadingInfo.pos).SquaredLength();
+
+                const float cosP =
+                  std::abs(Dot(rayToLight.dir, shadingInfoLight.normal));
+
+                float misWeight = 0.0f;
+                if (l2 > 0.0f)
+                {
+                    const float pdfLight = pdfArea;
+                    const float pdfBSDF =
+                      mat->PDF(ray, rayToLight, shadingInfo) * cosP / l2;
 #ifdef BALANCE_HEURISTIC
-                misWeight = pdfLight / (pdfLight + pdfBSDF);
+                    misWeight = pdfLight / (pdfLight + pdfBSDF);
 #else
-                misWeight = pdfLight * pdfLight /
-                            (pdfLight * pdfLight + pdfBSDF * pdfBSDF);
+                    misWeight = pdfLight * pdfLight /
+                                (pdfLight * pdfLight + pdfBSDF * pdfBSDF);
 #endif
+                }
+
+                const auto matEmission =
+                  static_cast<const Emission*>(shadingInfoLight.material);
+                const Color3f li = matEmission->GetLightColor();
+                const Color3f f = mat->BxDF(ray, rayToLight, shadingInfo);
+                auto cos =
+                  std::abs(Math::Dot(rayToLight.dir, shadingInfo.normal));
+
+                ASSERT(std::isfinite(misWeight) && misWeight >= 0.0f);
+
+                lightContribution += misWeight * ray.weight *
+                                     (li * f * cos * cosP / (pdfArea * l2));
             }
-
-            const auto matEmission =
-              static_cast<const Emission*>(shadingInfoLight.material);
-            const Color3f li = matEmission->GetLightColor();
-            const Color3f f = mat->BxDF(ray, rayToLight, shadingInfo);
-            auto cos = std::abs(Math::Dot(rayToLight.dir, shadingInfo.normal));
-
-            ASSERT(std::isfinite(misWeight) && misWeight >= 0.0f);
-
-            lightContribution =
-              misWeight * ray.weight * (li * f * cos * cosP / (pdfArea * l2));
         }
     }
 
-    scene.GetEnvironment().ImportanceSampling(sampler2D);
+    if (scene.GetEnvironment().UseEnvImportanceSampling())
+    {
+        float pdfuv = 0.0f;
+        Math::Vector3f sampledDir =
+          scene.GetEnvironment().ImportanceSampling(sampler2D, &pdfuv);
+
+        const Math::Vector3f rayOrigin =
+          shadingInfo.pos +
+          kEps * std::copysign(1.0f, dot) * shadingInfo.normal;
+
+        Ray rayToEnv(rayOrigin, sampledDir, RayTypes::Shadow);
+        const std::optional<HitInfo> hitInfo = scene.Intersect(rayToEnv);
+
+        // 物体に遮られず、環境マップが見えた場合
+        if (hitInfo == std::nullopt)
+        {
+            const float cos =
+              std::abs(Math::Dot(rayToEnv.dir, shadingInfo.normal));
+            const float sin = sqrt(std::max(0.0f, 1.0f - cos * cos));
+            const MaterialBase* const mat = shadingInfo.material;
+
+            const float pdfBSDF = 2.0f * Math::kPi * Math::kPi * sin *
+                                  mat->PDF(ray, rayToEnv, shadingInfo);
+
+#ifdef BALANCE_HEURISTIC
+            float misWeight = pdfuv / (pdfuv + pdfBSDF);
+#else
+            float misWeight =
+              pdfuv * pdfuv / (pdfuv * pdfuv + pdfBSDF * pdfBSDF);
+#endif
+
+            const Color3f li = scene.GetEnvironment().GetColor(rayToEnv.dir);
+            const Color3f f = mat->BxDF(ray, rayToEnv, shadingInfo);
+
+            lightContribution +=
+              misWeight * ray.weight *
+              (li * f * sin * cos * 2.0f * Math::kPi * Math::kPi) / pdfuv;
+        }
+    }
 
     return lightContribution;
 }
@@ -241,12 +309,7 @@ PathTracing::SampleLight(const Scene& scene,
 {
     const auto& lights = scene.GetLights();
 
-    auto index = static_cast<size_t>(randomVal * lights.size());
-    if (index >= lights.size())
-    {
-        std::cout << index << std::endl;
-        index = lights.size() - 1;
-    }
+    const auto index = static_cast<int>(randomVal * lights.size());
     ASSERT(index < lights.size());
 
     float sumArea = 0.0f;

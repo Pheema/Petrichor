@@ -2,9 +2,9 @@
 
 #include "Core/Color3f.h"
 #include "Core/Constants.h"
-#include "Math/Vector3f.h"
-#include "Math/OrthonormalBasis.h"
 #include "Math/MathUtils.h"
+#include "Math/OrthonormalBasis.h"
+#include "Math/Vector3f.h"
 
 namespace Petrichor
 {
@@ -34,9 +34,9 @@ Environment::GetColor(const Math::Vector3f& dir) const
 
     IS_NORMALIZED(dir);
     const float theta = acos(dir.z);
-    const float phi = atan2(dir.y, dir.x) - m_ZAxisRotation;
+    const float phi = atan2(dir.y, dir.x);
 
-    float u = 1.0f - phi * 0.5f * Math::kInvPi;
+    float u = 1.0f - (phi - m_ZAxisRotation) * 0.5f * Math::kInvPi;
     float v = theta * Math::kInvPi;
 
     u = Math::Mod(u, 1.0f);
@@ -66,7 +66,6 @@ Environment::PreCalcCumulativeDistTex()
     m_debugTex = Texture2D(m_texEnv->GetWidth(), m_texEnv->GetHeight());
 
     // 列方向の和
-    Color3f sumLuminance2D;
     for (int i = 0; i < m_cdf2D.GetWidth(); i++)
     {
         for (int j = 0; j < m_cdf2D.GetHeight(); j++)
@@ -77,8 +76,8 @@ Environment::PreCalcCumulativeDistTex()
             }
 
             const Color3f& prevPixel = m_cdf2D.GetPixel(i, j - 1);
-            const Color3f luminance = GetLuminance(m_texEnv->GetPixel(i, j)) * Color3f::One();
-            sumLuminance2D += luminance;
+            const Color3f luminance =
+              GetLuminance(m_texEnv->GetPixel(i, j)) * Color3f::One();
 
             m_pdf2D.SetPixel(i, j, luminance);
             m_cdf2D.SetPixel(i, j, prevPixel + luminance);
@@ -128,57 +127,15 @@ Environment::PreCalcCumulativeDistTex()
             }
         }
     }
-
-
-    //// 行方向の和
-    //for (int j = 0; j < m_cdf2D.GetHeight(); j++)
-    //{
-    //    for (int i = 0; i < m_cdf2D.GetWidth(); i++)
-    //    {
-    //        if (i == 0)
-    //        {
-    //            continue;
-    //        }
-
-    //        const float prevluminace = GetLuminance(m_cdf2D.GetPixel(i - 1, j));
-
-    //        const float luminance = GetLuminance(m_cdf2D.GetPixel(i, j));
-
-    //        m_cdf2D.SetPixel(i, j, (prevluminace + luminance) * Color3f::One());
-    //    }
-    //}
-
-    /*Math::Vector3f sumOfAllPixel =
-      m_cdf2D.GetPixel(m_cdf2D.GetWidth() - 1, m_cdf2D.GetHeight() - 1);
-
-    m_maxLuminance = 0.0f;
-    for (int j = 0; j < m_cdf2D.GetHeight(); j++)
-    {
-        for (int i = 0; i < m_cdf2D.GetWidth(); i++)
-        {
-            const float l = GetLuminance(m_texEnv->GetPixel(i, j));
-            if (l > m_maxLuminance)
-            {
-                m_maxLuminance = l;
-            }
-
-            const Color3f pixel = m_cdf2D.GetPixel(i, j);
-            m_cdf2D.SetPixel(i, j, pixel / sumOfAllPixel);
-        }
-    }*/
-
-    m_pdf2D.Save("pdf2D.hdr");
-    m_cdf2D.Save("cdf2D.hdr");
 }
 
-Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
+Math::Vector3f
+Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
 {
     const float texelWidth = 1.0f / m_pdf2D.GetWidth();
     const float texelHeight = 1.0f / m_pdf2D.GetHeight();
 
-    // !!!
-    const float rand0 = rand() / static_cast<float>(RAND_MAX + 1);
-    const float rand1 = rand() / static_cast<float>(RAND_MAX + 1);
+    const auto [rand0, rand1] = sampler2D.Next();
 
     float u0 = 0.0f;
     float u1 = 1.0f;
@@ -186,8 +143,10 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
     {
         const float u = 0.5f * (u0 + u1);
         const float x = u * m_cdf2D.GetWidth();
-        const int floorX = static_cast<int>(x);
-        const float cdf1D = Math::Lerp(m_cdf1D[floorX], m_cdf1D[floorX + 1], x - floorX);
+        const auto floorX = static_cast<int>(x);
+        const auto ceilX = std::min(floorX + 1, m_cdf2D.GetWidth() - 1);
+        const float cdf1D =
+          Math::Lerp(m_cdf1D[floorX], m_cdf1D[ceilX], x - floorX);
         const float diff = cdf1D - rand0;
 
         if (u1 - u0 <= texelWidth)
@@ -211,7 +170,10 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
     for (;;)
     {
         const float v = 0.5f * (v0 + v1);
-        const float diff = m_cdf2D.GetPixelByUV(u0, v, Texture2D::InterplationTypes::Bilinear).x - rand1;
+        const float diff =
+          m_cdf2D.GetPixelByUV(u0, v, Texture2D::InterplationTypes::Bilinear)
+            .x -
+          rand1;
 
         if (v1 - v0 <= texelHeight)
         {
@@ -219,38 +181,72 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
             break;
         }
 
-        if (diff >= 0)
+        if (diff > 0)
         {
             v1 = v;
         }
-        else
+        else if (diff < 0)
         {
             v0 = v;
         }
+        else
+        {
+            v0 = v1 = v;
+            break;
+        }
     }
 
-    u0 += 0.5f * texelWidth;
-    v0 += 0.5f * texelHeight;
+    // u0 += 0.5f * texelWidth;
+    // v0 += 0.5f * texelHeight;
 
     if (pdfXY)
     {
         const float x = u0 * m_pdf2D.GetWidth();
-        const int x0 = static_cast<int>(u0 * m_pdf2D.GetWidth());
-        const int x1 = x0 + 1;
+        const auto x0 = static_cast<int>(x);
+        const int x1 = std::min(x0 + 1, static_cast<int>(m_pdf1D.size()) - 1);
         const float pdfX0 = Math::Lerp(m_pdf1D[x0], m_pdf1D[x1], x - x0);
-        const float pdfY0UnderX0 = m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear).x;
+        const float pdfY0UnderX0 =
+          m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear)
+            .x;
         *pdfXY = pdfX0 * pdfY0UnderX0;
     }
 
-    auto prevColor = m_debugTex.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Point);
-    m_debugTex.SetPixel(static_cast<int>(u0 * m_debugTex.GetWidth()), static_cast<int>(v0 * m_debugTex.GetHeight()), prevColor + Color3f::One());
+    auto prevColor =
+      m_debugTex.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Point);
+    m_debugTex.SetPixel(static_cast<int>(u0 * m_debugTex.GetWidth()),
+                        static_cast<int>(v0 * m_debugTex.GetHeight()),
+                        prevColor + Color3f::One());
 
-    const float theta = u0 * Math::kPi;
-    const float phi = 0.5f * Math::kPi * (1.0f - v0) - m_ZAxisRotation;
+    const float theta = v0 * Math::kPi;
+    const float phi = 2.0f * Math::kPi * (1.0f - u0) + m_ZAxisRotation;
 
     Math::OrthonormalBasis onb;
     onb.Build(Math::Vector3f::UnitZ(), Math::Vector3f::UnitX());
     return onb.GetDir(theta, phi);
+}
+
+float
+Environment::GetImportanceSamplingPDF(const Math::Vector3f& dir) const
+{
+    if (m_texEnv == nullptr)
+    {
+        return 0.0f;
+    }
+
+    IS_NORMALIZED(dir);
+    const float theta = acos(dir.z);
+    const float phi = atan2(dir.y, dir.x);
+
+    float u0 = 1.0f - (phi - m_ZAxisRotation) * 0.5f * Math::kInvPi;
+    float v0 = theta * Math::kInvPi;
+
+    const float x = u0 * m_pdf2D.GetWidth();
+    const auto x0 = static_cast<int>(x);
+    const int x1 = std::min(x0 + 1, static_cast<int>(m_pdf1D.size()) - 1);
+    const float pdfX0 = Math::Lerp(m_pdf1D[x0], m_pdf1D[x1], x - x0);
+    const float pdfY0UnderX0 =
+      m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear).x;
+    return pdfX0 * pdfY0UnderX0;
 }
 
 } // namespace Core

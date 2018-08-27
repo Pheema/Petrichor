@@ -37,6 +37,8 @@ public:
 
 private:
     // ランダムにライト上をサンプリング
+    //! @param envMapSampling
+    //! trueの場合はライトをサンプリングするのではなく、環境マップを直接サンプリングしにいく
     PointData
     SampleLight(const Scene& scene,
                 const Math::Vector3f& shadowRayOrigin,

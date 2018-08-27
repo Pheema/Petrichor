@@ -161,7 +161,7 @@ Petrichor::Initialize()
     // MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
     const auto* const matEmissionWhite =
-      m_scene.AppendMaterial(Emission(10.0f * Color3f::One()));
+      m_scene.AppendMaterial(Emission(Color3f::One()));
 
     auto const leftWall = new Mesh();
     leftWall->Load("Resource/SampleScene/CornellBox/LeftWall.obj",
@@ -200,7 +200,7 @@ Petrichor::Initialize()
       new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
 
     camera->FocusTo(Math::Vector3f::Zero());
-    // camera->SetLens(100e-3f);
+    // camera->SetLens(18e-3f);
 
     m_scene.SetMainCamera(*camera);
 
@@ -210,9 +210,9 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load(
-      "Resource/SampleScene/CornellBox/cape_hill_2k.hdr");
-    m_scene.GetEnvironment().SetBaseColor(3.0f * Color3f::One());
-    m_scene.GetEnvironment().SetZAxisRotation(0.5f * Math::kPi);
+      "Resource/SampleScene/CornellBox/syferfontein_18d_clear_2k.hdr");
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+    m_scene.GetEnvironment().SetZAxisRotation(-1.25f * Math::kPi);
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
@@ -311,6 +311,9 @@ Petrichor::SaveImage(const std::string& path)
 void
 Petrichor::Finalize()
 {
+    // #DEBUG
+    m_scene.GetEnvironment().m_debugTex.Save("sampling.hdr");
+
     const std::chrono::duration<float> totalTime =
       ClockType::now() - m_timeRenderingBegin;
 
