@@ -173,69 +173,77 @@ Environment::PreCalcCumulativeDistTex()
 
 Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
 {
-    // !!!
-    const float u0 = rand() / static_cast<float>(RAND_MAX);
-    const float u1 = rand() / static_cast<float>(RAND_MAX);
+    const float texelWidth = 1.0f / m_pdf2D.GetWidth();
+    const float texelHeight = 1.0f / m_pdf2D.GetHeight();
 
-    float x0 = 0;
-    float x1 = m_cdf1D.size() - 1;
+    // !!!
+    const float rand0 = rand() / static_cast<float>(RAND_MAX);
+    const float rand1 = rand() / static_cast<float>(RAND_MAX);
+
+    float u0 = 0.0f;
+    float u1 = 1.0f;
     for (;;)
     {
-        const float x = 0.5f * (x0 + x1);
-        const float cdf1D = Math::Lerp(m_cdf1D[static_cast<int>(x)], m_cdf1D[static_cast<int>(x + 1)], x - static_cast<int>(x));
-        const float diff = cdf1D - u0;
+        const float u = 0.5f * (u0 + u1);
+        const float x = u * (m_cdf2D.GetWidth() - 1);
+        const int floorX = static_cast<int>(x);
+        const float cdf1D = Math::Lerp(m_cdf1D[floorX], m_cdf1D[floorX + 1], x - floorX);
+        const float diff = cdf1D - rand0;
 
-        if (x1 - x0 <= 1.0f)
+        if (u1 - u0 <= texelWidth)
         {
-            x0 = x1 = x;
+            u0 = u1 = u;
             break;
         }
 
         if (diff >= 0)
         {
-            x1 = x;
+            u1 = u;
         }
         else
         {
-            x0 = x;
+            u0 = u;
         }
     }
 
-    float y0 = 0;
-    float y1 = m_cdf2D.GetHeight() - 1;
+    float v0 = 0.0f;
+    float v1 = 1.0f;
     for (;;)
     {
-        const float y = 0.5f * (y0 + y1);
-        const float diff = m_cdf2D.GetPixel(x0, y, Texture2D::InterplationTypes::Bilinear).x - u1;
+        const float v = 0.5f * (v0 + v1);
+        const float diff = m_cdf2D.GetPixelByUV(u0, v, Texture2D::InterplationTypes::Bilinear).x - rand1;
 
-        if (y1 - y0 <= 1.0f)
+        if (v1 - v0 <= texelHeight)
         {
-            y0 = y1 = y;
+            v0 = v1 = v;
             break;
         }
 
         if (diff >= 0)
         {
-            y1 = y;
+            v1 = v;
         }
         else
         {
-            y0 = y;
+            v0 = v;
         }
     }
 
     if (pdfXY)
     {
-        const float pdfX0 = m_pdf1D[x0];
-        const float pdfY0UnderX0 = m_pdf2D.GetPixel(x0, y0, Texture2D::InterplationTypes::Bilinear).x;
+        const float x = u0 * m_pdf2D.GetWidth();
+        const int x0 = static_cast<int>(u0 * m_pdf2D.GetWidth());
+        const int x1 = x0 + 1;
+        const float pdfX0 = Math::Lerp(m_pdf1D[x0], m_pdf1D[x1], x - x0);
+        const float pdfY0UnderX0 = m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear).x;
         *pdfXY = pdfX0 * pdfY0UnderX0;
     }
 
-    auto prevColor = m_debugTex.GetPixel(static_cast<int>(x0), static_cast<int>(y0));
-    m_debugTex.SetPixel(static_cast<int>(x0), static_cast<int>(y0), prevColor + Color3f::One());
+    auto prevColor = m_debugTex.GetPixelByUV(u0, v0);
+    m_debugTex.SetPixel(static_cast<int>(u0 * (m_debugTex.GetWidth() - 1)), static_cast<int>(v0 * (m_debugTex.GetHeight() - 1)), prevColor + Color3f::One());
 
-    const float theta = (x0 / m_pdf2D.GetWidth()) * Math::kPi;
-    const float phi = 0.5f * Math::kPi * (1.0f - y0 / m_pdf2D.GetHeight()) - m_ZAxisRotation;
+    const float theta = u0 * Math::kPi;
+    const float phi = 0.5f * Math::kPi * (1.0f - v0) - m_ZAxisRotation;
 
     Math::OrthonormalBasis onb;
     onb.Build(Math::Vector3f::UnitZ(), Math::Vector3f::UnitX());
