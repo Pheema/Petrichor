@@ -177,15 +177,15 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
     const float texelHeight = 1.0f / m_pdf2D.GetHeight();
 
     // !!!
-    const float rand0 = rand() / static_cast<float>(RAND_MAX);
-    const float rand1 = rand() / static_cast<float>(RAND_MAX);
+    const float rand0 = rand() / static_cast<float>(RAND_MAX + 1);
+    const float rand1 = rand() / static_cast<float>(RAND_MAX + 1);
 
     float u0 = 0.0f;
     float u1 = 1.0f;
     for (;;)
     {
         const float u = 0.5f * (u0 + u1);
-        const float x = u * (m_cdf2D.GetWidth() - 1);
+        const float x = u * m_cdf2D.GetWidth();
         const int floorX = static_cast<int>(x);
         const float cdf1D = Math::Lerp(m_cdf1D[floorX], m_cdf1D[floorX + 1], x - floorX);
         const float diff = cdf1D - rand0;
@@ -229,6 +229,9 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
         }
     }
 
+    u0 += 0.5f * texelWidth;
+    v0 += 0.5f * texelHeight;
+
     if (pdfXY)
     {
         const float x = u0 * m_pdf2D.GetWidth();
@@ -239,8 +242,8 @@ Petrichor::Math::Vector3f Environment::SampleDir(float* pdfXY)
         *pdfXY = pdfX0 * pdfY0UnderX0;
     }
 
-    auto prevColor = m_debugTex.GetPixelByUV(u0, v0);
-    m_debugTex.SetPixel(static_cast<int>(u0 * (m_debugTex.GetWidth() - 1)), static_cast<int>(v0 * (m_debugTex.GetHeight() - 1)), prevColor + Color3f::One());
+    auto prevColor = m_debugTex.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Point);
+    m_debugTex.SetPixel(static_cast<int>(u0 * m_debugTex.GetWidth()), static_cast<int>(v0 * m_debugTex.GetHeight()), prevColor + Color3f::One());
 
     const float theta = u0 * Math::kPi;
     const float phi = 0.5f * Math::kPi * (1.0f - v0) - m_ZAxisRotation;

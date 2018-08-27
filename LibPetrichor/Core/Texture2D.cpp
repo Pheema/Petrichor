@@ -264,6 +264,11 @@ Texture2D::GetPixel(float x,
         float wy1 = iy1 - y;
 
         // 4方のピクセル色
+        ix0 = std::max(ix0, 0);
+        ix1 = std::min(ix1, GetWidth() - 1);
+        iy0 = std::max(iy0, 0);
+        iy1 = std::min(iy1, GetHeight() - 1);
+
         auto c00 = GetPixel(ix0, iy0);
         auto c10 = GetPixel(ix1, iy0);
         auto c01 = GetPixel(ix0, iy1);
@@ -292,7 +297,7 @@ Texture2D::GetPixelByUV(float u,
 {
     u = Math::Mod(u, 1.0f);
     v = Math::Mod(v, 1.0f);
-    return GetPixel(u * (m_width - 1), v * (m_height - 1), interpoplationType);
+    return GetPixel(u * m_width, v * m_height, interpoplationType);
 }
 
 void
