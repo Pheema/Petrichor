@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "Core/Sampler/ISampler2D.h"
 #include "Texture2D.h"
 
 namespace Petrichor
@@ -35,14 +34,17 @@ public:
     void
     PreCalcCumulativeDistTex();
 
-    Color3f
-    ImportanceSampling(ISampler2D& sampler2D);
+    //! 輝度に応じた環境マップの重点サンプリングする
+    Math::Vector3f SampleDir(float* pdfXY);
+
+    Texture2D m_debugTex;
 
 private:
     Texture2D* m_texEnv = nullptr; // #TODO: constにして外部からセット
-    std::vector<float> m_cdf1D;    //!< #TODO: x軸方向の輝度CDF
+    std::vector<float> m_pdf1D;		//!
+    std::vector<float> m_cdf1D;		//!< #TODO: x軸方向の輝度CDF
+    Texture2D m_pdf2D;
     Texture2D m_cdf2D;
-    float m_maxLuminance = 0.0f;
 
     Color3f m_baseColor;
     float m_ZAxisRotation = 0.0f; //!< y軸周りの回転角[rad]
