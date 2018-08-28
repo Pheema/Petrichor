@@ -65,17 +65,17 @@ Environment::PreCalcCumulativeDistTex()
     // #DEBUG
     m_debugTex = Texture2D(m_texEnv->GetWidth(), m_texEnv->GetHeight());
 
-    // 列方向の和
-    for (int i = 0; i < m_cdf2D.GetWidth(); i++)
+    // 行方向の和
+    for (int j = 0; j < m_cdf2D.GetHeight(); j++)
     {
-        for (int j = 0; j < m_cdf2D.GetHeight(); j++)
+        for (int i = 0; i < m_cdf2D.GetWidth(); i++)
         {
-            if (j == 0)
+            if (i == 0)
             {
                 continue;
             }
 
-            const Color3f& prevPixel = m_cdf2D.GetPixel(i, j - 1);
+            const Color3f& prevPixel = m_cdf2D.GetPixel(i - 1, j);
             const Color3f luminance =
               GetLuminance(m_texEnv->GetPixel(i, j)) * Color3f::One();
 
@@ -88,39 +88,37 @@ Environment::PreCalcCumulativeDistTex()
     {
         m_pdf1D.clear();
         m_pdf1D.shrink_to_fit();
-        m_pdf1D.reserve(m_cdf2D.GetWidth());
+        m_pdf1D.reserve(m_cdf2D.GetHeight());
         m_cdf1D.clear();
         m_cdf1D.shrink_to_fit();
-        m_cdf1D.reserve(m_cdf2D.GetWidth());
+        m_cdf1D.reserve(m_cdf2D.GetHeight());
 
         float sumLuminance1D = 0.0f;
-        const int jMax = m_cdf2D.GetHeight() - 1;
-        for (int i = 0; i < m_cdf2D.GetWidth(); i++)
+        const int iMax = m_cdf2D.GetWidth() - 1;
+        for (int j = 0; j < m_cdf2D.GetHeight(); j++)
         {
-            const float luminance = m_cdf2D.GetPixel(i, jMax).x;
+            const float luminance = m_cdf2D.GetPixel(iMax, j).x;
             m_pdf1D.emplace_back(luminance);
             sumLuminance1D += luminance;
             m_cdf1D.emplace_back(sumLuminance1D);
         }
 
-        for (int i = 0; i < m_cdf2D.GetWidth(); i++)
+        for (int j = 0; j < m_cdf2D.GetHeight(); j++)
         {
-            m_pdf1D[i] *= (m_cdf2D.GetWidth() / sumLuminance1D);
-            m_cdf1D[i] /= sumLuminance1D;
+            m_pdf1D[j] *= (m_cdf2D.GetHeight() / sumLuminance1D);
+            m_cdf1D[j] /= sumLuminance1D;
         }
     }
 
     {
-        const int jMax = m_cdf2D.GetHeight() - 1;
-        for (int i = 0; i < m_cdf2D.GetWidth(); i++)
+        const int iMax = m_cdf2D.GetWidth() - 1;
+        for (int j = 0; j < m_cdf2D.GetHeight(); j++)
         {
-            const float luminance = m_cdf2D.GetPixel(i, jMax).x;
-            Color3f maxL = m_cdf2D.GetPixel(i, jMax);
-
-            for (int j = 0; j < m_cdf2D.GetHeight(); j++)
+            Color3f maxL = m_cdf2D.GetPixel(iMax, j);
+            for (int i = 0; i < m_cdf2D.GetWidth(); i++)
             {
                 Color3f l = m_pdf2D.GetPixel(i, j);
-                m_pdf2D.SetPixel(i, j, l * (m_cdf2D.GetHeight() / maxL));
+                m_pdf2D.SetPixel(i, j, l * (m_cdf2D.GetWidth() / maxL));
 
                 Color3f integratedL = m_cdf2D.GetPixel(i, j);
                 m_cdf2D.SetPixel(i, j, integratedL / maxL);
@@ -137,43 +135,17 @@ Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
 
     const auto [rand0, rand1] = sampler2D.Next();
 
-    float u0 = 0.0f;
-    float u1 = 1.0f;
-    for (;;)
-    {
-        const float u = 0.5f * (u0 + u1);
-        const float x = u * m_cdf2D.GetWidth();
-        const auto floorX = static_cast<int>(x);
-        const auto ceilX = std::min(floorX + 1, m_cdf2D.GetWidth() - 1);
-        const float cdf1D =
-          Math::Lerp(m_cdf1D[floorX], m_cdf1D[ceilX], x - floorX);
-        const float diff = cdf1D - rand0;
-
-        if (u1 - u0 <= texelWidth)
-        {
-            u0 = u1 = u;
-            break;
-        }
-
-        if (diff >= 0)
-        {
-            u1 = u;
-        }
-        else
-        {
-            u0 = u;
-        }
-    }
-
     float v0 = 0.0f;
     float v1 = 1.0f;
     for (;;)
     {
         const float v = 0.5f * (v0 + v1);
-        const float diff =
-          m_cdf2D.GetPixelByUV(u0, v, Texture2D::InterplationTypes::Bilinear)
-            .x -
-          rand1;
+        const float y = v * m_cdf2D.GetHeight();
+        const auto floorY = static_cast<int>(y);
+        const auto ceilY = std::min(floorY + 1, m_cdf2D.GetHeight() - 1);
+        const float cdf1D =
+          Math::Lerp(m_cdf1D[floorY], m_cdf1D[ceilY], y - floorY);
+        const float diff = cdf1D - rand0;
 
         if (v1 - v0 <= texelHeight)
         {
@@ -196,19 +168,42 @@ Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
         }
     }
 
-    // u0 += 0.5f * texelWidth;
-    // v0 += 0.5f * texelHeight;
+    float u0 = 0.0f;
+    float u1 = 1.0f;
+    for (;;)
+    {
+        const float u = 0.5f * (u0 + u1);
+        const float cdf2D =
+          m_cdf2D.GetPixelByUV(u, v0, Texture2D::InterplationTypes::Bilinear).x;
+        const float diff = cdf2D - rand1;
+
+        if (u1 - u0 <= texelWidth)
+        {
+            u0 = u1 = u;
+            break;
+        }
+
+        if (diff >= 0)
+        {
+            u1 = u;
+        }
+        else
+        {
+            u0 = u;
+        }
+    }
 
     if (pdfXY)
     {
-        const float x = u0 * m_pdf2D.GetWidth();
-        const auto x0 = static_cast<int>(x);
-        const int x1 = std::min(x0 + 1, static_cast<int>(m_pdf1D.size()) - 1);
-        const float pdfX0 = Math::Lerp(m_pdf1D[x0], m_pdf1D[x1], x - x0);
-        const float pdfY0UnderX0 =
+        const float y = v0 * m_pdf2D.GetHeight();
+        const auto y0 = static_cast<int>(y);
+        const int y1 =
+          std::min(y0 + 1, static_cast<int>(m_pdf2D.GetWidth()) - 1);
+        const float pdfY0 = Math::Lerp(m_pdf1D[y0], m_pdf1D[y1], y - y0);
+        const float pdfX0UnderY0 =
           m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear)
             .x;
-        *pdfXY = pdfX0 * pdfY0UnderX0;
+        *pdfXY = pdfY0 * pdfX0UnderY0;
     }
 
     auto prevColor =
