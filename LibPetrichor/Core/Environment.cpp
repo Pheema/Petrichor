@@ -235,13 +235,13 @@ Environment::GetImportanceSamplingPDF(const Math::Vector3f& dir) const
     float u0 = 1.0f - (phi - m_ZAxisRotation) * 0.5f * Math::kInvPi;
     float v0 = theta * Math::kInvPi;
 
-    const float x = u0 * m_pdf2D.GetWidth();
-    const auto x0 = static_cast<int>(x);
-    const int x1 = std::min(x0 + 1, static_cast<int>(m_pdf1D.size()) - 1);
-    const float pdfX0 = Math::Lerp(m_pdf1D[x0], m_pdf1D[x1], x - x0);
-    const float pdfY0UnderX0 =
+    const float y = v0 * m_pdf2D.GetHeight();
+    const auto y0 = static_cast<int>(y);
+    const int y1 = std::min(y0 + 1, static_cast<int>(m_pdf2D.GetWidth()) - 1);
+    const float pdfY0 = Math::Lerp(m_pdf1D[y0], m_pdf1D[y1], y - y0);
+    const float pdfX0UnderY0 =
       m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear).x;
-    return pdfX0 * pdfY0UnderX0;
+    return pdfY0 * pdfX0UnderY0;
 }
 
 } // namespace Core
