@@ -77,7 +77,7 @@ Environment::PreCalcCumulativeDistTex()
 
             const Color3f& prevPixel = m_cdf2D.GetPixel(i - 1, j);
             const Color3f luminance =
-              GetLuminance(m_texEnv->GetPixel(i, j)) * Color3f::One();
+              GetLuminance(m_texEnv->GetPixel(i - 1, j)) * Color3f::One();
 
             m_pdf2D.SetPixel(i, j, luminance);
             m_cdf2D.SetPixel(i, j, prevPixel + luminance);
@@ -198,7 +198,7 @@ Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
         const float y = v0 * m_pdf2D.GetHeight();
         const auto y0 = static_cast<int>(y);
         const int y1 =
-          std::min(y0 + 1, static_cast<int>(m_pdf2D.GetWidth()) - 1);
+          std::min(y0 + 1, static_cast<int>(m_pdf2D.GetHeight() - 1));
         const float pdfY0 = Math::Lerp(m_pdf1D[y0], m_pdf1D[y1], y - y0);
         const float pdfX0UnderY0 =
           m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear)
@@ -237,7 +237,7 @@ Environment::GetImportanceSamplingPDF(const Math::Vector3f& dir) const
 
     const float y = v0 * m_pdf2D.GetHeight();
     const auto y0 = static_cast<int>(y);
-    const int y1 = std::min(y0 + 1, static_cast<int>(m_pdf2D.GetWidth()) - 1);
+    const int y1 = std::min(y0 + 1, static_cast<int>(m_pdf2D.GetHeight() - 1));
     const float pdfY0 = Math::Lerp(m_pdf1D[y0], m_pdf1D[y1], y - y0);
     const float pdfX0UnderY0 =
       m_pdf2D.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Bilinear).x;

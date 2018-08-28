@@ -22,6 +22,12 @@
 #include <mutex>
 #include <sstream>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+#endif
+
 namespace Petrichor
 {
 namespace Core
@@ -210,7 +216,7 @@ Petrichor::Initialize()
 
     // 環境マップの設定
     m_scene.GetEnvironment().Load(
-      "Resource/SampleScene/CornellBox/syferfontein_18d_clear_2k.hdr");
+      "Resource/SampleScene/CornellBox/cape_hill_2k.hdr");
     m_scene.GetEnvironment().SetBaseColor(Color3f::One());
     m_scene.GetEnvironment().SetZAxisRotation(-1.25f * Math::kPi);
 
@@ -260,12 +266,25 @@ Petrichor::Render()
              idxTile < static_cast<int>(tileManager.GetNumTiles());
              idxTile++)
         {
-            threadPool.Run([&, idxTile] {
+            threadPool.Run([&, idxTile](size_t threadIndex) {
                 const Tile tile = tileManager.GetTile();
                 const auto pixelPos = tile.GetInitialPixel();
 
                 const uint32_t i0 = pixelPos.first;
                 const uint32_t j0 = pixelPos.second;
+
+#ifdef _WIN32
+                {
+                    const int processerGroupID = threadIndex % 64;
+                    GROUP_AFFINITY groupAffinity{};
+                    if (GetNumaNodeProcessorMaskEx(processerGroupID,
+                                                   &groupAffinity))
+                    {
+                        SetThreadGroupAffinity(
+                          GetCurrentThread(), &groupAffinity, nullptr);
+                    }
+                }
+#endif
 
                 RandomSampler1D sampler1D(idxTile);
                 RandomSampler2D sampler2D(idxTile, idxTile + 123456u);

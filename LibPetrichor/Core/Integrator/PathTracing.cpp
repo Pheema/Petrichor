@@ -17,6 +17,7 @@ namespace Petrichor
 namespace Core
 {
 
+#pragma optimize("", off)
 void
 PathTracing::Render(uint32_t pixelX,
                     uint32_t pixelY,
@@ -108,8 +109,12 @@ PathTracing::Render(uint32_t pixelX,
                     // TODO:
                     // 下の関数が確率密度関数を取得しているだけなのに無駄
                     PointData pointData;
-                    SampleLight(
-                      scene, ray.o, sampler1D.Next(), sampler2D, &pdfArea);
+                    SampleLight(scene,
+                                ray.o,
+                                sampler1D.Next(),
+                                sampler2D,
+                                &pdfArea,
+                                nullptr);
 
                     const float pdfBSDF = mat->PDF(prevRay, ray, shadingInfo);
                     const float pdfLight = l2 / cosP * pdfArea;
@@ -145,19 +150,33 @@ PathTracing::Render(uint32_t pixelX,
                     const float sin = sqrt(std::max(0.0f, 1.0f - cos * cos));
 
                     const float pdfBSDF = mat->PDF(prevRay, ray, shadingInfo);
-                    const float pdfEnv =
-                      scene.GetEnvironment().GetImportanceSamplingPDF(ray.dir) *
-                      2.0f * Math::kPi * Math::kPi * sin;
+                    float pdfEnv = 0.0f;
+                    float misWeight = 0.0;
+                    if (ray.dir.x != 0 && ray.dir.y != 0 && sin > 0)
+                    {
+                        pdfEnv =
+                          scene.GetEnvironment().GetImportanceSamplingPDF(
+                            ray.dir) /
+                          (2.0f * Math::kPi * Math::kPi * sin);
 
 #ifdef BALANCE_HEURISTIC
-                    float misWeight = pdfBSDF / (pdfEnv + pdfBSDF);
+                        misWeight = pdfBSDF / (pdfEnv + pdfBSDF);
 #else
-                    float misWeight =
-                      pdfBSDF * pdfBSDF / (pdfEnv * pdfEnv + pdfBSDF * pdfBSDF);
+                        misWeight = pdfBSDF * pdfBSDF /
+                                    (pdfEnv * pdfEnv + pdfBSDF * pdfBSDF);
 #endif
+                    }
+                    else
+                    {
+                        misWeight = 1.0f;
+                    }
 
-                    color += misWeight * ray.weight *
-                             scene.GetEnvironment().GetColor(ray.dir);
+                    const Color3f contribution =
+                      misWeight * ray.weight *
+                      scene.GetEnvironment().GetColor(ray.dir);
+                    ASSERT(contribution.MinElem() >= 0);
+
+                    color += contribution;
                 }
                 else
                 {
@@ -188,11 +207,6 @@ PathTracing::CalcLightContribution(const Scene& scene,
                                    ISampler2D& sampler2D,
                                    const Ray& ray)
 {
-    if (scene.GetLights().empty())
-    {
-        return Color3f::Zero();
-    }
-
     Color3f lightContribution;
 
     const float dot = -Math::Dot(ray.dir, shadingInfo.normal);
@@ -201,10 +215,17 @@ PathTracing::CalcLightContribution(const Scene& scene,
     ;
 
     float pdfArea = 1.0f;
-    const PointData pointOnLight =
-      SampleLight(scene, p, sampler1D.Next(), sampler2D, &pdfArea);
+    bool sampleEnvMap = false;
+    const PointData pointOnLight = SampleLight(
+      scene, p, sampler1D.Next(), sampler2D, &pdfArea, &sampleEnvMap);
 
+    if (!sampleEnvMap)
     {
+        if (scene.GetLights().empty())
+        {
+            return Color3f::Zero();
+        }
+
         Ray rayToLight(
           p, (pointOnLight.pos - p).Normalized(), RayTypes::Shadow);
 
@@ -256,8 +277,7 @@ PathTracing::CalcLightContribution(const Scene& scene,
             }
         }
     }
-
-    if (scene.GetEnvironment().UseEnvImportanceSampling())
+    else if (scene.GetEnvironment().UseEnvImportanceSampling())
     {
         float pdfuv = 0.0f;
         Math::Vector3f sampledDir =
@@ -291,12 +311,16 @@ PathTracing::CalcLightContribution(const Scene& scene,
             const Color3f li = scene.GetEnvironment().GetColor(rayToEnv.dir);
             const Color3f f = mat->BxDF(ray, rayToEnv, shadingInfo);
 
-            lightContribution +=
+            const Color3f contribution =
               misWeight * ray.weight *
               (li * f * sin * cos * 2.0f * Math::kPi * Math::kPi) / pdfuv;
+            ASSERT(contribution.MinElem() >= 0);
+
+            lightContribution += contribution;
         }
     }
 
+    ASSERT(lightContribution.MinElem() >= 0);
     return lightContribution;
 }
 
@@ -305,12 +329,34 @@ PathTracing::SampleLight(const Scene& scene,
                          const Math::Vector3f& shadowRayOrigin,
                          float randomVal,
                          ISampler2D& sampler2D,
-                         float* pdfArea)
+                         float* pdfArea,
+                         bool* sampleEnvMap)
 {
     const auto& lights = scene.GetLights();
 
-    const auto index = static_cast<int>(randomVal * lights.size());
-    ASSERT(index < lights.size());
+    int index = 0;
+    if (sampleEnvMap == nullptr)
+    {
+        index = static_cast<int>(randomVal * lights.size());
+        index = std::min(index, static_cast<int>(lights.size() - 1));
+
+        if (sampleEnvMap)
+        {
+            *sampleEnvMap = false;
+        }
+    }
+    else
+    {
+        index = static_cast<int>(randomVal * (lights.size() + 1));
+        index = std::min(index, static_cast<int>(lights.size()));
+        ASSERT(index < lights.size() + 1);
+
+        if (index >= lights.size())
+        {
+            *sampleEnvMap = true;
+            return PointData{};
+        }
+    }
 
     float sumArea = 0.0f;
 

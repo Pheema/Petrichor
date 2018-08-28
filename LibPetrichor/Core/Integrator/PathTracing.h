@@ -44,7 +44,8 @@ private:
                 const Math::Vector3f& shadowRayOrigin,
                 float randomVal,
                 ISampler2D& sampler2D,
-                float* pdfArea);
+                float* pdfArea,
+                bool* sampleEnvMap);
 };
 } // namespace Core
 } // namespace Petrichor

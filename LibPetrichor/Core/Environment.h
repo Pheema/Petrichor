@@ -47,7 +47,7 @@ public:
     bool
     UseEnvImportanceSampling() const
     {
-        return useEnvImportanceSampling;
+        return m_texEnv && useEnvImportanceSampling;
     }
 
 private:
