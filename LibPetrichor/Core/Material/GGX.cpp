@@ -76,6 +76,7 @@ GGX::PDF(const Ray& rayIn,
     return tmp > 0 ? Math::kInvPi * alpha2 / (tmp * tmp) : kInfinity;
 }
 
+#pragma optimize("", off)
 Ray
 GGX::CreateNextRay(const Ray& rayIn,
                    const ShadingInfo& shadingInfo,
@@ -104,8 +105,6 @@ GGX::CreateNextRay(const Ray& rayIn,
             rayIn.weight,
             rayIn.bounce + 1);
 
-    ASSERT(std::isfinite(ray.dir.x));
-
     const float alpha = GetAlpha(shadingInfo);
     const float lambdaIn = Lambda(outDir, sampledHalfVec, alpha);
     const float lambdaOut = Lambda(-rayIn.dir, sampledHalfVec, alpha);
@@ -113,6 +112,7 @@ GGX::CreateNextRay(const Ray& rayIn,
     const float g1 = 1.0f / (1.0f + lambdaIn);
 
     ray.weight *= (fTerm * g2 / g1);
+    ASSERT(ray.weight.MinElem() >= 0.0f);
 
 #else
     Math::OrthonormalBasis onb;
@@ -157,12 +157,13 @@ GGX::Lambda(const Math::Vector3f& dir,
 {
     const float alpha2 = alpha * alpha;
     const float cos = abs(Dot(dir, halfDir));
-    const float tan2 = 1.0f / (cos * cos) - 1.0f;
+    const float tan2 = cos > 0 ? 1.0f / (cos * cos) - 1.0f : kInfinity;
 
     float lambda = -0.5f + 0.5f * sqrt(1.0f + alpha2 * tan2);
+    ASSERT(!std::isinf(lambda));
     return lambda;
 }
-
+#pragma optimize("", on)
 Math::Vector3f
 GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
                    const ShadingInfo& shadingInfo,
