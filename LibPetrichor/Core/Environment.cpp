@@ -105,7 +105,7 @@ Environment::PreCalcCumulativeDistTex()
 
         for (int i = 0; i < m_cdf2D.GetWidth(); i++)
         {
-            m_pdf1D[i] /= sumLuminance1D;
+            m_pdf1D[i] *= (m_cdf2D.GetWidth() / sumLuminance1D);
             m_cdf1D[i] /= sumLuminance1D;
         }
     }
@@ -120,7 +120,7 @@ Environment::PreCalcCumulativeDistTex()
             for (int j = 0; j < m_cdf2D.GetHeight(); j++)
             {
                 Color3f l = m_pdf2D.GetPixel(i, j);
-                m_pdf2D.SetPixel(i, j, l / maxL);
+                m_pdf2D.SetPixel(i, j, l * (m_cdf2D.GetHeight() / maxL));
 
                 Color3f integratedL = m_cdf2D.GetPixel(i, j);
                 m_cdf2D.SetPixel(i, j, integratedL / maxL);
