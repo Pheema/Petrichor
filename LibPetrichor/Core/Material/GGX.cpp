@@ -70,19 +70,10 @@ GGX::PDF(const Ray& rayIn,
     const float alpha = GetAlpha(shadingInfo);
     const float alpha2 = alpha * alpha;
     const float hDotN2 = hDotN * hDotN;
-    const float tan2 = (1.0f / hDotN2) - 1.0f;
-    const float k = 1.0f + tan2 / alpha2;
 
     // D
-    const float dTerm = 1.0f / (Math::kPi * alpha2 * hDotN2 * hDotN2 * k * k);
-
-    // TODO: nanチェックが雑
-    if (hDotN2 < 1e-4f)
-    {
-        return kInfinity;
-    }
-
-    return dTerm;
+    const float tmp = 1.0f - (1.0f - alpha2) * hDotN2;
+    return tmp > 0 ? Math::kInvPi * alpha2 / (tmp * tmp) : kInfinity;
 }
 
 Ray
