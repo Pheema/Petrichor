@@ -17,7 +17,6 @@ namespace Petrichor
 namespace Core
 {
 
-#pragma optimize("", off)
 void
 PathTracing::Render(uint32_t pixelX,
                     uint32_t pixelY,
@@ -77,12 +76,10 @@ PathTracing::Render(uint32_t pixelX,
               scene, shadingInfo, sampler1D, sampler2D, ray);
 
             // 次のレイを生成
-            mat = shadingInfo.material;
-            ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
-            ASSERT(std::isfinite(ray.dir.x));
-
             prevRay = ray;
+            mat = shadingInfo.material;
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
+            ASSERT(ray.weight.MinElem() >= 0.0f);
 
             if (Math::ApproxEq(ray.weight.SquaredLength(), 0.0f, kEps))
             {
@@ -272,8 +269,10 @@ PathTracing::CalcLightContribution(const Scene& scene,
 
                 ASSERT(std::isfinite(misWeight) && misWeight >= 0.0f);
 
-                lightContribution += misWeight * ray.weight *
-                                     (li * f * cos * cosP / (pdfArea * l2));
+                Color3f contribution = misWeight * ray.weight *
+                                       (li * f * cos * cosP / (pdfArea * l2));
+                ASSERT(contribution.MinElem() >= 0);
+                lightContribution += contribution;
             }
         }
     }

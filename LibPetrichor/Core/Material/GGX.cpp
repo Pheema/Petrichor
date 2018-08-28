@@ -76,7 +76,6 @@ GGX::PDF(const Ray& rayIn,
     return tmp > 0 ? Math::kInvPi * alpha2 / (tmp * tmp) : kInfinity;
 }
 
-#pragma optimize("", off)
 Ray
 GGX::CreateNextRay(const Ray& rayIn,
                    const ShadingInfo& shadingInfo,
@@ -163,7 +162,6 @@ GGX::Lambda(const Math::Vector3f& dir,
     ASSERT(!std::isinf(lambda));
     return lambda;
 }
-#pragma optimize("", on)
 Math::Vector3f
 GGX::SampleGGXVNDF(const Math::Vector3f& dirView,
                    const ShadingInfo& shadingInfo,

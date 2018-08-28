@@ -25,7 +25,7 @@ public:
     static constexpr uint64_t
     max()
     {
-        return UINT_MAX + 1llu;
+        return UINT_MAX;
     }
     unsigned
     operator()()

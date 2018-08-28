@@ -19,11 +19,11 @@ public:
     ~ThreadPool();
 
     void
-    Run(std::function<T()>&& task);
+    Run(std::function<T(size_t)>&& task);
 
 private:
     std::vector<std::thread> m_threads;
-    std::queue<std::function<T()>> m_tasks;
+    std::queue<std::function<T(size_t)>> m_tasks;
     const size_t m_numThreads;
     std::mutex m_mutex;
     std::condition_variable m_cond;
@@ -42,10 +42,10 @@ ThreadPool<T>::ThreadPool(size_t numThreads)
     m_threads.reserve(numThreads);
     for (size_t threadIndex = 0; threadIndex < m_numThreads; threadIndex++)
     {
-        m_threads.emplace_back(std::thread([this] {
+        m_threads.emplace_back(std::thread([this, threadIndex] {
             for (;;)
             {
-                std::function<void()> task;
+                std::function<void(size_t)> task;
 
                 {
                     std::unique_lock<std::mutex> lock(m_mutex);
@@ -62,7 +62,7 @@ ThreadPool<T>::ThreadPool(size_t numThreads)
                     m_tasks.pop();
                 }
 
-                task();
+                task(threadIndex);
             }
         }));
     }
@@ -85,7 +85,7 @@ ThreadPool<T>::~ThreadPool()
 
 template<class T>
 void
-ThreadPool<T>::Run(std::function<T()>&& task)
+ThreadPool<T>::Run(std::function<T(size_t)>&& task)
 {
     {
         std::unique_lock<std::mutex> lock(m_mutex);
@@ -94,7 +94,7 @@ ThreadPool<T>::Run(std::function<T()>&& task)
             return;
         }
 
-        m_tasks.emplace(std::forward<std::function<T()>>(task));
+        m_tasks.emplace(std::forward<std::function<T(size_t)>>(task));
     }
     m_cond.notify_one();
 }

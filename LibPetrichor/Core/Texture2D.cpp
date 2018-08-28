@@ -264,10 +264,10 @@ Texture2D::GetPixel(float x,
         float wy1 = iy1 - y;
 
         // 4方のピクセル色
-        ix0 = std::max(ix0, 0);
-        ix1 = std::min(ix1, GetWidth() - 1);
-        iy0 = std::max(iy0, 0);
-        iy1 = std::min(iy1, GetHeight() - 1);
+        ix0 = std::clamp(ix0, 0, GetWidth() - 1);
+        ix1 = std::clamp(ix1, 0, GetWidth() - 1);
+        iy0 = std::clamp(iy0, 0, GetHeight() - 1);
+        iy1 = std::clamp(iy1, 0, GetHeight() - 1);
 
         auto c00 = GetPixel(ix0, iy0);
         auto c10 = GetPixel(ix1, iy0);

@@ -37,105 +37,64 @@ void
 Petrichor::Initialize()
 {
 
-#if 0
+#if 1
 
-    // シーンの定義
-    auto sphere = new Sphere(Math::Vector3f(-1.5f, 0.0f, 1.0f), 1.0f);
+    auto* baseColorTex = new Texture2D();
+    baseColorTex->Load("Resource/RTCamp6/Textures/BaseColor.png",
+                       Texture2D::TextureColorType::Color);
+    auto* normalMap = new Texture2D();
+    normalMap->Load("Resource/RTCamp6/CornellBox/MetalNormal.png",
+                    Texture2D::TextureColorType::NonColor);
 
-    float r = 1000.0f;
-    auto floor = new Sphere(-Math::Vector3f::UnitZ() * r, r);
+    const auto* const matLambertRed =
+      m_scene.AppendMaterial(Lambert(Color3f(1.0f, 0.0f, 0.0f)));
+    const auto* const matLambertGreen =
+      m_scene.AppendMaterial(Lambert(Color3f(0, 1.0f, 0)));
+    auto* const matLamberWhite =
+      m_scene.AppendMaterial(Lambert(0.8f * Color3f::One()));
 
-    auto sphereLight = new Sphere(Math::Vector3f(2.5f, -2.0f, 1.0f), 0.5f);
+    matLamberWhite->SetTexAlbedo(baseColorTex);
+    // MaterialBase* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
+    // MaterialBase* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
+    // MaterialBase* matLamberWhite = new Lambert(Color3f::One());
+    // GGX* matGGX = new GGX(0.9f * Color3f::One(), 0.1f);
 
-    // マテリアルを適用
-    // TODO: メモリリーク
+    /*auto* const matGGX =
+      m_scene.AppendMaterial(GGX(0.9f * Color3f::One(), 0.1f));
+    matGGX->SetRoughnessMap(roughnessTex);
+    matGGX->SetRoughnessMapStrength(0.3f);
+    matGGX->SetNormalMap(normalMap);
+    matGGX->SetNormalMapStrength(0.5f);*/
 
-    // ---- floorMat ----
-    MaterialBase* matLambertFloor = new Lambert(0.95f * Color3f::One());
-    MaterialBase* matGGXFloor = new GGX(0.05f * Color3f::One(), 0.05f);
-    MaterialBase* matMixFloor = new MatMix(matLambertFloor, matGGXFloor, 0.3f);
+    // MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
-    // ---- matBody ----
-    MaterialBase* matLambertBody = new Lambert(0.01f * Color3f::One());
+    const auto* const matEmissionWhite =
+      m_scene.AppendMaterial(Emission(Color3f::One()));
 
-    MaterialBase* matGGXBodySmooth = new GGX(0.05f * Color3f::One(), 0.1f);
-    MaterialBase* matBodySmooth =
-        new MatMix(matLambertBody, matGGXBodySmooth, 0.2f);
+    auto const room = new Mesh();
+    room->Load("Resource/RTCamp6/room.obj", matLamberWhite, ShadingTypes::Flat);
 
-    MaterialBase* matGGXBodyRough = new GGX(0.05f * Color3f::One(), 0.3f);
-    MaterialBase* matBodyRough =
-        new MatMix(matLambertBody, matGGXBodyRough, 0.2f);
+    m_scene.AppendMesh(*room);
 
-    MaterialBase* matArrayBody[] = { matGGXBodySmooth, matGGXBodyRough };
+    auto const camera =
+      new Camera(Math::Vector3f(0, 1.0f, 1.6f), Math::Vector3f::UnitY());
 
-    // ---- matCover ----
-    MaterialBase* matLambertCover = new Lambert(1.5f * Color3f::One());
-    MaterialBase* matGGXCover = new GGX(0.05f * Color3f::One(), 0.31f);
-    MaterialBase* matMixCover = new MatMix(matLambertCover, matGGXCover, 0.1f);
-    auto* texCover = new Texture2D();
-    texCover->Load("Resource/Speaker/fabric_01_diffuse.jpg");
-    static_cast<Lambert*>(matLambertCover)->SetTexAlbedo(texCover);
+    camera->SetLens(36e-3f);
+    camera->SetFNumber(6.0f);
+    camera->FocusTo(Math::Vector3f(0, 12.0f, 0.3f));
 
-    // ---- matCode ----
-    MaterialBase* matLambertCode = new Lambert(0.03f * Color3f::One());
-    MaterialBase* matGGXCode = new GGX(0.05f * Color3f::One(), 0.1f);
-    MaterialBase* matMixCode = new MatMix(matLambertCode, matGGXCode, 0.1f);
-
-    // ---- panelLight ----
-    MaterialBase* matLightLU = new Emission(5.0f * Color3f::One());
-    MaterialBase* matLightR = new Emission(2.0f * Color3f::One());
-
-    auto meshFloor = new Mesh();
-    auto meshBody = new Mesh();
-    auto meshCode = new Mesh();
-    auto meshCover = new Mesh();
-    auto meshLightLU = new Mesh();
-    auto meshLightR = new Mesh();
-
-    meshBody->Load("Resource/Speaker/SpeakerDiv3.obj",
-                   matArrayBody,
-                   2,
-                   ShadingTypes::Smooth);
-    meshCover->Load(
-        "Resource/Speaker/CoverMesh.obj", &matMixCover, 1, ShadingTypes::Smooth);
-    meshCode->Load(
-        "Resource/Speaker/Code.obj", &matMixCode, 1, ShadingTypes::Smooth);
-    meshLightLU->Load(
-        "Resource/Speaker/PanelLightLU.obj", &matLightLU, 1, ShadingTypes::Flat);
-    meshLightR->Load(
-        "Resource/Speaker/PanelLightR.obj", &matLightR, 1, ShadingTypes::Flat);
-
-    meshFloor->Load(
-        "Resource/Speaker/Floor.obj", &matMixFloor, 1, ShadingTypes::Flat);
-
-    // sphere->SetMaterial(matMixFloor);
-    floor->SetMaterial(matLambertFloor);
-
-    m_scene.AppendMesh(*meshBody);
-    m_scene.AppendMesh(*meshCode);
-    m_scene.AppendMesh(*meshCover);
-    m_scene.AppendLightMesh(*meshLightLU);
-    m_scene.AppendLightMesh(*meshLightR);
-
-    m_scene.AppendMesh(*meshFloor);
-
-    // m_scene.AppendGeometry(sphere);
-    m_scene.AppendGeometry(floor);
-    // m_scene.AppendGeometry(sphereLight);
-    // m_scene.AppendLight(*sphereLight);
-
-    // カメラをセット
-    auto camera = new Camera(Math::Vector3f(-7.53405f, -8.51452f, 5.22279f),
-                             Math::Vector3f::UnitY());
-
-    camera->LookAt(Math::Vector3f(-0.99248f, 0.14638f, 1.33148f));
-    // TODO: メモリリーク
-
-    // camera->SetFNumber(1.8f);
-    // camera->SetLens(10e-3f);
-    camera->SetLens(80e-3f);
-    camera->FocusTo(sphere->GetOrigin());
+    m_scene.LoadSceneSettings();
     m_scene.SetMainCamera(*camera);
+
+    // 環境マップの設定
+    m_scene.GetEnvironment().Load("Resource/RTCamp6/venice_sunset_2k.hdr");
+    m_scene.GetEnvironment().SetBaseColor(Color3f::One());
+    m_scene.GetEnvironment().SetZAxisRotation(-Math::kPi);
+
+    // レンダリング先を指定
+    auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
+                                   m_scene.GetSceneSettings().outputHeight);
+    m_scene.SetTargetTexture(targetTex);
 
 #else
 
@@ -160,9 +119,9 @@ Petrichor::Initialize()
     auto* const matGGX =
       m_scene.AppendMaterial(GGX(0.9f * Color3f::One(), 0.1f));
     matGGX->SetRoughnessMap(roughnessTex);
-    matGGX->SetRoughnessMapStrength(0.4f);
+    matGGX->SetRoughnessMapStrength(0.3f);
     matGGX->SetNormalMap(normalMap);
-    matGGX->SetNormalMapStrength(0.1f);
+    matGGX->SetNormalMapStrength(0.5f);
 
     // MaterialBase* matEmissionWhite = new Emission(10.0f * Color3f::One());
 
@@ -210,8 +169,6 @@ Petrichor::Initialize()
 
     m_scene.SetMainCamera(*camera);
 
-#endif
-
     m_scene.LoadSceneSettings();
 
     // 環境マップの設定
@@ -224,6 +181,8 @@ Petrichor::Initialize()
     auto targetTex = new Texture2D(m_scene.GetSceneSettings().outputWidth,
                                    m_scene.GetSceneSettings().outputHeight);
     m_scene.SetTargetTexture(targetTex);
+
+#endif
 }
 
 void
