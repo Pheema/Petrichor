@@ -78,14 +78,8 @@ BinnedSAHBVH::Build(const Scene& scene)
         }
 
         // バウンディングボックスの一番長い辺に沿ってソート
-        const int widestAxis = currentNode->GetBounds().GetWidestAxis();
-
         const auto iterBegin = std::begin(m_primitiveIDs) + indexBegin;
         const auto iterEnd = std::begin(m_primitiveIDs) + indexEnd;
-        std::sort(iterBegin, iterEnd, [this, widestAxis](int id0, int id1) {
-            return m_primitiveData[id0].centroid[widestAxis] <
-                   m_primitiveData[id1].centroid[widestAxis];
-        });
 
         // ビンをアップデート
         Bounds binBounds;
@@ -95,14 +89,22 @@ BinnedSAHBVH::Build(const Scene& scene)
             binBounds.Merge(m_primitiveData[primitiveID].centroid);
         }
 
+        const int widestAxis = binBounds.GetWidestAxis();
+
+        std::sort(iterBegin, iterEnd, [this, widestAxis](int id0, int id1) {
+            return m_primitiveData[id0].centroid[widestAxis] <
+                   m_primitiveData[id1].centroid[widestAxis];
+        });
+
         // どのビンに属しているかを番号付け
+        const float widestEdgeLength =
+          binBounds.vMax[widestAxis] - binBounds.vMin[widestAxis];
+
         for (auto iter = iterBegin; iter != iterEnd; iter++)
         {
             const int primitiveID = *iter;
 
             PrimitiveData* const primitiveData = &m_primitiveData[primitiveID];
-            const float widestEdgeLength =
-              binBounds.vMax[widestAxis] - binBounds.vMin[widestAxis];
 
             const float l =
               primitiveData->centroid[widestAxis] - binBounds.vMin[widestAxis];
