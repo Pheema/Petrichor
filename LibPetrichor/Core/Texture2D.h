@@ -75,12 +75,26 @@ public:
     SetPixel(int i, int j, const Color3f& color);
 
     // 画像の幅を取得
+
     int
-    GetWidth() const;
+    GetWidth() const
+    {
+        return m_width;
+    }
 
     // 画像の高さを取得
+
     int
-    GetHeight() const;
+    GetHeight() const
+    {
+        return m_height;
+    }
+
+    bool
+    IsValid() const
+    {
+        return m_isLoaded && (GetWidth() > 0) && (GetHeight() > 0);
+    }
 
 private:
     // TODO: RGBAに対応させる（現在はRGB）
@@ -91,10 +105,12 @@ private:
     int m_width = 0;  //!< 画像の横幅[px]
     int m_height = 0; //!< 画像の縦幅[px]
 
-    //! 画像の補間タイプ
-    InterplationTypes m_interplationType = InterplationTypes::Bilinear;
+    InterplationTypes m_interplationType =
+      InterplationTypes::Bilinear; //<! 画像の補間タイプ
 
     std::vector<Color3f> m_pixels; //!< 画素値の配列
+
+    bool m_isLoaded = false; //!< 読み込みが成功しているか
 };
 
 } // namespace Core

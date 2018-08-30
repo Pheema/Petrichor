@@ -16,18 +16,20 @@ Environment::Load(std::string path)
 {
     if (m_texEnv == nullptr)
     {
-        // TODO: メモリリーク
+        // TODO: メモリリーク。リソース管理クラスを作る。
         m_texEnv = new Texture2D();
     }
     m_texEnv->Load(path, Texture2D::TextureColorType::Color);
 
+    // #TODO:
+    // ここで計算するのおかしい。レンダリング前に外部から呼んで計算をする。
     PreCalcCumulativeDistTex();
 }
 
 Color3f
 Environment::GetColor(const Math::Vector3f& dir) const
 {
-    if (m_texEnv == nullptr)
+    if (!(m_texEnv && m_texEnv->IsValid()))
     {
         return m_baseColor;
     }
@@ -54,7 +56,7 @@ Environment::SetBaseColor(const Color3f& baseColor)
 void
 Environment::PreCalcCumulativeDistTex()
 {
-    if (m_texEnv == nullptr)
+    if (!UseEnvImportanceSampling())
     {
         return;
     }
@@ -130,6 +132,11 @@ Environment::PreCalcCumulativeDistTex()
 Math::Vector3f
 Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
 {
+    if (!UseEnvImportanceSampling())
+    {
+        return Math::Vector3f::UnitX();
+    }
+
     const float texelWidth = 1.0f / m_pdf2D.GetWidth();
     const float texelHeight = 1.0f / m_pdf2D.GetHeight();
 
@@ -223,9 +230,9 @@ Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
 float
 Environment::GetImportanceSamplingPDF(const Math::Vector3f& dir) const
 {
-    if (m_texEnv == nullptr)
+    if (!UseEnvImportanceSampling())
     {
-        return 0.0f;
+        return 1.0f;
     }
 
     IS_NORMALIZED(dir);

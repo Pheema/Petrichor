@@ -243,6 +243,11 @@ Texture2D::Clear(const Color3f& color)
 Color3f
 Texture2D::GetPixel(int i, int j) const
 {
+    if (!IsValid())
+    {
+        return Color3f(1.0f, 0.0f, 1.0f);
+    }
+
     ASSERT(0 <= i && i < m_width);
     ASSERT(0 <= j && j < m_height);
     return m_pixels[m_width * j + i];
@@ -318,18 +323,6 @@ Texture2D::SetPixel(int i, int j, const Color3f& color)
     ASSERT(0 <= i && i < m_width);
     ASSERT(0 <= j && j < m_height);
     m_pixels[m_width * j + i] = color;
-}
-
-int
-Texture2D::GetWidth() const
-{
-    return m_width;
-}
-
-int
-Texture2D::GetHeight() const
-{
-    return m_height;
 }
 
 } // namespace Core
