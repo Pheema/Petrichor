@@ -85,23 +85,30 @@ Texture2D::Texture2D(int width, int height)
     Clear();
 }
 
-void
+bool
 Texture2D::Load(const std::filesystem::path& path,
                 TextureColorType textureColorType)
 {
+    if (std::filesystem::exists(path))
+    {
+        std::cerr << "[Error] Texture not found. (" << path << ")" << std::endl;
+        return false;
+    }
+
     // #TODO: とりあえずif
     if (path.extension() == ".png")
     {
-        unsigned char* data = stbi_load(path.string().c_str(),
-                                        &m_width,
-                                        &m_height,
-                                        nullptr,
-                                        kNumChannelsInPixelRGB);
+        const unsigned char* data = stbi_load(path.string().c_str(),
+                                              &m_width,
+                                              &m_height,
+                                              nullptr,
+                                              kNumChannelsInPixelRGB);
 
         if (data == nullptr)
         {
-            std::cerr << "[Texture Loading Error] " << path << std::endl;
-            return;
+            std::cerr << "[Error] Could not read png file. (" << path << ")"
+                      << std::endl;
+            return false;
         }
 
         const int numPixels = m_width * m_height;
@@ -130,8 +137,8 @@ Texture2D::Load(const std::filesystem::path& path,
             }
         }
 
-        stbi_image_free(data);
-        return;
+        stbi_image_free(const_cast<unsigned char*>(data));
+        return true;
     }
 
     if (path.extension() == ".hdr")
@@ -142,8 +149,9 @@ Texture2D::Load(const std::filesystem::path& path,
 
         if (data == nullptr)
         {
-            std::cerr << "[Texture Loading Error] " << path << std::endl;
-            return;
+            std::cerr << "[Error] Could not read hdr file.(" << path << ")"
+                      << std::endl;
+            return false;
         }
 
         const int numPixels = m_width * m_height;
@@ -160,8 +168,12 @@ Texture2D::Load(const std::filesystem::path& path,
         }
 
         stbi_image_free(const_cast<float*>(data));
-        return;
+        return true;
     }
+
+    std::cerr << "[Error] Unsupported texture format.(" << path << ")"
+              << std::endl;
+    return false;
 }
 
 void

@@ -40,8 +40,9 @@ public:
 
     Texture2D(int width, int height);
 
-    // 画像を読み込む
-    void
+    //! 画像を読み込む
+    //! @return 読み込みが成功したか
+    bool
     Load(const std::filesystem::path& path, TextureColorType textureColorType);
 
     //// 画像を書き出し
