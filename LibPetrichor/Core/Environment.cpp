@@ -117,7 +117,8 @@ Environment::PreCalcCumulativeDistTex()
             for (int i = 0; i < m_cdf2D.GetWidth(); i++)
             {
                 Color3f l = m_pdf2D.GetPixel(i, j);
-                m_pdf2D.SetPixel(i, j, l * (m_cdf2D.GetWidth() / maxL));
+                m_pdf2D.SetPixel(
+                  i, j, l * (static_cast<float>(m_cdf2D.GetWidth()) / maxL));
 
                 Color3f integratedL = m_cdf2D.GetPixel(i, j);
                 m_cdf2D.SetPixel(i, j, integratedL / maxL);
