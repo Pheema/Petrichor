@@ -249,20 +249,25 @@ BinnedSAHBVH::Intersect(const Ray& ray,
                         float distMin /*= 0.0f*/,
                         float distMax /*= kInfinity*/) const
 {
-    std::stack<const BVHNode*> nodeStack;
-    nodeStack.emplace(&m_bvhNodes[0]);
+    thread_local std::vector<int> bvhNodeIndexStack;
+    bvhNodeIndexStack.reserve(m_bvhNodes.size());
+    bvhNodeIndexStack.clear();
+    bvhNodeIndexStack.emplace_back(0);
 
     // ---- BVHのトラバーサル ----
     std::optional<HitInfo> hitInfoResult;
 
     // 2つの子ノード又は子オブジェクトに対して
-    while (!nodeStack.empty())
+    while (!bvhNodeIndexStack.empty())
     {
         // 葉ノードに対して
-        const auto* currentNode = nodeStack.top();
-        nodeStack.pop();
+        const auto index = static_cast<int>(bvhNodeIndexStack.size() - 1);
+        const int currentNodeIndex = bvhNodeIndexStack[index];
 
-        const auto hitInfoNode = currentNode->Intersect(ray);
+        bvhNodeIndexStack.erase(std::end(bvhNodeIndexStack) - 1);
+        const BVHNode& currentNode = m_bvhNodes[currentNodeIndex];
+
+        const auto hitInfoNode = currentNode.Intersect(ray);
 
         // そもそもBVHノードに当たる軌道ではない
         if (hitInfoNode == std::nullopt)
@@ -271,7 +276,7 @@ BinnedSAHBVH::Intersect(const Ray& ray,
         }
 
         // 自ノードより手前で既に衝突している
-        if (hitInfoResult && currentNode->Contains(ray.o) == false)
+        if (hitInfoResult && currentNode.Contains(ray.o) == false)
         {
             if (hitInfoResult->distance < hitInfoNode->distance)
             {
@@ -279,10 +284,10 @@ BinnedSAHBVH::Intersect(const Ray& ray,
             }
         }
 
-        if (currentNode->IsLeaf())
+        if (currentNode.IsLeaf())
         {
-            for (int index = currentNode->GetIndexBegin();
-                 index < currentNode->GetIndexEnd();
+            for (int index = currentNode.GetIndexBegin();
+                 index < currentNode.GetIndexEnd();
                  index++)
             {
                 const int primitiveID = m_primitiveIDs[index];
@@ -309,13 +314,26 @@ BinnedSAHBVH::Intersect(const Ray& ray,
         }
         else
         {
-            const BVHNode* const leftNode =
-              &m_bvhNodes[currentNode->GetChildNodes()[0]];
-            nodeStack.emplace(leftNode);
+            const int leftChildIndex = currentNode.GetChildNodes()[0];
+            const int rightChildIndex = currentNode.GetChildNodes()[1];
 
-            const BVHNode* const rightNode =
-              &m_bvhNodes[currentNode->GetChildNodes()[1]];
-            nodeStack.emplace(rightNode);
+            const float sqDistLeft =
+              (m_bvhNodes[leftChildIndex].GetBounds().GetCenter() - ray.o)
+                .SquaredLength();
+            const float sqDistRight =
+              (m_bvhNodes[rightChildIndex].GetBounds().GetCenter() - ray.o)
+                .SquaredLength();
+
+            if (sqDistLeft < sqDistRight)
+            {
+                bvhNodeIndexStack.emplace_back(leftChildIndex);
+                bvhNodeIndexStack.emplace_back(rightChildIndex);
+            }
+            else
+            {
+                bvhNodeIndexStack.emplace_back(rightChildIndex);
+                bvhNodeIndexStack.emplace_back(leftChildIndex);
+            }
         }
     }
     return hitInfoResult;
