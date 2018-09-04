@@ -109,7 +109,8 @@ BinnedSAHBVH::Build(const Scene& scene)
             const float l =
               primitiveData->centroid[widestAxis] - binBounds.vMin[widestAxis];
 
-            const int binID = kNumBins * (1.0f - kEps) * l / widestEdgeLength;
+            const auto binID =
+              static_cast<int>(kNumBins * (1.0f - kEps) * l / widestEdgeLength);
             ASSERT(binID >= 0);
             primitiveData->binID = binID;
         }
@@ -177,7 +178,7 @@ BinnedSAHBVH::Build(const Scene& scene)
                   false);
                 nodeStack.emplace(&leftChildNode);
 
-                const size_t index = m_bvhNodes.size() - 1;
+                const auto index = static_cast<int>(m_bvhNodes.size() - 1);
                 currentNode->SetChildNode(index, 0);
             }
 
@@ -190,7 +191,7 @@ BinnedSAHBVH::Build(const Scene& scene)
                   false);
                 nodeStack.emplace(&rightChildNode);
 
-                const size_t index = m_bvhNodes.size() - 1;
+                const auto index = static_cast<int>(m_bvhNodes.size() - 1);
                 currentNode->SetChildNode(index, 1);
             }
         }
