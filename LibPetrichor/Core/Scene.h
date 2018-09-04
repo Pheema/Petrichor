@@ -23,13 +23,8 @@ class Scene
     // #TODO: マテリアルの個数をファイルから読みこんで動的に変更する
     static constexpr int kMaxNumMaterials = 128;
 
-
 public:
-
-    Scene()
-    {
-        m_materials.reserve(kMaxNumMaterials);
-    };
+    Scene() { m_materials.reserve(kMaxNumMaterials); };
 
     // シーンにジオメトリを追加
     void
@@ -183,8 +178,8 @@ private:
     // メインカメラ
     const Camera* m_mainCamera = nullptr;
 
-    // 高速化構造
-    std::unique_ptr<AccelBase> m_accel = nullptr;
+    //! 高速化構造
+    mutable std::unique_ptr<AccelBase> m_accel = nullptr;
 
     // レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;

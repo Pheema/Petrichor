@@ -21,7 +21,7 @@ ACESFilm(float x)
     float c = 2.43f;
     float d = 0.59f;
     float e = 0.14f;
-    return std::clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0f, 1.0f);
+    return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
 
 Color3f
@@ -53,7 +53,7 @@ ApplyGamma(const Color3f& color)
 Color3f
 ApplyToneMapping(const Math::Vector3f& color)
 {
-    return { ACESFilm(color.x), ACESFilm(color.y), ACESFilm(color.z) };
+    return ACESFilm(color);
 }
 
 float
@@ -186,9 +186,8 @@ Texture2D::Save(std::filesystem::path path) const
 
         for (const auto& pixel : m_pixels)
         {
-            const Color3f toneMapped = ACESFilm(pixel);
-            const Color3f degammaColor =
-              ApplyDegamma(Clamp(toneMapped, 0.0f, 1.0f));
+            const Color3f toneMapped = ApplyToneMapping(pixel);
+            const Color3f degammaColor = ApplyDegamma(toneMapped);
 
             const auto r =
               static_cast<uint8_t>((kColorDepth8Bit - kEps) * degammaColor.x);
