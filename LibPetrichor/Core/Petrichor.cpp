@@ -52,6 +52,7 @@ Petrichor::Render(const Scene& scene)
     const uint32_t outputWidth = targetTexure->GetWidth();
     const uint32_t outputHeight = targetTexure->GetHeight();
     TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
+    m_numTiles = tileManager.GetNumTiles();
 
     std::mutex mtx;
 

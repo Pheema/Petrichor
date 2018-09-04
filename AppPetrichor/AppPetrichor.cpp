@@ -85,6 +85,16 @@ main()
     elapsedTimeChecker.detach();
 #endif
 
+    std::thread showProgress([&] {
+        for (;;)
+        {
+            std::this_thread::sleep_for(0.1s);
+            std::cout << "[Tile]: " << petrichor.GetNumRenderedTiles() << " / "
+                      << petrichor.GetNumTiles() << "\r";
+        }
+    });
+    showProgress.detach();
+
     petrichor.Render(scene);
 
     Petrichor::Core::Texture2D* targetTexture = scene.GetTargetTexture();
