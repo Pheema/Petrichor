@@ -64,9 +64,6 @@ Environment::PreCalcCumulativeDistTex()
     m_pdf2D = Texture2D(m_texEnv->GetWidth(), m_texEnv->GetHeight());
     m_cdf2D = Texture2D(m_texEnv->GetWidth(), m_texEnv->GetHeight());
 
-    // #DEBUG
-    m_debugTex = Texture2D(m_texEnv->GetWidth(), m_texEnv->GetHeight());
-
     // 行方向の和
     for (int j = 0; j < m_cdf2D.GetHeight(); j++)
     {
@@ -129,8 +126,8 @@ Environment::PreCalcCumulativeDistTex()
     }
 }
 
-Math::Vector3f
-Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
+Petrichor::Math::Vector3f
+Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY) const
 {
     if (!UseEnvImportanceSampling())
     {
@@ -212,12 +209,6 @@ Environment::ImportanceSampling(ISampler2D& sampler2D, float* pdfXY)
             .x;
         *pdfXY = pdfY0 * pdfX0UnderY0;
     }
-
-    auto prevColor =
-      m_debugTex.GetPixelByUV(u0, v0, Texture2D::InterplationTypes::Point);
-    m_debugTex.SetPixel(static_cast<int>(u0 * m_debugTex.GetWidth()),
-                        static_cast<int>(v0 * m_debugTex.GetHeight()),
-                        prevColor + Color3f::One());
 
     const float theta = v0 * Math::kPi;
     const float phi = 2.0f * Math::kPi * (1.0f - u0) + m_ZAxisRotation;

@@ -62,9 +62,6 @@ LoadCornellBoxScene(Scene* scene)
 
     scene->SetMainCamera(*camera);
 
-    // 環境マップの設定
-    scene->GetEnvironment().SetBaseColor(Color3f::Zero());
-
     // レンダリング先を指定
     auto targetTex = new Texture2D(scene->GetSceneSettings().outputWidth,
                                    scene->GetSceneSettings().outputHeight);

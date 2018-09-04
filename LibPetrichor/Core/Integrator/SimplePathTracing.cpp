@@ -17,6 +17,7 @@ void
 SimplePathTracing::Render(uint32_t pixelX,
                           uint32_t pixelY,
                           const Scene& scene,
+                          const AccelBase& accel,
                           Texture2D* targetTex,
                           ISampler1D& sampler1D,
                           ISampler2D& sampler2D)
@@ -44,7 +45,7 @@ SimplePathTracing::Render(uint32_t pixelX,
         bool isOverBounced = false;
         for (uint32_t bounce = 0;; bounce++)
         {
-            const auto hitInfo = scene.Intersect(ray, kEps);
+            const auto hitInfo = accel.Intersect(ray, kEps);
 
             // ---- ヒットしなかった場合 ----
             if (hitInfo == std::nullopt)

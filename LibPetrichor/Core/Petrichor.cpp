@@ -38,7 +38,12 @@ Petrichor::Render(const Scene& scene)
 {
     m_timeRenderingBegin = ClockType::now();
 
+    // #TODO: 外部から設定可能にする
     PathTracing pt;
+
+    // #TODO 外部から設定可能にする
+    BinnedSAHBVH accel;
+    accel.Build(scene);
 
     const uint32_t tileWidth = scene.GetSceneSettings().tileWidth;
     const uint32_t tileHeight = scene.GetSceneSettings().tileHeight;
@@ -54,16 +59,11 @@ Petrichor::Render(const Scene& scene)
     TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
     m_numTiles = tileManager.GetNumTiles();
 
-    std::mutex mtx;
-
     const uint32_t numThreads = scene.GetSceneSettings().numThreads > 0
                                   ? scene.GetSceneSettings().numThreads
                                   : std::thread::hardware_concurrency();
 
-    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency()
-              << std::endl;
-    std::cout << "Number of used threads: " << numThreads << std::endl;
-
+    m_numRenderedTiles = 0;
     {
         uint32_t maxIdxTile = 0;
         ThreadPool<void> threadPool(numThreads);
@@ -74,10 +74,7 @@ Petrichor::Render(const Scene& scene)
         {
             threadPool.Run([&](size_t threadIndex) {
                 const Tile tile = tileManager.GetTile();
-                const auto pixelPos = tile.GetInitialPixel();
-
-                const uint32_t i0 = pixelPos.first;
-                const uint32_t j0 = pixelPos.second;
+                const auto [i0, j0] = tile.GetInitialPixel();
 
 #ifdef _WIN32
                 {
@@ -99,8 +96,13 @@ Petrichor::Render(const Scene& scene)
                 {
                     for (uint32_t i = i0; i < i0 + tile.GetWidth(); i++)
                     {
-                        pt.Render(
-                          i, j, scene, targetTexure, sampler1D, sampler2D);
+                        pt.Render(i,
+                                  j,
+                                  scene,
+                                  accel,
+                                  targetTexure,
+                                  sampler1D,
+                                  sampler2D);
                     }
                 }
 

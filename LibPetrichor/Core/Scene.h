@@ -104,10 +104,17 @@ public:
     }
 
     // Environmentを取得
-    Environment&
+    const Environment&
     GetEnvironment() const
     {
         return m_environment;
+    }
+
+    //! 環境マップを設定
+    void
+    SetEnvironment(const Environment& environment)
+    {
+        m_environment = environment;
     }
 
     // レンダリング先のテクスチャを設定
@@ -124,39 +131,11 @@ public:
         return m_targetTex;
     }
 
-    void
-    BuildAccel()
-    {
-        m_accel = std::make_unique<BinnedSAHBVH>();
-        m_accel->Build(*this);
-    }
-
-    std::optional<HitInfo>
-    Intersect(const Ray& ray) const
-    {
-        if (m_accel == nullptr)
-        {
-            return std::nullopt;
-        }
-
-        return m_accel->Intersect(ray);
-    }
-
-    std::optional<HitInfo>
-    Intersect(const Ray& ray, float distMin) const
-    {
-        if (m_accel == nullptr)
-        {
-            return std::nullopt;
-        }
-
-        return m_accel->Intersect(ray, distMin);
-    }
-
     //! シーン設定を読み込む
     void
     LoadSceneSettings();
 
+    //! 環境マップを取得
     const SceneSettings&
     GetSceneSettings() const
     {
@@ -164,27 +143,25 @@ public:
     }
 
 private:
-    // シーンに登録されたオブジェクト
+    //! シーンに登録されたオブジェクト
     std::vector<const GeometryBase*> m_geometries;
 
-    // シーンに登録されたライト
+    //! シーンに登録されたライト
     std::vector<const GeometryBase*> m_lights;
 
-    // シーンで使用するマテリアル
+    //! シーンで使用するマテリアル
     std::vector<std::any> m_materials;
 
-    mutable Environment m_environment;
+    //! 環境マップ
+    Environment m_environment;
 
-    // メインカメラ
+    //! メインカメラ
     const Camera* m_mainCamera = nullptr;
 
-    //! 高速化構造
-    mutable std::unique_ptr<AccelBase> m_accel = nullptr;
-
-    // レンダリング先のテクスチャ
+    //! レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
 
-    // シーン設定
+    //! シーン設定
     SceneSettings m_sceneSetting;
 };
 

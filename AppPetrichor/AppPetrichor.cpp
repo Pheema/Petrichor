@@ -37,7 +37,6 @@ main()
 
     Petrichor::Core::Scene scene;
     Petrichor::Core::LoadCornellBoxScene(&scene);
-    scene.BuildAccel();
     petrichor.SetRenderCallback(OnRenderingFinished);
 
 #ifdef SAVE_IMAGE_PERIODICALLY
@@ -94,6 +93,11 @@ main()
         }
     });
     showProgress.detach();
+
+    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency()
+              << std::endl;
+    std::cout << "Number of used threads: "
+              << scene.GetSceneSettings().numThreads << std::endl;
 
     petrichor.Render(scene);
 

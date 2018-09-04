@@ -37,12 +37,10 @@ public:
 
     //! 輝度に応じた環境マップの重点サンプリングする
     Math::Vector3f
-    ImportanceSampling(ISampler2D& sampler2D, float* pdfXY);
+    ImportanceSampling(ISampler2D& sampler2D, float* pdfXY) const;
 
     float
     GetImportanceSamplingPDF(const Math::Vector3f& dir) const;
-
-    Texture2D m_debugTex;
 
     bool
     UseEnvImportanceSampling() const
