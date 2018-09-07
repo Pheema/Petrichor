@@ -49,10 +49,10 @@ target_compile_features(
 
 target_compile_options(
     LibPetrichor
-    PUBLIC
+    PRIVATE
         $<$<CONFIG:Debug>:/MTd>
         $<$<CONFIG:RelWithDebInfo>:/MT>
-        $<$<CONFIG:Release>:/MT>
+        $<$<CONFIG:Release>:/MT /GL /fp:fast>
 )
 
 target_include_directories(
