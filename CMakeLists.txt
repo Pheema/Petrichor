@@ -18,8 +18,8 @@ target_compile_options(
     AppPetrichor
     PRIVATE
         $<$<CONFIG:Debug>:/MTd>
-        $<$<CONFIG:RelWithDebInfo>:/MT>
-        $<$<CONFIG:Release>:/MT /GL /fp:fast>
+        $<$<CONFIG:RelWithDebInfo>:/MT /fp:fast /arch:AVX2>
+        $<$<CONFIG:Release>:/MT /GL /fp:fast /arch:AVX2>
 )
 
 target_include_directories(
