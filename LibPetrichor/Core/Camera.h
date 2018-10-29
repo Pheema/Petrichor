@@ -16,8 +16,6 @@ class ISampler2D;
 class Camera
 {
 public:
-    Math::Vector3f pos;
-
     Camera();
     Camera(const Math::Vector3f& pos, const Math::Vector3f& dir);
 
@@ -113,17 +111,19 @@ public:
     }
 
 private:
-    // カメラの各ローカル軸(正規化されている必要有り)
-    Math::Vector3f m_right;
-    Math::Vector3f m_up;
-    Math::Vector3f m_forward;
+    Math::Vector3f pos; //!< カメラ位置
 
-    float m_focusDist = 1.0f;
-    float m_sensorHeight = 24e-3f;           //! 標準センサーサイズ
-    float m_hPerf = m_sensorHeight / 55e-3f; //! 初期レンズは55mm
-    float m_apeture = 25e-3f; //! 有効口径(焦点距離(55mm)/F値(2.2))
+    Math::Vector3f m_right;   //!< カメラ右方向への単位ベクトル
+    Math::Vector3f m_up;      //!< カメラ上方向への単位ベクトル
+    Math::Vector3f m_forward; //!< カメラ正面方向への単位ベクトル
 
-    constexpr static Math::Vector3f m_worldUp = Math::Vector3f::UnitZ();
+    float m_focusDist = 1.0f;                //!< フォーカス距離
+    float m_sensorHeight = 24e-3f;           //!< 標準センサーサイズ
+    float m_hPerf = m_sensorHeight / 55e-3f; //!< 初期レンズは55mm
+    float m_apeture = 25e-3f; //!< 有効口径(焦点距離(55mm)/F値(2.2))
+
+    static constexpr Math::Vector3f s_worldUp =
+      Math::Vector3f::UnitZ(); //!< ワールドの上方向への単位ベクトル
 };
 
 } // namespace Core

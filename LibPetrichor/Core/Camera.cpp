@@ -1,4 +1,4 @@
-﻿#include "Camera.h"
+#include "Camera.h"
 
 #include "Core/Sampler/ISampler2D.h"
 #include "Random/XorShift.h"
@@ -39,7 +39,7 @@ void
 Camera::SetViewDir(const Vector3f& dir)
 {
     m_forward = dir.Normalized();
-    m_right = Cross(m_forward, m_worldUp);
+    m_right = Cross(m_forward, s_worldUp);
     m_up = Cross(m_right, m_forward);
 }
 
@@ -53,27 +53,37 @@ Ray
 Camera::PixelToRay(
   int i, int j, int imageWidth, int imageHeight, ISampler2D& sampler2D) const
 {
-    // Random
-    auto samplingPoint = sampler2D.Next();
-    const float aspect = static_cast<float>(imageWidth) / imageHeight;
-    const float u = (i + std::get<0>(samplingPoint)) / imageWidth - 0.5f;
-    const float v = (j + std::get<1>(samplingPoint)) / imageHeight - 0.5f;
+    // センサー上の点をランダムに選ぶ
+    const Vector3f pointOnSensor = [&]() {
+        const auto [rand0, rand1] = sampler2D.Next();
+        const float aspect = static_cast<float>(imageWidth) / imageHeight;
+        const float u = (i + rand0) / imageWidth - 0.5f;
+        const float v = (j + rand1) / imageHeight - 0.5f;
 
-    Vector3f pointOnSensor =
-      pos + m_right * u * m_hPerf * m_focusDist * aspect +
-      -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
+        return pos + m_right * u * m_hPerf * m_focusDist * aspect +
+               -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
+    }();
 
-    samplingPoint = sampler2D.Next();
-    float r = sqrt(std::get<0>(samplingPoint));
-    float theta = 2.0f * Math::kPi * std::get<1>(samplingPoint);
-    Vector3f pointOnLens = pos + m_right * 0.5f * m_apeture * r * cos(theta) +
-                           -m_up * 0.5f * m_apeture * r * sin(theta);
+    // レンズ上の点をランダムに選ぶ
+    const Vector3f pointOnLens = [&]() {
+        const auto [rand0, rand1] = sampler2D.Next();
+        const float r = sqrt(rand0);
+        const float theta = 2.0f * Math::kPi * rand1;
 
+        return pos + m_right * 0.5f * m_apeture * r * cos(theta) +
+               -m_up * 0.5f * m_apeture * r * sin(theta);
+    }();
+
+    // レイの方向
     const Vector3f rayDir = (pointOnSensor - pointOnLens).Normalized();
 
-    float dot = Dot(rayDir, Forward());
-    auto weight = Color3f::One() * dot * dot * m_focusDist * m_focusDist /
-                  (pointOnSensor - pointOnLens).SquaredLength();
+    // レイが保持する色
+    const Vector3f weight = [&]() {
+        const float dot = Dot(rayDir, Forward());
+
+        return Color3f::One() * dot * dot * m_focusDist * m_focusDist /
+               (pointOnSensor - pointOnLens).SquaredLength();
+    }();
 
     Ray cameraRay = Ray(pointOnLens, rayDir, RayTypes::Camera);
     cameraRay.weight = weight;
