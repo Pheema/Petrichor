@@ -1,4 +1,4 @@
-﻿#include "Core/Petrichor.h"
+#include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
 #include <cstdlib>
 #include <fstream>

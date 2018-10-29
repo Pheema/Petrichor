@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Color3f.h"
 #include "Core/Constants.h"

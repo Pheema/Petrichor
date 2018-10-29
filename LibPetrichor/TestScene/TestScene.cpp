@@ -1,4 +1,4 @@
-﻿#include "TestScene.h"
+#include "TestScene.h"
 
 namespace Petrichor
 {
@@ -13,7 +13,7 @@ LoadCornellBoxScene(Scene* scene)
         return;
     }
 
-    scene->LoadSceneSettings();
+    scene->LoadSceneSettings("Resource/SampleScene/CornellBox/settings.json");
 
     const auto* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     const auto* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));

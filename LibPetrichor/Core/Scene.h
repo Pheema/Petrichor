@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Accel/AccelBase.h"
 #include "Core/Accel/BinnedSAHBVH.h"
@@ -10,6 +10,7 @@
 #include "Core/Material/MaterialBase.h"
 #include "Core/SceneSettings.h"
 #include <any>
+#include <filesystem>
 #include <optional>
 #include <vector>
 
@@ -133,7 +134,7 @@ public:
 
     //! シーン設定を読み込む
     void
-    LoadSceneSettings();
+    LoadSceneSettings(const std::filesystem::path& path);
 
     //! 環境マップを取得
     const SceneSettings&
