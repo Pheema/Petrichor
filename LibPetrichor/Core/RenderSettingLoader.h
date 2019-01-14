@@ -4,7 +4,6 @@
 #include "RenderSetting.h"
 #include <filesystem>
 
-
 namespace Petrichor
 {
 namespace Core
@@ -24,12 +23,12 @@ public:
     Load(const std::filesystem::path& path) override;
 };
 
-// class SceneSettingsTomlLoader : public ISceneSettingsLoader
-//{
-// public:
-//    SceneSettings
-//    Load(const std::filesystem::path& path) override;
-//};
+class SceneSettingsTomlLoader : public ISceneSettingsLoader
+{
+public:
+    RenderSetting
+    Load(const std::filesystem::path& path) override;
+};
 
 } // namespace Core
 } // namespace Petrichor

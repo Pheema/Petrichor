@@ -1,10 +1,11 @@
 #include "RenderSettingLoader.h"
-// #include "tinytoml/include/toml/toml.h"
+#include "nlohmann/json.hpp"
+#include "tinytoml/include/toml/toml.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <type_traits>
-#include "nlohmann/json.hpp"
+
 using Json = nlohmann::json;
 
 namespace Petrichor
@@ -29,12 +30,13 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
     file.close();
 
     auto readValueIfKeyExists =
-      [](auto* value, const std::string& key, const Json& json) -> void {
+      [](auto* result, const std::string& key, const Json& json) -> void {
+        using ValueType = std::remove_pointer<decltype(result)>::type;
+
         const auto iter = json.find(key);
         if (iter != json.cend())
         {
-            *value =
-              static_cast<std::remove_pointer<decltype(value)>::type>(*iter);
+            *result = static_cast<ValueType>(*iter);
             return;
         }
 
@@ -59,67 +61,66 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
 
     return renderSetting;
 }
-//
-// template<class T>
-// void
-// ReadTomlValueIfKeyExists(T* result,
-//                         const std::string& key,
-//                         const toml::ParseResult& parsedData)
-//{
-//    const toml::Value* value = parsedData.value.find(key);
-//    if (value && value->is<T>())
-//    {
-//        *result = value->as<T>();
-//    }
-//    else
-//    {
-//        std::cout << "SceneSettings: key (" << key << ") is not found."
-//                  << std::endl;
-//    }
-//}
-//
-// SceneSettings
-// SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
-//{
-//    SceneSettings sceneSettings;
-//
-//    std::ifstream file(path, std::ios::in);
-//    if (file.fail())
-//    {
-//        std::cerr << "Couldn't read the setting file" << std::endl;
-//        return sceneSettings;
-//    }
-//
-//    const toml::ParseResult parsedData = toml::parse(file);
-//    if (!parsedData.valid())
-//    {
-//        std::cerr << "Parsing toml file failed.\n";
-//        return sceneSettings;
-//    }
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.outputWidth, "settings.render_width", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.outputHeight, "settings.render_height", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.numSamplesPerPixel, "settings.spp", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.numMaxBouces, "settings.maxBounces", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.tileWidth, "settings.tile_width", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.tileHeight, "settings.tile_height", parsedData);
-//
-//    ReadTomlValueIfKeyExists(
-//      &sceneSettings.numThreads, "settings.num_threads", parsedData);
-//
-//    return sceneSettings;
-//}
+
+RenderSetting
+SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
+{
+    RenderSetting sceneSettings;
+
+    std::ifstream file(path, std::ios::in);
+    if (file.fail())
+    {
+        std::cerr << "Couldn't read the setting file" << std::endl;
+        return sceneSettings;
+    }
+
+    const toml::ParseResult parsedData = toml::parse(file);
+    if (!parsedData.valid())
+    {
+        std::cerr << "Parsing toml file failed.\n";
+        return sceneSettings;
+    }
+
+    auto readValueIfKeyExists =
+      [](auto* result,
+         const std::string& key,
+         const toml::ParseResult& parsedData) -> void {
+        using ValueType = std::remove_pointer<decltype(result)>::type;
+
+        const toml::Value* value = parsedData.value.find(key);
+        if (value && value->is<ValueType>())
+        {
+            *result = value->as<ValueType>();
+        }
+        else
+        {
+            std::cout << "RenderSetting: key (" << key << ") is not found.\n";
+        }
+    };
+
+    readValueIfKeyExists(
+      &sceneSettings.outputWidth, "settings.render_width", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.outputHeight, "settings.render_height", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.numSamplesPerPixel, "settings.spp", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.numMaxBouces, "settings.maxBounces", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.tileWidth, "settings.tile_width", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.tileHeight, "settings.tile_height", parsedData);
+
+    readValueIfKeyExists(
+      &sceneSettings.numThreads, "settings.num_threads", parsedData);
+
+    return sceneSettings;
+}
 
 } // namespace Core
 } // namespace Petrichor
