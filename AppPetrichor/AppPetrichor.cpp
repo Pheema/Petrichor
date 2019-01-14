@@ -97,7 +97,7 @@ main()
     std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency()
               << std::endl;
     std::cout << "Number of used threads: "
-              << scene.GetSceneSettings().numThreads << std::endl;
+              << scene.GetRenderSetting().numThreads << std::endl;
 
     petrichor.Render(scene);
 

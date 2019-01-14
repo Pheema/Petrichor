@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Scene.h"
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <string>
 
 namespace Petrichor

@@ -8,7 +8,8 @@
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Material/MaterialBase.h"
-#include "Core/SceneSettings.h"
+#include "Core/RenderSetting.h"
+
 #include <any>
 #include <filesystem>
 #include <optional>
@@ -134,13 +135,13 @@ public:
 
     //! シーン設定を読み込む
     void
-    LoadSceneSettings(const std::filesystem::path& path);
+    LoadRenderSetting(const std::filesystem::path& path);
 
     //! 環境マップを取得
-    const SceneSettings&
-    GetSceneSettings() const
+    const RenderSetting&
+    GetRenderSetting() const
     {
-        return m_sceneSetting;
+        return m_renderSetting;
     }
 
 private:
@@ -162,8 +163,8 @@ private:
     //! レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;
 
-    //! シーン設定
-    SceneSettings m_sceneSetting;
+    //! レンダリング設定
+    RenderSetting m_renderSetting;
 };
 
 } // namespace Core

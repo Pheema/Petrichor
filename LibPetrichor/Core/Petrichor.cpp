@@ -1,4 +1,4 @@
-﻿#include "Petrichor.h"
+#include "Petrichor.h"
 
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
@@ -45,8 +45,8 @@ Petrichor::Render(const Scene& scene)
     BinnedSAHBVH accel;
     accel.Build(scene);
 
-    const uint32_t tileWidth = scene.GetSceneSettings().tileWidth;
-    const uint32_t tileHeight = scene.GetSceneSettings().tileHeight;
+    const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
+    const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
 
     Texture2D* const targetTexure = scene.GetTargetTexture();
     if (targetTexure == nullptr)
@@ -59,8 +59,8 @@ Petrichor::Render(const Scene& scene)
     TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
     m_numTiles = tileManager.GetNumTiles();
 
-    const uint32_t numThreads = scene.GetSceneSettings().numThreads > 0
-                                  ? scene.GetSceneSettings().numThreads
+    const uint32_t numThreads = scene.GetRenderSetting().numThreads > 0
+                                  ? scene.GetRenderSetting().numThreads
                                   : std::thread::hardware_concurrency();
 
     m_numRenderedTiles = 0;

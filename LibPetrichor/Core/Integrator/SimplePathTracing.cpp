@@ -1,4 +1,4 @@
-﻿#include "SimplePathTracing.h"
+#include "SimplePathTracing.h"
 
 #include "Core/HitInfo.h"
 #include "Core/Material/Emission.h"
@@ -29,8 +29,8 @@ SimplePathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    const uint32_t kNumSamples = scene.GetSceneSettings().numSamplesPerPixel;
-    const uint32_t kMaxNumBounces = scene.GetSceneSettings().numMaxBouces;
+    const uint32_t kNumSamples = scene.GetRenderSetting().numSamplesPerPixel;
+    const uint32_t kMaxNumBounces = scene.GetRenderSetting().numMaxBouces;
 
     Color3f pixelColorSum;
     for (uint32_t spp = 0; spp < kNumSamples; spp++)

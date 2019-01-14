@@ -1,15 +1,15 @@
 #include "Scene.h"
+#include "Core/RenderSettingLoader.h"
 
 namespace Petrichor
 {
 namespace Core
 {
 void
-Scene::LoadSceneSettings(const std::filesystem::path& path)
+Scene::LoadRenderSetting(const std::filesystem::path& path)
 {
-    SceneSettingsLoader loader;
-    m_sceneSetting =
-      loader.Load(path.c_str(), SceneSettingsLoader::FileType::Json);
+    auto loader = new RenderSettingLoaderJson();
+    m_renderSetting = loader->Load(path.c_str());
 }
 } // namespace Core
 } // namespace Petrichor

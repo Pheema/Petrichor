@@ -1,4 +1,4 @@
-﻿#include "PathTracing.h"
+#include "PathTracing.h"
 
 #include "Core/Accel/BruteForce.h"
 #include "Core/HitInfo.h"
@@ -33,7 +33,7 @@ PathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    const uint32_t numSamples = scene.GetSceneSettings().numSamplesPerPixel;
+    const uint32_t numSamples = scene.GetRenderSetting().numSamplesPerPixel;
     Color3f pixelColorSum;
     for (uint32_t spp = 0; spp < numSamples; spp++)
     {
@@ -69,7 +69,7 @@ PathTracing::Render(uint32_t pixelX,
         }
 
         // ---- 光源以外のオブジェクトにヒットした場合 ----
-        const uint32_t maxNumBounces = scene.GetSceneSettings().numMaxBouces;
+        const uint32_t maxNumBounces = scene.GetRenderSetting().numMaxBouces;
         for (uint32_t bounce = 0; bounce < maxNumBounces; bounce++)
         {
             // ---- ライトをサンプリング ----

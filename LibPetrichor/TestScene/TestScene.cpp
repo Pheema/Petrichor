@@ -13,7 +13,7 @@ LoadCornellBoxScene(Scene* scene)
         return;
     }
 
-    scene->LoadSceneSettings("Resource/SampleScene/CornellBox/settings.json");
+    scene->LoadRenderSetting("Resource/SampleScene/CornellBox/settings.json");
 
     const auto* matLambertRed = new Lambert(Color3f(1.0f, 0, 0));
     const auto* matLambertGreen = new Lambert(Color3f(0, 1.0f, 0));
@@ -59,8 +59,8 @@ LoadCornellBoxScene(Scene* scene)
     scene->SetMainCamera(*camera);
 
     // レンダリング先を指定
-    auto targetTex = new Texture2D(scene->GetSceneSettings().outputWidth,
-                                   scene->GetSceneSettings().outputHeight);
+    auto targetTex = new Texture2D(scene->GetRenderSetting().outputWidth,
+                                   scene->GetRenderSetting().outputHeight);
     scene->SetTargetTexture(targetTex);
 }
 

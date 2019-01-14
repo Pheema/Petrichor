@@ -26,7 +26,7 @@ add_library(LibPetrichor
             Core/Environment.cpp
             Core/Petrichor.cpp
             Core/Scene.cpp
-            Core/SceneSettings.cpp
+            Core/RenderSettingLoader.cpp
             Core/Texture2D.cpp
             Core/TileManager.cpp
             Math/Halton.cpp
@@ -53,6 +53,8 @@ target_compile_options(LibPetrichor
                                /fp:fast
                                /arch:AVX2>)
 
-target_include_directories(LibPetrichor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(LibPetrichor
+                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+                                   ${CMAKE_SOURCE_DIR}/External)
 
 conan_target_link_libraries(LibPetrichor)

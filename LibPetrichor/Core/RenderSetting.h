@@ -1,18 +1,13 @@
-﻿#pragma once
+#pragma once
 
-#include "Core/Assert.h"
-#include "nlohmann/json.hpp"
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-using json = nlohmann::json;
+#include <cstdint>
 
 namespace Petrichor
 {
 namespace Core
 {
 
-struct SceneSettings
+struct RenderSetting
 {
     uint32_t outputWidth = 1280;       //!< rendered image width
     uint32_t outputHeight = 720;       //!< rendered image height
@@ -23,19 +18,6 @@ struct SceneSettings
 
     //! number of render threads (0: use max number of threads)
     uint32_t numThreads = 0;
-};
-
-class SceneSettingsLoader
-{
-public:
-    enum class FileType
-    {
-        Json
-    };
-
-public:
-    SceneSettings
-    Load(const std::filesystem::path& path, FileType fileType);
 };
 
 } // namespace Core
