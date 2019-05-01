@@ -1,19 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include "Constants.h"
+#include <cassert>
 
 #ifdef PHM_DEBUG
 
-#define ASSERT(expression)                                                     \
-    if (expression)                                                            \
-    {                                                                          \
-        (void*)0;                                                              \
-    }                                                                          \
-    else                                                                       \
-    {                                                                          \
-        int* tmp = nullptr;                                                    \
-        *tmp = 0;                                                              \
-    }
+#define ASSERT(expression) assert(expression)
 
 #define UNIMPLEMENTED() ASSERT(false && "This function is unimplemented")
 #define IS_NORMALIZED(v)                                                       \

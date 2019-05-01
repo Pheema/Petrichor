@@ -1,13 +1,22 @@
 #include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
 #include <cstdlib>
+#include <fmt/format.h>
 #include <fstream>
+#include <gflags/gflags.h>
 #include <iomanip>
 #include <sstream>
 #include <thread>
 
-// #define ENABLE_TIME_LIMITATION
-#define SAVE_IMAGE_PERIODICALLY
+// DEFINE_int32(saveInterval,
+//             10,
+//             "rendered file save interval[sec]"); // 0で途中保存なし
+// DEFINE_int32(numThreads, 1, "number of threads to rendering");
+// DEFINE_int32(imageWidth, 1280, "output width[px]");
+// DEFINE_int32(imageHeight, 720, "output image height[px]");
+// DEFINE_int32(tileSize, 16, "Tile size[px]");
+// DEFINE_string(imageFileNamePrefix, 16, "output file name prefix");
+// DEFINE_string(outputPath, "Output/", "relative output path");
 
 void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
@@ -25,7 +34,7 @@ OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 }
 
 int
-main()
+main(int argc, char argv[])
 {
     using namespace Petrichor;
     using namespace std::chrono_literals;
