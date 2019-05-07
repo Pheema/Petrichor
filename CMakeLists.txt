@@ -14,6 +14,7 @@ add_compile_options($<$<C_COMPILER_ID:MSVC>:/utf-8>)
 
 add_subdirectory(LibPetrichor)
 add_subdirectory(TestPetrichor)
+add_subdirectory(Benchmark)
 
 add_executable(AppPetrichor AppPetrichor/AppPetrichor.cpp)
 
