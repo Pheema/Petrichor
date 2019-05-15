@@ -1,4 +1,4 @@
-﻿#include "Sphere.h"
+#include "Sphere.h"
 
 #include "Core/Constants.h"
 #include "Core/HitInfo.h"
@@ -13,13 +13,6 @@ namespace Core
 {
 
 using namespace Math;
-
-Sphere::Sphere()
-  : m_origin(Vector3f::Zero())
-  , m_radius(0.0f)
-{
-    // Do nothing
-}
 
 Sphere::Sphere(const Math::Vector3f& o, float r)
   : m_origin(o)

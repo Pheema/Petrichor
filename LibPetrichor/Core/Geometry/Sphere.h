@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Geometry/GeometryBase.h"
 #include <array>
@@ -11,7 +11,7 @@ namespace Core
 class Sphere : public GeometryBase
 {
 public:
-    Sphere();
+    Sphere() = default;
 
     Sphere(const Math::Vector3f& o, float r);
 
@@ -44,7 +44,7 @@ public:
 
 private:
     Math::Vector3f m_origin;
-    float m_radius;
+    float m_radius = 1.0f;
 };
 
 } // namespace Core
