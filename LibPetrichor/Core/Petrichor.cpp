@@ -39,7 +39,7 @@ Petrichor::Render(const Scene& scene)
     m_timeRenderingBegin = ClockType::now();
 
     // #TODO: 外部から設定可能にする
-    PathTracing pt;
+    SimplePathTracing pt;
 
     // #TODO 外部から設定可能にする
     BinnedSAHBVH accel;

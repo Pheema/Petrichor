@@ -86,7 +86,7 @@ Camera::PixelToRay(
     }();
 
     Ray cameraRay = Ray(pointOnLens, rayDir, RayTypes::Camera);
-    cameraRay.weight = weight;
+    cameraRay.throughput = weight;
 
     return cameraRay;
 }

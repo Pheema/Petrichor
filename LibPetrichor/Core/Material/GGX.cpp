@@ -1,4 +1,4 @@
-﻿#include "GGX.h"
+#include "GGX.h"
 
 #include "Core/Constants.h"
 #include "Core/HitInfo.h"
@@ -101,7 +101,7 @@ GGX::CreateNextRay(const Ray& rayIn,
     Ray ray(shadingInfo.pos,
             outDir,
             RayTypes::Glossy,
-            rayIn.weight,
+            rayIn.throughput,
             rayIn.bounce + 1);
 
     const float alpha = GetAlpha(shadingInfo);
@@ -110,8 +110,8 @@ GGX::CreateNextRay(const Ray& rayIn,
     const float g2 = 1.0f / (1.0f + lambdaIn + lambdaOut);
     const float g1 = 1.0f / (1.0f + lambdaIn);
 
-    ray.weight *= (fTerm * g2 / g1);
-    ASSERT(ray.weight.MinElem() >= 0.0f);
+    ray.throughput *= (fTerm * g2 / g1);
+    ASSERT(ray.throughput.MinElem() >= 0.0f);
 
 #else
     Math::OrthonormalBasis onb;
@@ -128,12 +128,12 @@ GGX::CreateNextRay(const Ray& rayIn,
     Ray ray(shadingInfo.pos,
             outDir,
             RayTypes::Glossy,
-            rayIn.weight,
+            rayIn.throughput,
             rayIn.bounce + 1);
 
     auto f = BxDF(rayIn, ray, shadingInfo);
     auto cos = std::max(0.0f, Math::Dot(ray.dir, normal));
-    ray.weight *= (f * cos / *pdfDir);
+    ray.throughput *= (f * cos / *pdfDir);
 
 #endif
 

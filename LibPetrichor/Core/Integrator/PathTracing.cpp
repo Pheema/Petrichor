@@ -52,7 +52,7 @@ PathTracing::Render(uint32_t pixelX,
             {
                 // IBL
                 pixelColorSum +=
-                  ray.weight * scene.GetEnvironment().GetColor(ray.dir);
+                  ray.throughput * scene.GetEnvironment().GetColor(ray.dir);
                 continue;
             }
 
@@ -64,7 +64,7 @@ PathTracing::Render(uint32_t pixelX,
         if (mat->GetMaterialType() == MaterialTypes::Emission)
         {
             auto matLight = static_cast<const Emission*>(mat);
-            pixelColorSum += ray.weight * matLight->GetLightColor();
+            pixelColorSum += ray.throughput * matLight->GetLightColor();
             continue;
         }
 
@@ -80,9 +80,9 @@ PathTracing::Render(uint32_t pixelX,
             prevRay = ray;
             mat = shadingInfo.material;
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
-            ASSERT(ray.weight.MinElem() >= 0.0f);
+            ASSERT(ray.throughput.MinElem() >= 0.0f);
 
-            if (Math::ApproxEq(ray.weight.SquaredLength(), 0.0f, kEps))
+            if (Math::ApproxEq(ray.throughput.SquaredLength(), 0.0f, kEps))
             {
                 break;
             }
@@ -128,8 +128,8 @@ PathTracing::Render(uint32_t pixelX,
                         auto matLight = static_cast<const Emission*>(
                           shadingInfoNext.material);
 
-                        color +=
-                          misWeight * ray.weight * matLight->GetLightColor();
+                        color += misWeight * ray.throughput *
+                                 matLight->GetLightColor();
                     }
 
                     break;
@@ -170,7 +170,7 @@ PathTracing::Render(uint32_t pixelX,
                     }
 
                     const Color3f contribution =
-                      misWeight * ray.weight *
+                      misWeight * ray.throughput *
                       scene.GetEnvironment().GetColor(ray.dir);
                     ASSERT(contribution.MinElem() >= 0);
 
@@ -179,7 +179,7 @@ PathTracing::Render(uint32_t pixelX,
                 else
                 {
                     color +=
-                      ray.weight * scene.GetEnvironment().GetColor(ray.dir);
+                      ray.throughput * scene.GetEnvironment().GetColor(ray.dir);
                     ASSERT(color.MinElem() >= 0.0f);
                 }
 
@@ -271,7 +271,7 @@ PathTracing::CalcLightContribution(const Scene& scene,
 
                 ASSERT(std::isfinite(misWeight) && misWeight >= 0.0f);
 
-                Color3f contribution = misWeight * ray.weight *
+                Color3f contribution = misWeight * ray.throughput *
                                        (li * f * cos * cosP / (pdfArea * l2));
                 ASSERT(contribution.MinElem() >= 0);
                 lightContribution += contribution;
@@ -313,7 +313,7 @@ PathTracing::CalcLightContribution(const Scene& scene,
             const Color3f f = mat->BxDF(ray, rayToEnv, shadingInfo);
 
             const Color3f contribution =
-              misWeight * ray.weight *
+              misWeight * ray.throughput *
               (li * f * sin * cos * 2.0f * Math::kPi * Math::kPi) / pdfuv;
             ASSERT(contribution.MinElem() >= 0);
 

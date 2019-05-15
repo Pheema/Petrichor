@@ -1,4 +1,4 @@
-﻿#include "Lambert.h"
+#include "Lambert.h"
 
 #include "Core/Constants.h"
 #include "Core/HitInfo.h"
@@ -74,7 +74,7 @@ Lambert::CreateNextRay(const Ray& rayIn,
         const Math::Vector3f outDir =
           coffU * onb.GetU() + coffV * onb.GetV() + coffW * onb.GetW();
 
-        Color3f outWeight = rayIn.weight * m_kd;
+        Color3f outWeight = rayIn.throughput * m_kd;
         if (m_texAlbedo)
         {
             outWeight *=
@@ -103,11 +103,11 @@ Lambert::CreateNextRay(const Ray& rayIn,
         Ray rayOut(shadingInfo.pos + kEps * normal,
                    outDir,
                    RayTypes::Diffuse,
-                   rayIn.weight,
+                   rayIn.throughput,
                    rayIn.bounce + 1);
 
         const auto f = BxDF(rayIn, rayOut, shadingInfo);
-        rayOut.weight *= (f * cosTheta / PDF(rayIn, rayOut, shadingInfo));
+        rayOut.throughput *= (f * cosTheta / PDF(rayIn, rayOut, shadingInfo));
 
         return rayOut;
     }

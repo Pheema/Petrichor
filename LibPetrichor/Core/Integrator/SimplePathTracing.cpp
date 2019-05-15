@@ -29,29 +29,30 @@ SimplePathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    const uint32_t kNumSamples = scene.GetRenderSetting().numSamplesPerPixel;
-    const uint32_t kMaxNumBounces = scene.GetRenderSetting().numMaxBouces;
+    const int kNumSamples = scene.GetRenderSetting().numSamplesPerPixel;
+    const int kMaxNumBounces = scene.GetRenderSetting().numMaxBouces;
 
-    Color3f pixelColorSum;
-    for (uint32_t spp = 0; spp < kNumSamples; spp++)
+    Color3f sumContribution;
+    for (int spp = 0; spp < kNumSamples; spp++)
     {
-        Color3f color;
         auto ray = mainCamera->PixelToRay(pixelX,
                                           pixelY,
                                           targetTex->GetWidth(),
                                           targetTex->GetHeight(),
                                           sampler2D);
 
-        bool isOverBounced = false;
-        for (uint32_t bounce = 0;; bounce++)
+        Color3f contribution;
+        bool hasContribution = true;
+        for (int bounce = 0;; bounce++)
         {
             const auto hitInfo = accel.Intersect(ray, kEps);
 
-            // ---- ヒットしなかった場合 ----
-            if (hitInfo == std::nullopt)
+            // ヒットしなかった場合
+            if (!hitInfo)
             {
                 // IBL
-                color += ray.weight * scene.GetEnvironment().GetColor(ray.dir);
+                contribution +=
+                  ray.throughput * scene.GetEnvironment().GetColor(ray.dir);
                 break;
             }
 
@@ -61,7 +62,7 @@ SimplePathTracing::Render(uint32_t pixelX,
             if (mat->GetMaterialType() == MaterialTypes::Emission)
             {
                 auto matEmission = static_cast<const Emission*>(mat);
-                color += ray.weight * matEmission->GetLightColor();
+                contribution += ray.throughput * matEmission->GetLightColor();
                 break;
             }
 
@@ -74,25 +75,30 @@ SimplePathTracing::Render(uint32_t pixelX,
               (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
 
-            // 最大反射回数未満の場合はロシアンルーレットを行わない
-            // TODO: あとでロシアンルーレット方式に
-            if (ray.bounce >= kMaxNumBounces)
+            // 最大反射回数以上でロシアンルーレット
+            if (ray.bounce > kMaxNumBounces)
             {
-                isOverBounced = true;
-                break;
+                // #TODO: 大雑把なので条件を考える
+                ray.prob *= 0.9f;
+                ray.prob = std::max(0.1f, ray.prob);
+                if (sampler1D.Next() < ray.prob)
+                {
+                    ray.throughput /= ray.prob;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
-        ASSERT(color.MinElem() >= 0.0f);
-        if (!isOverBounced)
-        {
-            pixelColorSum += color;
-        }
+        ASSERT(contribution.MinElem() >= 0.0f);
+        sumContribution += contribution;
     }
 
-    const Color3f averagedColor =
-      pixelColorSum / static_cast<float>(kNumSamples);
-    targetTex->SetPixel(pixelX, pixelY, averagedColor);
+    const Color3f averagedContribution =
+      sumContribution / static_cast<float>(kNumSamples);
+    targetTex->SetPixel(pixelX, pixelY, averagedContribution);
 }
 
 } // namespace Core
