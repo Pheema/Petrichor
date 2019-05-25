@@ -119,6 +119,7 @@ BVHNode::Intersect(const Ray& ray) const
 bool
 BVHNode::Contains(const Math::Vector3f& point) const
 {
+    // #TODO: 判定怪しげ
     const Math::Vector3f diff = GetBounds().vMax - GetBounds().vMin;
     const Math::Vector3f point2 = point - GetBounds().vMin;
 
