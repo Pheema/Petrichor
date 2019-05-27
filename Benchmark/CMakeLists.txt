@@ -1,24 +1,34 @@
 cmake_minimum_required(VERSION 3.8)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-conan_basic_setup()
+if(MSVC)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
+else(MSVC)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+endif(MSVC)
+conan_basic_setup(TARGETS)
 
-add_executable(Benchmark Math/BenchmarkVector3f.cpp)
+add_executable(Benchmark "Math/BenchmarkVector3f.cpp")
 
-target_compile_features(Benchmark PUBLIC cxx_std_17)
+target_compile_features(Benchmark PRIVATE cxx_std_17)
+target_include_directories(Benchmark PRIVATE ${CMAKE_SOURCE_DIR}/LibPetrichor)
 
-target_compile_options(Benchmark
-                       PRIVATE $<$<CONFIG:Debug>:/MTd>
-                               $<$<CONFIG:RelWithDebInfo>:/MT
-                               /fp:fast
-                               /arch:AVX2>
-                               $<$<CONFIG:Release>:/MT
-                               /fp:fast
-                               /arch:AVX2>)
+if(MSVC)
+  target_compile_options(Benchmark
+                         PRIVATE $<$<CONFIG:Debug>:/MTd>
+                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                                 /fp:fast
+                                 /arch:AVX2>
+                                 $<$<CONFIG:Release>:/MT
+                                 /GL
+                                 /fp:fast
+                                 /arch:AVX2>)
+endif(MSVC)
 
-target_include_directories(Benchmark
-                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-                                   ${CMAKE_SOURCE_DIR}/External
-                                   ${CMAKE_SOURCE_DIR}/LibPetrichor)
-
-conan_target_link_libraries(Benchmark)
+if(MSVC)
+  target_link_libraries(Benchmark
+                        PRIVATE CONAN_PKG::google-benchmark Shlwapi.lib)
+else(MSVC)
+  find_package(Threads)
+  target_link_libraries(Benchmark
+                        PRIVATE Threads::Threads CONAN_PKG::google-benchmark)
+endif(MSVC)

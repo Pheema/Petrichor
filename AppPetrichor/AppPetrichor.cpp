@@ -34,7 +34,7 @@ OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 }
 
 int
-main(int argc, char argv[])
+main(int argc, char** argv)
 {
     using namespace Petrichor;
     using namespace std::chrono_literals;

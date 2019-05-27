@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Texture2D.h"
 #include "MaterialBase.h"
 #include "Math/OrthonormalBasis.h"
+#include "Math/Vector3f.h"
 
 namespace Petrichor
 {
@@ -11,7 +12,6 @@ namespace Core
 
 class ISampler2D;
 struct HitInfo;
-class Math::Vector3f;
 
 class GGX : public MaterialBase
 {

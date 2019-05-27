@@ -31,7 +31,7 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
 
     auto readValueIfKeyExists =
       [](auto* result, const std::string& key, const Json& json) -> void {
-        using ValueType = std::remove_pointer<decltype(result)>::type;
+        using ValueType = typename std::remove_pointer<decltype(result)>::type;
 
         const auto iter = json.find(key);
         if (iter != json.cend())
@@ -85,7 +85,7 @@ SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
       [](auto* result,
          const std::string& key,
          const toml::ParseResult& parsedData) -> void {
-        using ValueType = std::remove_pointer<decltype(result)>::type;
+        using ValueType = typename std::remove_pointer<decltype(result)>::type;
 
         const toml::Value* value = parsedData.value.find(key);
         if (value && value->is<ValueType>())

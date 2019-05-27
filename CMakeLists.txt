@@ -1,7 +1,11 @@
 project(Petrichor)
 cmake_minimum_required(VERSION 3.8)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
+if (MSVC)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
+else(MSVC)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+endif(MSVC)
 conan_basic_setup()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release"
@@ -13,8 +17,11 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 add_compile_options($<$<C_COMPILER_ID:MSVC>:/utf-8>)
 
 add_subdirectory(LibPetrichor)
-add_subdirectory(TestPetrichor)
 add_subdirectory(Benchmark)
+# gccでエラーが出るので一旦外す
+
+add_subdirectory(TestPetrichor)
+
 
 add_executable(AppPetrichor AppPetrichor/AppPetrichor.cpp)
 

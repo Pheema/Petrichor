@@ -1,9 +1,9 @@
-﻿#include "BinnedSAHBVH.h"
+#include "BinnedSAHBVH.h"
 
 #include "Core/Accel/BVHNode.h"
 #include "Core/Geometry/GeometryBase.h"
 #include "Core/Scene.h"
-#include <execution>
+#include <numeric>
 #include <stack>
 
 namespace Petrichor
