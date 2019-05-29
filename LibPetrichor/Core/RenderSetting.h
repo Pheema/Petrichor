@@ -12,7 +12,7 @@ struct RenderSetting
     int outputWidth = 1280;       //!< rendered image width
     int outputHeight = 720;       //!< rendered image height
     int numSamplesPerPixel = 128; //!< number of samples in a pixel
-    int numMaxBouces = 16;        //!< maximum number of ray bounces
+    int numMaxBounces = 16;       //!< maximum number of ray bounces
     int tileWidth = 16;           //!< tile width
     int tileHeight = 16;          //!< tile height
 
@@ -48,7 +48,7 @@ struct fmt::formatter<Petrichor::Core::RenderSetting>
                          input.outputWidth,
                          input.outputHeight,
                          input.numSamplesPerPixel,
-                         input.numMaxBouces,
+                         input.numMaxBounces,
                          input.tileWidth,
                          input.tileHeight,
                          input.numThreads);

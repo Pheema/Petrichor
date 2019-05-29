@@ -30,7 +30,7 @@ SimplePathTracing::Render(uint32_t pixelX,
     }
 
     const int kNumSamples = scene.GetRenderSetting().numSamplesPerPixel;
-    const int kMaxNumBounces = scene.GetRenderSetting().numMaxBouces;
+    const int kMaxNumBounces = scene.GetRenderSetting().numMaxBounces;
 
     Color3f sumContribution;
     for (int spp = 0; spp < kNumSamples; spp++)

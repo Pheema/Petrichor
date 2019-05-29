@@ -69,7 +69,7 @@ PathTracing::Render(uint32_t pixelX,
         }
 
         // ---- 光源以外のオブジェクトにヒットした場合 ----
-        const uint32_t maxNumBounces = scene.GetRenderSetting().numMaxBouces;
+        const uint32_t maxNumBounces = scene.GetRenderSetting().numMaxBounces;
         for (uint32_t bounce = 0; bounce < maxNumBounces; bounce++)
         {
             // ---- ライトをサンプリング ----

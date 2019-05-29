@@ -51,7 +51,7 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
     readValueIfKeyExists(
       &renderSetting.numSamplesPerPixel, "spp", renderSettingJson);
     readValueIfKeyExists(
-      &renderSetting.numMaxBouces, "maxBounces", renderSettingJson);
+      &renderSetting.numMaxBounces, "maxBounces", renderSettingJson);
     readValueIfKeyExists(
       &renderSetting.tileWidth, "tileWidth", renderSettingJson);
     readValueIfKeyExists(
@@ -108,7 +108,7 @@ SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
       &sceneSettings.numSamplesPerPixel, "settings.spp", parsedData);
 
     readValueIfKeyExists(
-      &sceneSettings.numMaxBouces, "settings.maxBounces", parsedData);
+      &sceneSettings.numMaxBounces, "settings.maxBounces", parsedData);
 
     readValueIfKeyExists(
       &sceneSettings.tileWidth, "settings.tile_width", parsedData);
