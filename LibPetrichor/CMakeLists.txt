@@ -76,6 +76,7 @@ target_sources(LibPetrichor PRIVATE
                Core/Sampler/RandomSampler2D.cpp
                # Core/Thread/
                Core/Thread/ThreadPool.h
+               Core/Thread/ThreadPool.cpp
                # Math/
                Math/Halton.h
                Math/Halton.cpp

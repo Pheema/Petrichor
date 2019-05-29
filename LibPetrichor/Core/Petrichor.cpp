@@ -22,12 +22,6 @@
 #include <mutex>
 #include <sstream>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
-#endif
-
 namespace Petrichor
 {
 namespace Core
@@ -59,14 +53,12 @@ Petrichor::Render(const Scene& scene)
     TileManager tileManager(outputWidth, outputHeight, tileWidth, tileHeight);
     m_numTiles = tileManager.GetNumTiles();
 
-    const uint32_t numThreads = scene.GetRenderSetting().numThreads > 0
-                                  ? scene.GetRenderSetting().numThreads
-                                  : std::thread::hardware_concurrency();
+    const uint32_t numThreads = scene.GetRenderSetting().numThreads;
 
     m_numRenderedTiles = 0;
     {
         uint32_t maxIdxTile = 0;
-        ThreadPool<void> threadPool(numThreads);
+        ThreadPool threadPool(numThreads);
 
         for (int idxTile = 0;
              idxTile < static_cast<int>(tileManager.GetNumTiles());
@@ -75,19 +67,6 @@ Petrichor::Render(const Scene& scene)
             threadPool.Run([&](size_t threadIndex) {
                 const Tile tile = tileManager.GetTile();
                 const auto [i0, j0] = tile.GetInitialPixel();
-
-#ifdef _WIN32
-                {
-                    const int processerGroupID = threadIndex % 64;
-                    GROUP_AFFINITY groupAffinity{};
-                    if (GetNumaNodeProcessorMaskEx(processerGroupID,
-                                                   &groupAffinity))
-                    {
-                        SetThreadGroupAffinity(
-                          GetCurrentThread(), &groupAffinity, nullptr);
-                    }
-                }
-#endif
 
                 RandomSampler1D sampler1D(idxTile);
                 RandomSampler2D sampler2D(idxTile, idxTile + 123456u);
