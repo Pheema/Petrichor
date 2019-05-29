@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: conanio/clang7
+    working_directory: ~/project/Petrichor
     steps:
       - checkout
       - run:
