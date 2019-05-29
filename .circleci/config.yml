@@ -8,5 +8,7 @@ jobs:
       - checkout
       - run:
           command: |
+            git submodule sync
+            git submodule update --init
             conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
             sh build.sh
