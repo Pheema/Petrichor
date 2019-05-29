@@ -11,4 +11,4 @@ jobs:
             git submodule sync
             git submodule update --init
             conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
-            sh build.sh
+            bash build.sh
