@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fmt/format.h"
+
 namespace Petrichor
 {
 namespace Core
@@ -20,3 +22,35 @@ struct RenderSetting
 
 } // namespace Core
 } // namespace Petrichor
+
+template<>
+struct fmt::formatter<Petrichor::Core::RenderSetting>
+{
+    template<typename ParseContext>
+    constexpr auto
+    parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto
+    format(const Petrichor::Core::RenderSetting& input, FormatContext& ctx)
+    {
+        return format_to(ctx.out(),
+                         "OutputWidth: {}\n"
+                         "OutputHeight: {}\n"
+                         "NumSamplesPerPixel: {}\n"
+                         "NumMaxBounces: {}\n"
+                         "TileWidth: {}\n"
+                         "TileHeight: {}\n"
+                         "NumThreads: {}\n",
+                         input.outputWidth,
+                         input.outputHeight,
+                         input.numSamplesPerPixel,
+                         input.numMaxBouces,
+                         input.tileWidth,
+                         input.tileHeight,
+                         input.numThreads);
+    }
+};
