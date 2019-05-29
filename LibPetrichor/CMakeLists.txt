@@ -75,8 +75,7 @@ target_sources(LibPetrichor PRIVATE
                Core/Sampler/RandomSampler2D.h
                Core/Sampler/RandomSampler2D.cpp
                # Core/Thread/
-               Core/Thread/ThreadPool.h
-               Core/Thread/ThreadPool.cpp
+               Core/Thread/ThreadPool.h Core/Thread/ThreadPool.cpp
                # Math/
                Math/Halton.h
                Math/Halton.cpp
@@ -99,14 +98,18 @@ target_compile_definitions(
 
 target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
-target_compile_options(LibPetrichor
-                       PRIVATE $<$<CONFIG:Debug>:/MTd>
-                               $<$<CONFIG:RelWithDebInfo>:/MT
-                               /fp:fast
-                               /arch:AVX2>
-                               $<$<CONFIG:Release>:/MT
-                               /fp:fast
-                               /arch:AVX2>)
+if(MSVC)
+  target_compile_options(LibPetrichor
+                         PRIVATE $<$<CONFIG:Debug>:/MTd>
+                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                                 /fp:fast
+                                 /arch:AVX2>
+                                 $<$<CONFIG:Release>:/MT
+                                 /fp:fast
+                                 /arch:AVX2>)
+else(MSVC)
+  target_compile_options(LibPetrichor INTERFACE -lc++fs)
+endif(MSVC)
 
 target_include_directories(LibPetrichor
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
