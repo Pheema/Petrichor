@@ -8,4 +8,4 @@ jobs:
       - run:
           command: |
             conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
-            ./build.sh
+            sh build.sh
