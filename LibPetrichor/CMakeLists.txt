@@ -107,16 +107,10 @@ if(MSVC)
                                  $<$<CONFIG:Release>:/MT
                                  /fp:fast
                                  /arch:AVX2>)
-else(MSVC)
-  target_link_options(LibPetrichor INTERFACE "")
-  target_compile_options(LibPetrichor INTERFACE "")
 endif(MSVC)
 
 target_include_directories(LibPetrichor
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
                                    ${CMAKE_SOURCE_DIR}/External)
-if(MSVC)
-  conan_target_link_libraries(LibPetrichor)
-else(MSVC)
-  conan_target_link_libraries(LibPetrichor INTERFACE "-Wl,-lstdc++fs")
-endif(MSVC)
+
+conan_target_link_libraries(LibPetrichor)

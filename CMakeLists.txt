@@ -6,7 +6,7 @@ if (MSVC)
 else(MSVC)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 endif(MSVC)
-conan_basic_setup()
+conan_basic_setup(Packages)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release"
     CACHE STRING ""
@@ -50,9 +50,7 @@ set_target_properties(
              LINK_FLAGS_RELEASE
              "${linkFlagsRelease}")
 
-target_link_libraries(AppPetrichor LibPetrichor)
-
-conan_target_link_libraries(AppPetrichor)
+target_link_libraries(AppPetrichor LibPetrichor stdc++fs)
 
 # Set the startup project
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT AppPetrichor)
