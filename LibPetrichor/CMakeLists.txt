@@ -108,7 +108,7 @@ if(MSVC)
                                  /fp:fast
                                  /arch:AVX2>)
 else(MSVC)
-  target_compile_options(LibPetrichor INTERFACE -lc++fs)
+  target_compile_options(LibPetrichor INTERFACE "-lstdc++fs")
 endif(MSVC)
 
 target_include_directories(LibPetrichor
