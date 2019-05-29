@@ -39,7 +39,7 @@ Lambert::PDF(const Ray& rayIn,
 {
     if (IsImportanceSamplingEnabled())
     {
-        float cos = abs(Math::Dot(rayOut.dir, shadingInfo.normal));
+        float cos = std::abs(Math::Dot(rayOut.dir, shadingInfo.normal));
         return cos * Math::kInvPi;
     }
     else

@@ -102,7 +102,7 @@ PathTracing::Render(uint32_t pixelX,
                     const float l2 =
                       (shadingInfoNext.pos - ray.o).SquaredLength();
                     const float cosP =
-                      abs(Math::Dot(ray.dir, shadingInfoNext.normal));
+                      std::abs(Math::Dot(ray.dir, shadingInfoNext.normal));
 
                     // TODO:
                     // 下の関数が確率密度関数を取得しているだけなのに無駄
@@ -144,7 +144,7 @@ PathTracing::Render(uint32_t pixelX,
                 if (scene.GetEnvironment().UseEnvImportanceSampling())
                 {
                     const float cos =
-                      abs(Math::Dot(shadingInfo.normal, ray.dir));
+                      std::abs(Math::Dot(shadingInfo.normal, ray.dir));
                     const float sin = sqrt(std::max(0.0f, 1.0f - cos * cos));
 
                     const float pdfBSDF = mat->PDF(prevRay, ray, shadingInfo);

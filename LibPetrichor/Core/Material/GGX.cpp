@@ -27,7 +27,7 @@ GGX::BxDF(const Ray& rayIn,
     const Math::Vector3f normal = GetNormal(shadingInfo);
 
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN = abs(Dot(halfVec, normal));
+    const float hDotN = std::abs(Dot(halfVec, normal));
 
     const float alpha = GetAlpha(shadingInfo);
     const float alpha2 = alpha * alpha;
@@ -43,14 +43,14 @@ GGX::BxDF(const Ray& rayIn,
     const float gTerm = 1.0f / (1.0f + lambdaIn + lambdaOut);
 
     // F
-    const float hDotL = abs(Dot(halfVec, rayOut.dir));
+    const float hDotL = std::abs(Dot(halfVec, rayOut.dir));
     const float oneMinusCos = 1.0f - hDotL;
     const float oneMinusCos2 = oneMinusCos * oneMinusCos;
     const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
     const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
 
-    const float lDotN = abs(Dot(rayOut.dir, normal));
-    const float vDotN = abs(Dot(-rayIn.dir, normal));
+    const float lDotN = std::abs(Dot(rayOut.dir, normal));
+    const float vDotN = std::abs(Dot(-rayIn.dir, normal));
 
     auto f = dTerm * gTerm * fTerm / (4.0f * lDotN * vDotN);
 
@@ -65,7 +65,7 @@ GGX::PDF(const Ray& rayIn,
     const Math::Vector3f normal = GetNormal(shadingInfo);
 
     const auto halfVec = (-rayIn.dir + rayOut.dir).Normalized();
-    const float hDotN = abs(Dot(halfVec, normal));
+    const float hDotN = std::abs(Dot(halfVec, normal));
 
     const float alpha = GetAlpha(shadingInfo);
     const float alpha2 = alpha * alpha;
@@ -92,7 +92,7 @@ GGX::CreateNextRay(const Ray& rayIn,
     Math::Vector3f outDir = (rayIn.dir).Reflected(sampledHalfVec);
 
     // TODO: あとでFresnel()にまとめる
-    const float hDotL = abs(Math::Dot(sampledHalfVec, outDir));
+    const float hDotL = std::abs(Math::Dot(sampledHalfVec, outDir));
     const float oneMinusCos = 1.0f - hDotL;
     const float oneMinusCos2 = oneMinusCos * oneMinusCos;
     const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
@@ -155,7 +155,7 @@ GGX::Lambda(const Math::Vector3f& dir,
             float alpha) const
 {
     const float alpha2 = alpha * alpha;
-    const float cos = abs(Dot(dir, halfDir));
+    const float cos = std::abs(Dot(dir, halfDir));
     const float tan2 = cos > 0 ? 1.0f / (cos * cos) - 1.0f : kInfinity;
 
     float lambda = -0.5f + 0.5f * sqrt(1.0f + alpha2 * tan2);
