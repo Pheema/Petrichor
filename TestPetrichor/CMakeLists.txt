@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
 
-if(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-else(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-endif(MSVC)
-conan_basic_setup()
-
 add_executable(TestPetrichor "Math/TestVector3f.cpp" "TestMain.cpp")
 
 target_compile_features(TestPetrichor PUBLIC cxx_std_17)
@@ -25,4 +18,4 @@ endif(MSVC)
 target_include_directories(TestPetrichor
                            PRIVATE ${CMAKE_SOURCE_DIR}/LibPetrichor)
 
-conan_target_link_libraries(TestPetrichor)
+target_link_libraries(TestPetrichor CONAN_PKG::gtest)

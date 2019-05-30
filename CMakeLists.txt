@@ -6,7 +6,7 @@ if(MSVC)
 else(MSVC)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 endif(MSVC)
-conan_basic_setup(Packages)
+conan_basic_setup(TARGETS)
 
 set(CMAKE_CONFIGURATION_TYPES
     "Debug;RelWithDebInfo;Release"
@@ -50,9 +50,9 @@ set_target_properties(
              "${linkFlagsRelease}")
 
 if(MSVC)
-  target_link_libraries(AppPetrichor LibPetrichor)
+  target_link_libraries(AppPetrichor LibPetrichor CONAN_PKG::gflags)
 else(MSVC)
-  target_link_libraries(AppPetrichor LibPetrichor stdc++fs)
+  target_link_libraries(AppPetrichor LibPetrichor stdc++fs CONAN_PKG::gflags)
 endif(MSVC)
 
 # Startup project

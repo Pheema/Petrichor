@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
 
-if(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-else(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-endif(MSVC)
-conan_basic_setup(TARGETS)
-
 add_executable(Benchmark "Math/BenchmarkVector3f.cpp")
 
 target_compile_features(Benchmark PRIVATE cxx_std_17)

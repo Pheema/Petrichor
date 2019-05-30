@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
 
-if(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-else(MSVC)
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-endif(MSVC)
-conan_basic_setup()
-
 add_library(LibPetrichor STATIC "")
 
 target_sources(LibPetrichor PRIVATE
