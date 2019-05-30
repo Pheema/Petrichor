@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "AccelBase.h"
 #include "Core/Geometry/GeometryBase.h"
@@ -21,9 +21,7 @@ public:
     Build(const Scene& scene) override;
 
     std::optional<HitInfo>
-    Intersect(const Ray& ray,
-              float distMin = 0.0f,
-              float distMax = kInfinity) const override;
+    Intersect(const Ray& ray, float distMin, float distMax) const override;
 
 private:
     std::vector<const GeometryBase*> m_geometries;

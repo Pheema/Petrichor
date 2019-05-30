@@ -19,9 +19,7 @@ BruteForce::Build(const Scene& scene)
 }
 
 std::optional<HitInfo>
-BruteForce::Intersect(const Ray& ray,
-                      float distMin /*= 0.0f*/,
-                      float distMax /*= kInfinity*/) const
+BruteForce::Intersect(const Ray& ray, float distMin, float distMax) const
 {
     std::optional<HitInfo> hitInfoResult;
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "AccelBase.h"
 #include "BVHNode.h"
@@ -12,7 +12,6 @@ namespace Core
 {
 
 class Scene;
-struct HitInfo;
 struct Ray;
 
 class BinnedSAHBVH : public AccelBase
@@ -32,9 +31,7 @@ public:
     Build(const Scene& scene) override;
 
     std::optional<HitInfo>
-    Intersect(const Ray& ray,
-              float distMin = 0.0f,
-              float distMax = kInfinity) const override;
+    Intersect(const Ray& ray, float distMin, float distMax) const override;
 
 private:
     //!

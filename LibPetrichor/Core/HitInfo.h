@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Constants.h"
 #include "Math/Vector3f.h"

@@ -245,9 +245,7 @@ BinnedSAHBVH::GetSAHCost(int binPartitionIndex,
 }
 
 std::optional<HitInfo>
-BinnedSAHBVH::Intersect(const Ray& ray,
-                        float distMin /*= 0.0f*/,
-                        float distMax /*= kInfinity*/) const
+BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
 {
     thread_local std::vector<int> bvhNodeIndexStack;
     bvhNodeIndexStack.reserve(m_bvhNodes.size());
