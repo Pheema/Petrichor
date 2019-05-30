@@ -4,8 +4,6 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <gflags/gflags.h>
-#include <iomanip>
-#include <sstream>
 #include <thread>
 
 // DEFINE_int32(saveInterval,
@@ -27,9 +25,7 @@ OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
         return;
     }
 
-    file << std::fixed;
-    file << "Total time: " << std::setprecision(2) << renderingResult.totalSec
-         << "[s]" << std::endl;
+    file << fmt::format("Total time: {:.2f} [s]\n", renderingResult.totalSec);
     file.close();
 }
 
@@ -97,16 +93,17 @@ main(int argc, char** argv)
         for (;;)
         {
             std::this_thread::sleep_for(0.1s);
-            std::cout << "[Tile]: " << petrichor.GetNumRenderedTiles() << " / "
-                      << petrichor.GetNumTiles() << "\r";
+            fmt::print("[Tile]: {} / {}\r",
+                       petrichor.GetNumRenderedTiles(),
+                       petrichor.GetNumTiles());
         }
     });
     showProgress.detach();
 
-    std::cout << "Hardware Concurrency: " << std::thread::hardware_concurrency()
-              << std::endl;
-    std::cout << "Number of used threads: "
-              << scene.GetRenderSetting().numThreads << std::endl;
+    fmt::print("Hardware Concurrency: {}\n",
+               std::thread::hardware_concurrency());
+    fmt::print("Number of used threads: {}\n",
+               scene.GetRenderSetting().numThreads);
 
     petrichor.Render(scene);
 
