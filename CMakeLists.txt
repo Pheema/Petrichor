@@ -1,39 +1,38 @@
 project(Petrichor)
 cmake_minimum_required(VERSION 3.8)
 
-if (MSVC)
+if(MSVC)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
 else(MSVC)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 endif(MSVC)
 conan_basic_setup(Packages)
 
-set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release"
-    CACHE STRING ""
-    FORCE)
+set(CMAKE_CONFIGURATION_TYPES
+    "Debug;RelWithDebInfo;Release"
+    CACHE STRING "" FORCE)
 
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
-add_compile_options($<$<C_COMPILER_ID:MSVC>:/utf-8>)
+if(MSVC)
+  add_compile_options(/MP /utf-8)
+endif(MSVC)
 
 add_subdirectory(LibPetrichor)
 add_subdirectory(Benchmark)
-# gccでエラーが出るので一旦外す
-
 add_subdirectory(TestPetrichor)
-
 
 add_executable(AppPetrichor AppPetrichor/AppPetrichor.cpp)
 
-target_compile_options(AppPetrichor
-                       PRIVATE $<$<CONFIG:Debug>:/MTd>
-                               $<$<CONFIG:RelWithDebInfo>:/MT
-                               /fp:fast
-                               /arch:AVX2>
-                               $<$<CONFIG:Release>:/MT
-                               /GL
-                               /fp:fast
-                               /arch:AVX2>)
+if(MSVC)
+  target_compile_options(AppPetrichor
+                         PRIVATE $<$<CONFIG:Debug>:/MTd>
+                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                                 /fp:fast
+                                 /arch:AVX2>
+                                 $<$<CONFIG:Release>:/MT
+                                 /GL
+                                 /fp:fast
+                                 /arch:AVX2>)
+endif(MSVC)
 
 target_include_directories(AppPetrichor PRIVATE LibPetrichor)
 
@@ -50,7 +49,11 @@ set_target_properties(
              LINK_FLAGS_RELEASE
              "${linkFlagsRelease}")
 
-target_link_libraries(AppPetrichor LibPetrichor stdc++fs)
+if(MSVC)
+  target_link_libraries(AppPetrichor LibPetrichor)
+else(MSVC)
+  target_link_libraries(AppPetrichor LibPetrichor stdc++fs)
+endif(MSVC)
 
-# Set the startup project
+# Startup project
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT AppPetrichor)
