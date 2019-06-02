@@ -89,21 +89,50 @@ main(int argc, char** argv)
     elapsedTimeChecker.detach();
 #endif
 
-    std::thread showProgress([&] {
-        for (;;)
-        {
-            std::this_thread::sleep_for(0.1s);
-            fmt::print("[Tile]: {} / {}\r",
-                       petrichor.GetNumRenderedTiles(),
-                       petrichor.GetNumTiles());
-        }
-    });
-    showProgress.detach();
-
     fmt::print("Hardware Concurrency: {}\n",
                std::thread::hardware_concurrency());
     fmt::print("Number of used threads: {}\n",
                scene.GetRenderSetting().numThreads);
+
+    const auto progressBar = [](float ratio) {
+        std::string progressBar;
+        constexpr int kMaxNumChars = 50;
+        const auto numBlockChars = static_cast<int>(kMaxNumChars * ratio);
+
+        progressBar += "[";
+        for (int charPos = 0; charPos < numBlockChars; charPos++)
+        {
+            progressBar += "*";
+        }
+        for (int charPos = numBlockChars; charPos < kMaxNumChars; charPos++)
+        {
+            progressBar += " ";
+        }
+        progressBar += "]";
+
+        return progressBar;
+    };
+
+    std::thread showProgress([&] {
+        for (;;)
+        {
+            std::this_thread::sleep_for(0.1s);
+            const float ratio =
+              static_cast<float>(petrichor.GetNumRenderedTiles()) /
+              petrichor.GetNumTiles();
+            fmt::print("[Progress]: {:.2f}% ({} / {}) {}\r",
+                       100.0f * ratio,
+                       petrichor.GetNumRenderedTiles(),
+                       petrichor.GetNumTiles(),
+                       progressBar(ratio));
+            std::cout << std::flush;
+
+            if (petrichor.GetNumRenderedTiles() >= petrichor.GetNumTiles())
+            {
+                return;
+            }
+        }
+    });
 
     petrichor.Render(scene);
 
@@ -112,5 +141,8 @@ main(int argc, char** argv)
     {
         targetTexture->Save("Output/Result.png");
     }
+
+    showProgress.join();
+
     return 0;
 }

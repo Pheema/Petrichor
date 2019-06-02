@@ -103,8 +103,6 @@ Petrichor::Finalize()
         renderingResult.totalSec = totalTime.count();
         m_onRenderingFinished(renderingResult);
     }
-
-    std::cout << "[Finished]" << std::endl;
 }
 
 } // namespace Core
