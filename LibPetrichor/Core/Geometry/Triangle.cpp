@@ -1,4 +1,4 @@
-﻿#include "Triangle.h"
+#include "Triangle.h"
 
 #include "Core/Geometry/Vertex.h"
 #include "Core/HitInfo.h"
