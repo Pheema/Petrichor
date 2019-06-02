@@ -6,15 +6,15 @@
 #include <gflags/gflags.h>
 #include <thread>
 
-// DEFINE_int32(saveInterval,
-//             10,
-//             "rendered file save interval[sec]"); // 0で途中保存なし
-// DEFINE_int32(numThreads, 1, "number of threads to rendering");
-// DEFINE_int32(imageWidth, 1280, "output width[px]");
-// DEFINE_int32(imageHeight, 720, "output image height[px]");
-// DEFINE_int32(tileSize, 16, "Tile size[px]");
-// DEFINE_string(imageFileNamePrefix, 16, "output file name prefix");
-// DEFINE_string(outputPath, "Output/", "relative output path");
+DEFINE_int32(saveInterval,
+             10,
+             "rendered file save interval[sec]"); // 0で途中保存なし
+DEFINE_int32(numThreads, 1, "number of threads to rendering");
+DEFINE_int32(imageWidth, 1280, "output width[px]");
+DEFINE_int32(imageHeight, 720, "output image height[px]");
+DEFINE_int32(tileSize, 16, "Tile size[px]");
+DEFINE_string(imageFileNamePrefix, "Rendered", "output file name prefix");
+DEFINE_string(outputPath, "Output/", "relative output path");
 
 void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
