@@ -111,8 +111,9 @@ public:
     friend Vector3f
     operator/(float c, const Vector3f& v);
 
-    // インデックスでアクセス
     constexpr float operator[](int i) const;
+
+    constexpr float& Vector3f::operator[](int i);
 
     // iostream
     friend std::ostream&
@@ -305,6 +306,12 @@ Vector3f::operator/=(float c)
 }
 
 constexpr float Vector3f::operator[](int i) const
+{
+    ASSERT(0 <= i && i < 3);
+    return *(&x + i);
+}
+
+constexpr float& Vector3f::operator[](int i)
 {
     ASSERT(0 <= i && i < 3);
     return *(&x + i);

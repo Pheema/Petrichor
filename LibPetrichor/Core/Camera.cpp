@@ -12,7 +12,7 @@ using namespace Math;
 Camera::Camera() {}
 
 Camera::Camera(const Vector3f& pos, const Vector3f& dir)
-  : pos(pos)
+  : m_pos(pos)
 {
     SetViewDir(dir);
 }
@@ -26,7 +26,7 @@ Camera::SetLens(float focalLength)
 void
 Camera::FocusTo(const Vector3f& target)
 {
-    m_focusDist = (target - pos).Length();
+    m_focusDist = (target - m_pos).Length();
 }
 
 void
@@ -46,7 +46,7 @@ Camera::SetViewDir(const Vector3f& dir)
 void
 Camera::LookAt(const Vector3f& target)
 {
-    SetViewDir(target - pos);
+    SetViewDir(target - m_pos);
 }
 
 Ray
@@ -60,7 +60,7 @@ Camera::PixelToRay(
         const float u = (i + rand0) / imageWidth - 0.5f;
         const float v = (j + rand1) / imageHeight - 0.5f;
 
-        return pos + m_right * u * m_hPerf * m_focusDist * aspect +
+        return m_pos + m_right * u * m_hPerf * m_focusDist * aspect +
                -m_up * v * m_hPerf * m_focusDist + m_forward * m_focusDist;
     }();
 
@@ -70,7 +70,7 @@ Camera::PixelToRay(
         const float r = sqrt(rand0);
         const float theta = 2.0f * Math::kPi * rand1;
 
-        return pos + m_right * 0.5f * m_apeture * r * cos(theta) +
+        return m_pos + m_right * 0.5f * m_apeture * r * cos(theta) +
                -m_up * 0.5f * m_apeture * r * sin(theta);
     }();
 

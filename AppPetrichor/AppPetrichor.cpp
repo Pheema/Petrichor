@@ -41,25 +41,6 @@ main(int argc, char** argv)
         using namespace Petrichor;
         using namespace Petrichor::Core;
 
-        const auto* matEmissionWhite = new Emission(Color3f::One());
-
-        auto sphere = new Sphere(Math::Vector3f(0.0f, 0.0f, 4.0f), 1.0f);
-        sphere->SetMaterial(matEmissionWhite);
-        scene.AppendGeometry(sphere);
-        scene.AppendLight(sphere);
-
-        auto const camera =
-          new Camera(Math::Vector3f(0, -10.0f, 2.0f), Math::Vector3f::UnitY());
-
-        Environment env;
-        env.SetBaseColor(Color3f::One());
-        scene.SetEnvironment(env);
-        camera->LookAt(0.0f * Math::Vector3f::UnitZ());
-        camera->FocusTo(0.0f * Math::Vector3f::UnitZ());
-        camera->SetFNumber(32.0f);
-
-        scene.SetMainCamera(*camera);
-
         // レンダリング先を指定
         auto targetTex = new Texture2D(scene.GetRenderSetting().outputWidth,
                                        scene.GetRenderSetting().outputHeight);

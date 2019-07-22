@@ -89,7 +89,7 @@ bool
 Texture2D::Load(const std::filesystem::path& path,
                 TextureColorType textureColorType)
 {
-    if (std::filesystem::exists(path))
+    if (!std::filesystem::exists(path))
     {
         std::cerr << "[Error] Texture not found. (" << path << ")" << std::endl;
         return false;
@@ -138,6 +138,7 @@ Texture2D::Load(const std::filesystem::path& path,
         }
 
         stbi_image_free(const_cast<unsigned char*>(data));
+        m_isLoaded = true;
         return true;
     }
 
@@ -168,6 +169,7 @@ Texture2D::Load(const std::filesystem::path& path,
         }
 
         stbi_image_free(const_cast<float*>(data));
+        m_isLoaded = true;
         return true;
     }
 

@@ -19,6 +19,13 @@ public:
     Camera();
     Camera(const Math::Vector3f& pos, const Math::Vector3f& dir);
 
+    //! 位置を設定する
+    void
+    SetPosition(const Math::Vector3f& pos)
+    {
+        m_pos = pos;
+    }
+
     //! レンズの焦点距離を設定する
     void
     SetLens(float focalLength);
@@ -111,7 +118,7 @@ public:
     }
 
 private:
-    Math::Vector3f pos; //!< カメラ位置
+    Math::Vector3f m_pos; //!< カメラ位置
 
     Math::Vector3f m_right;   //!< カメラ右方向への単位ベクトル
     Math::Vector3f m_up;      //!< カメラ上方向への単位ベクトル

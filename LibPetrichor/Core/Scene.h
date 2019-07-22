@@ -77,11 +77,11 @@ public:
         return m_lights;
     }
 
-    // メインカメラを取得
+    // メインカメラを参照
     const Camera*
     GetMainCamera() const
     {
-        return m_mainCamera;
+        return m_mainCamera.get();
     }
 
     //! シーン内で使用しているマテリアルを登録
@@ -99,10 +99,11 @@ public:
     }
 
     // メインカメラを登録
+    // #TODO: そもそも外部からカメラを登録するのはどうなの…。
     void
-    SetMainCamera(const Camera& camera)
+    SetMainCamera(std::unique_ptr<Camera> camera)
     {
-        m_mainCamera = &camera;
+        m_mainCamera = std::move(camera);
     }
 
     // Environmentを取得
@@ -167,7 +168,7 @@ private:
     Environment m_environment;
 
     //! メインカメラ
-    const Camera* m_mainCamera = nullptr;
+    std::unique_ptr<Camera> m_mainCamera = nullptr;
 
     //! レンダリング先のテクスチャ
     Texture2D* m_targetTex = nullptr;

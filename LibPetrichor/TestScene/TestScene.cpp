@@ -51,12 +51,11 @@ LoadCornellBoxScene(Scene* scene)
     scene->AppendMesh(*whiteBox);
     scene->AppendLightMesh(*ceilLight);
 
-    auto const camera =
-      new Camera(Math::Vector3f(0, -6.0f, 0), Math::Vector3f::UnitY());
-
+    auto camera = std::make_unique<Camera>(Math::Vector3f(0, -6.0f, 0),
+                                           Math::Vector3f::UnitY());
     camera->FocusTo(Math::Vector3f::Zero());
 
-    scene->SetMainCamera(*camera);
+    scene->SetMainCamera(std::move(camera));
 
     // レンダリング先を指定
     auto targetTex = new Texture2D(scene->GetRenderSetting().outputWidth,
