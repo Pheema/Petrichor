@@ -20,6 +20,8 @@ target_sources(LibPetrichor PRIVATE
                Core/RenderSettingLoader.cpp
                Core/Scene.h
                Core/Scene.cpp
+               Core/SceneLoader.h
+               Core/SceneLoader.cpp
                Core/Texture2D.h
                Core/Texture2D.cpp
                Core/TileManager.h

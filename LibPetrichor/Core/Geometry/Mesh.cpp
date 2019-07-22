@@ -1,4 +1,4 @@
-﻿#include "Mesh.h"
+#include "Mesh.h"
 
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
@@ -8,6 +8,7 @@
 #include "assimp/mesh.h"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+// #include "fmt/format.h"
 
 namespace Petrichor
 {
@@ -15,7 +16,7 @@ namespace Core
 {
 
 void
-Mesh::Load(const std::string& path,
+Mesh::Load(const std::filesystem::path& path,
            const MaterialBase* material,
            ShadingTypes shadingType /*= ShadingTypes::Flat*/
 )
@@ -23,13 +24,15 @@ Mesh::Load(const std::string& path,
     using namespace Math;
 
     Assimp::Importer importer;
-    // importer.Set
 
-    unsigned importFlag = aiProcess_JoinIdenticalVertices |
+    // #TODO: 下記フラグが実際に有効かどうかを調査。
+    /*unsigned importFlag = aiProcess_JoinIdenticalVertices |
                           aiProcess_ImproveCacheLocality |
-                          aiProcess_Triangulate | aiProcess_OptimizeMeshes;
+                          aiProcess_Triangulate | aiProcess_OptimizeMeshes;*/
 
-    const auto* aiscene = importer.ReadFile(path, importFlag);
+    unsigned importFlag = 0;
+
+    const auto* aiscene = importer.ReadFile(path.string(), importFlag);
     if (aiscene == nullptr)
     {
         printf("Unable to load mesh: %s\n", importer.GetErrorString());
@@ -41,8 +44,7 @@ Mesh::Load(const std::string& path,
         for (size_t idxMesh = 0; idxMesh < aiscene->mNumMeshes; ++idxMesh)
         {
             const aiMesh* pMesh = aiscene->mMeshes[idxMesh];
-            std::cout << "[" << path << "] : " << pMesh->mMaterialIndex
-                      << std::endl;
+            fmt::print("[{}]: {}\n", path.string(), pMesh->mMaterialIndex);
             // ---- 頂点の読み込み ----
             for (size_t idxVert = 0; idxVert < pMesh->mNumVertices; ++idxVert)
             {

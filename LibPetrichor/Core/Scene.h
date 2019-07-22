@@ -137,6 +137,15 @@ public:
     void
     LoadRenderSetting(const std::filesystem::path& path);
 
+    //! モデルファイルを読み込む
+    // #TODO: ひとまず用意。あとでシーンファイル用意したら消すかも。
+    void
+    LoadModel(const std::filesystem::path& path);
+
+    //! シーンファイルを元にして各モデルを読む
+    void
+    LoadAssets(const std::filesystem::path path);
+
     //! 環境マップを取得
     const RenderSetting&
     GetRenderSetting() const

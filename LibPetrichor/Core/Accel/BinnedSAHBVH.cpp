@@ -196,7 +196,7 @@ BinnedSAHBVH::Build(const Scene& scene)
             }
         }
     }
-    std::cout << "[Done] BVH Construction" << std::endl;
+    fmt::print("[Done] BVH Construction\n");
 }
 
 std::pair<float, int>

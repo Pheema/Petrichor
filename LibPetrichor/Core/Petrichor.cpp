@@ -36,6 +36,7 @@ Petrichor::Render(const Scene& scene)
     SimplePathTracing pt;
 
     // #TODO 外部から設定可能にする
+    // BruteForce accel;
     BinnedSAHBVH accel;
     accel.Build(scene);
 

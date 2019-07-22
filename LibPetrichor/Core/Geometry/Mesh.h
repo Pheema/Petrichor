@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "Triangle.h"
 #include "Vertex.h"
+#include <filesystem>
 #include <vector>
 
 namespace Petrichor
@@ -16,7 +17,7 @@ class Mesh
 {
 public:
     void
-    Load(const std::string& path,
+    Load(const std::filesystem::path& path,
          const MaterialBase* material,
          ShadingTypes shadingType = ShadingTypes::Flat);
 

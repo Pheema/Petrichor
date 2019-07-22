@@ -1,3 +1,4 @@
+#include "Core/Geometry/Sphere.h"
 #include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
 #include <cstdlib>
@@ -6,20 +7,16 @@
 #include <gflags/gflags.h>
 #include <thread>
 
-DEFINE_int32(saveInterval,
-             10,
-             "rendered file save interval[sec]"); // 0で途中保存なし
-DEFINE_int32(numThreads, 1, "number of threads to rendering");
-DEFINE_int32(imageWidth, 1280, "output width[px]");
-DEFINE_int32(imageHeight, 720, "output image height[px]");
-DEFINE_int32(tileSize, 16, "Tile size[px]");
-DEFINE_string(imageFileNamePrefix, "Rendered", "output file name prefix");
-DEFINE_string(outputPath, "Output/", "relative output path");
+DEFINE_string(outputDir, "./Output", "relative output path");
+DEFINE_uint32(timeLimit, 0, "Rendering time limit");
+DEFINE_string(renderSettingPath, "settings.json", "Render setting file path.");
+DEFINE_string(assetsPath, "assets.json", "Render setting file path.");
 
 void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 {
-    std::ofstream file("Output/Result.txt");
+    std::filesystem::path outputDir(FLAGS_outputDir);
+    std::ofstream file(outputDir / "Result.txt");
     if (file.fail())
     {
         return;
@@ -32,62 +29,84 @@ OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 int
 main(int argc, char** argv)
 {
-    using namespace Petrichor;
     using namespace std::chrono_literals;
-
-    constexpr auto kMaxRenderingTime = 123s;
-    constexpr auto kSaveInterval = 10s; // 画像を定期的に保存する時間間隔
-
-    Core::Petrichor petrichor;
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     Petrichor::Core::Scene scene;
-    Petrichor::Core::LoadCornellBoxScene(&scene);
+    scene.LoadRenderSetting(FLAGS_renderSettingPath);
+    scene.LoadAssets(FLAGS_assetsPath);
+
+    // #TODO: ライトの設定等が仮で直書きになっているのでjson側へ逃がす
+    {
+        using namespace Petrichor;
+        using namespace Petrichor::Core;
+
+        const auto* matEmissionWhite = new Emission(Color3f::One());
+
+        auto sphere = new Sphere(Math::Vector3f(0.0f, 0.0f, 4.0f), 1.0f);
+        sphere->SetMaterial(matEmissionWhite);
+        scene.AppendGeometry(sphere);
+        scene.AppendLight(sphere);
+
+        auto const camera =
+          new Camera(Math::Vector3f(0, -10.0f, 2.0f), Math::Vector3f::UnitY());
+
+        Environment env;
+        env.SetBaseColor(Color3f::One());
+        scene.SetEnvironment(env);
+        camera->LookAt(0.0f * Math::Vector3f::UnitZ());
+        camera->FocusTo(0.0f * Math::Vector3f::UnitZ());
+        camera->SetFNumber(32.0f);
+
+        scene.SetMainCamera(*camera);
+
+        // レンダリング先を指定
+        auto targetTex = new Texture2D(scene.GetRenderSetting().outputWidth,
+                                       scene.GetRenderSetting().outputHeight);
+        scene.SetTargetTexture(targetTex);
+    }
+
+    Petrichor::Core::Petrichor petrichor;
     petrichor.SetRenderCallback(OnRenderingFinished);
 
-#ifdef SAVE_IMAGE_PERIODICALLY
-    std::thread saveImage([&] {
-        uint32_t idxImg = 0;
-        const auto timeBegin = std::chrono::high_resolution_clock::now();
-        for (;;)
-        {
-            std::this_thread::sleep_for(kSaveInterval);
-            std::stringstream path;
-            path << "Output/" << std::setfill('0') << std::setw(4) << std::right
-                 << idxImg++ << ".png";
+    std::filesystem::path outputDir(FLAGS_outputDir);
+    if (!std::filesystem::is_directory(outputDir))
+    {
+        fmt::print("Invalid output directory.\n");
+        return 1;
+    }
 
-            Petrichor::Core::Texture2D* targetTexture =
-              scene.GetTargetTexture();
+    // 時間制限あればセット
+    if (FLAGS_timeLimit > 0)
+    {
+        const auto timeLimit = std::chrono::seconds(FLAGS_timeLimit);
 
-            if (targetTexture)
+        std::thread elapsedTimeChecker([timeLimit, &scene, &outputDir] {
+            const auto timeBegin = std::chrono::high_resolution_clock::now();
+            for (;;)
             {
-                targetTexture->Save(path.str());
-            }
-        }
-    });
-    saveImage.detach();
-#endif
+                std::this_thread::sleep_for(0.1s);
+                const auto now = std::chrono::high_resolution_clock::now();
+                const bool isTimeOver =
+                  std::chrono::duration_cast<std::chrono::seconds>(
+                    now - timeBegin) > (timeLimit - 1s);
 
-#ifdef ENABLE_TIME_LIMITATION
-    std::thread elapsedTimeChecker([&] {
-        const auto timeBegin = std::chrono::high_resolution_clock::now();
-
-        for (;;)
-        {
-            std::this_thread::sleep_for(1s);
-            const auto now = std::chrono::high_resolution_clock::now();
-            const bool isTimeOver =
-              std::chrono::duration_cast<std::chrono::seconds>(
-                now - timeBegin) > (kMaxRenderingTime - 5s);
-            if (isTimeOver)
-            {
-                petrichor.SaveImage("Output/TimeIsOver.png");
-                petrichor.Finalize();
-                std::quick_exit(0);
+                if (isTimeOver)
+                {
+                    Petrichor::Core::Texture2D* targetTexture =
+                      scene.GetTargetTexture();
+                    if (targetTexture)
+                    {
+                        targetTexture->Save(outputDir / "TimeOver.png");
+                    }
+                    fmt::print("File saved: ({})\n",
+                               (outputDir / "TimeOver.png").string());
+                    std::quick_exit(0);
+                }
             }
-        }
-    });
-    elapsedTimeChecker.detach();
-#endif
+        });
+        elapsedTimeChecker.detach();
+    }
 
     fmt::print("Hardware Concurrency: {}\n",
                std::thread::hardware_concurrency());
@@ -117,6 +136,12 @@ main(int argc, char** argv)
         for (;;)
         {
             std::this_thread::sleep_for(0.1s);
+
+            if (petrichor.GetNumTiles() == 0)
+            {
+                continue;
+            }
+
             const float ratio =
               static_cast<float>(petrichor.GetNumRenderedTiles()) /
               petrichor.GetNumTiles();
@@ -139,7 +164,7 @@ main(int argc, char** argv)
     Petrichor::Core::Texture2D* targetTexture = scene.GetTargetTexture();
     if (targetTexture)
     {
-        targetTexture->Save("Output/Result.png");
+        targetTexture->Save(outputDir / "Result.png");
     }
 
     showProgress.join();
