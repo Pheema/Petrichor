@@ -48,11 +48,11 @@ public:
 
     //! カメラ原点から画素(i, j)に向かう正規化されたベクトルを求める
     Ray
-    PixelToRay(int i,
-               int j,
-               int imageWidth,
-               int imageHeight,
-               ISampler2D& sampler2D) const;
+    GenerateRay(int i,
+                int j,
+                int imageWidth,
+                int imageHeight,
+                ISampler2D& sampler2D) const;
 
     //! 焦点距離を返す
     float

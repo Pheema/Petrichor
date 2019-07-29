@@ -50,7 +50,7 @@ Camera::LookAt(const Vector3f& target)
 }
 
 Ray
-Camera::PixelToRay(
+Camera::GenerateRay(
   int i, int j, int imageWidth, int imageHeight, ISampler2D& sampler2D) const
 {
     // センサー上の点をランダムに選ぶ

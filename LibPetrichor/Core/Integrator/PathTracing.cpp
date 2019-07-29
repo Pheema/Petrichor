@@ -38,11 +38,11 @@ PathTracing::Render(uint32_t pixelX,
     for (uint32_t spp = 0; spp < numSamples; spp++)
     {
         Color3f color;
-        Ray ray = mainCamera->PixelToRay(pixelX,
-                                         pixelY,
-                                         targetTex->GetWidth(),
-                                         targetTex->GetHeight(),
-                                         sampler2D);
+        Ray ray = mainCamera->GenerateRay(pixelX,
+                                          pixelY,
+                                          targetTex->GetWidth(),
+                                          targetTex->GetHeight(),
+                                          sampler2D);
         Ray prevRay = ray;
 
         ShadingInfo shadingInfo;
@@ -69,8 +69,8 @@ PathTracing::Render(uint32_t pixelX,
         }
 
         // ---- 光源以外のオブジェクトにヒットした場合 ----
-        const uint32_t maxNumBounces = scene.GetRenderSetting().numMaxBounces;
-        for (uint32_t bounce = 0; bounce < maxNumBounces; bounce++)
+        const int maxNumBounces = scene.GetRenderSetting().numMaxBounces;
+        for (int bounce = 0; bounce < maxNumBounces; bounce++)
         {
             // ---- ライトをサンプリング ----
             color += CalcLightContribution(

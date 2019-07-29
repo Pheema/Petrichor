@@ -29,20 +29,19 @@ SimplePathTracing::Render(uint32_t pixelX,
         return;
     }
 
-    const int kNumSamples = scene.GetRenderSetting().numSamplesPerPixel;
-    const int kMaxNumBounces = scene.GetRenderSetting().numMaxBounces;
+    const int numSamples = scene.GetRenderSetting().numSamplesPerPixel;
+    const int maxNumBounces = scene.GetRenderSetting().numMaxBounces;
 
     Color3f sumContribution;
-    for (int spp = 0; spp < kNumSamples; spp++)
+    for (int spp = 0; spp < numSamples; spp++)
     {
-        auto ray = mainCamera->PixelToRay(pixelX,
-                                          pixelY,
-                                          targetTex->GetWidth(),
-                                          targetTex->GetHeight(),
-                                          sampler2D);
+        auto ray = mainCamera->GenerateRay(pixelX,
+                                           pixelY,
+                                           targetTex->GetWidth(),
+                                           targetTex->GetHeight(),
+                                           sampler2D);
 
         Color3f contribution;
-        bool hasContribution = true;
         for (int bounce = 0;; bounce++)
         {
             const auto hitInfo = accel.Intersect(ray, kEps);
@@ -76,7 +75,7 @@ SimplePathTracing::Render(uint32_t pixelX,
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
 
             // 最大反射回数以上でロシアンルーレット
-            if (ray.bounce > kMaxNumBounces)
+            if (ray.bounce > maxNumBounces)
             {
                 // #TODO: 大雑把なので条件を考える
                 ray.prob *= 0.9f;
@@ -97,7 +96,7 @@ SimplePathTracing::Render(uint32_t pixelX,
     }
 
     const Color3f averagedContribution =
-      sumContribution / static_cast<float>(kNumSamples);
+      sumContribution / static_cast<float>(numSamples);
     targetTex->SetPixel(pixelX, pixelY, averagedContribution);
 }
 
