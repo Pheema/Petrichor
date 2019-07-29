@@ -298,6 +298,7 @@ __pycache__/
 !/External/**
 /settings.json
 /settings.toml
+/assets.json
 
 # Conan Package Manager
 conanbuildinfo.txt
