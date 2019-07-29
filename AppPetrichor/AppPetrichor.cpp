@@ -2,6 +2,7 @@
 #include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
 #include <cstdlib>
+#include <ctime>
 #include <fmt/format.h>
 #include <fstream>
 #include <gflags/gflags.h>
@@ -12,11 +13,31 @@ DEFINE_uint32(timeLimit, 0, "Rendering time limit");
 DEFINE_string(renderSettingPath, "settings.json", "Render setting file path.");
 DEFINE_string(assetsPath, "assets.json", "Render setting file path.");
 
+std::string
+GetCurrentTimeString()
+{
+    const auto now = std::chrono::system_clock::now();
+    const std::time_t time = std::chrono::system_clock::to_time_t(now);
+
+    std::tm tm{};
+    localtime_s(&tm, &time);
+
+    return fmt::format("{:04d}{:02d}{:02d}_{:02d}{:02d}{:02d}",
+                       tm.tm_year + 1900,
+                       tm.tm_mon + 1,
+                       tm.tm_mday,
+                       tm.tm_hour,
+                       tm.tm_min,
+                       tm.tm_sec);
+}
+
 void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 {
     std::filesystem::path outputDir(FLAGS_outputDir);
-    std::ofstream file(outputDir / "Result.txt");
+    const std::string filename = GetCurrentTimeString() + ".txt";
+
+    std::ofstream file(outputDir / filename);
     if (file.fail())
     {
         return;
@@ -145,7 +166,8 @@ main(int argc, char** argv)
     Petrichor::Core::Texture2D* targetTexture = scene.GetTargetTexture();
     if (targetTexture)
     {
-        targetTexture->Save(outputDir / "Result.png");
+        const std::string filename = GetCurrentTimeString() + ".png";
+        targetTexture->Save(outputDir / filename);
     }
 
     showProgress.join();
