@@ -113,7 +113,7 @@ public:
 
     constexpr float operator[](int i) const;
 
-    constexpr float& Vector3f::operator[](int i);
+    constexpr float& operator[](int i);
 
     // iostream
     friend std::ostream&
