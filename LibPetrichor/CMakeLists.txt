@@ -76,6 +76,8 @@ target_sources(LibPetrichor PRIVATE
                Math/Halton.cpp
                Math/OrthonormalBasis.h
                Math/OrthonormalBasis.cpp
+               Math/AliasMethod.h
+               Math/AliasMethod.cpp
                # Profiler/
                Profiler/Profiler.h Profiler/Profiler.cpp
                # Random/
