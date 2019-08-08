@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
 
 add_executable(Benchmark "Math/BenchmarkVector3f.cpp")
 
@@ -7,11 +7,10 @@ target_include_directories(Benchmark PRIVATE ${CMAKE_SOURCE_DIR}/LibPetrichor)
 
 if(MSVC)
   target_compile_options(Benchmark
-                         PRIVATE $<$<CONFIG:Debug>:/MTd>
-                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                         PRIVATE $<$<CONFIG:RelWithDebInfo>:
                                  /fp:fast
                                  /arch:AVX2>
-                                 $<$<CONFIG:Release>:/MT
+                                 $<$<CONFIG:Release>:
                                  /GL
                                  /fp:fast
                                  /arch:AVX2>)

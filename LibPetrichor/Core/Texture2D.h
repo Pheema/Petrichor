@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Color3f.h"
 #include <filesystem>
@@ -94,6 +94,20 @@ public:
     IsValid() const
     {
         return m_isLoaded && (GetWidth() > 0) && (GetHeight() > 0);
+    }
+
+    //! 再配置が起きる可能性があるのでポインタの保持には注意
+    const float*
+    GetRawDataPtr() const
+    {
+        return &(m_pixels[0].x);
+    }
+
+    float*
+    GetRawDataPtr()
+    {
+        return const_cast<float*>(
+          static_cast<const Texture2D*>(this)->GetRawDataPtr());
     }
 
 private:

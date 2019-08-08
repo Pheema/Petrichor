@@ -1,3 +1,4 @@
+#include "Core/Denoiser/IntelOpenImageDenoiser.h"
 #include "Core/Geometry/Sphere.h"
 #include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
@@ -175,6 +176,13 @@ main(int argc, char** argv)
     {
         const std::string filename = GetCurrentTimeString() + ".png";
         targetTexture->Save(outputDir / filename);
+
+        Petrichor::Core::IntelOpenImageDenoiser denoiser;
+        const Petrichor::Core::Texture2D denoised =
+          denoiser.Denoise(*targetTexture, true);
+        const std::string denoisedFilename =
+          GetCurrentTimeString() + "_denoised.png";
+        denoised.Save(outputDir / denoisedFilename);
     }
 
     showProgress.join();

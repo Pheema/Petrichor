@@ -1,5 +1,8 @@
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0091 NEW)
 project(Petrichor)
-cmake_minimum_required(VERSION 3.8)
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if(MSVC)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
@@ -16,6 +19,11 @@ if(MSVC)
   add_compile_options(/MP /utf-8)
 endif(MSVC)
 
+# ---- Open Image Denoise ----
+option(OIDN_STATIC_LIB "Build Open Image Denoise as a static library." ON)
+set(TBB_ROOT "${CMAKE_SOURCE_DIR}/External/tbb")
+add_subdirectory(External/oidn)
+
 add_subdirectory(LibPetrichor)
 add_subdirectory(Benchmark)
 add_subdirectory(TestPetrichor)
@@ -24,8 +32,7 @@ add_executable(AppPetrichor AppPetrichor/AppPetrichor.cpp)
 
 if(MSVC)
   target_compile_options(AppPetrichor
-                         PRIVATE $<$<CONFIG:Debug>:/MTd>
-                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                         PRIVATE $<$<CONFIG:RelWithDebInfo>:
                                  /fp:fast
                                  /arch:AVX2>
                                  $<$<CONFIG:Release>:/MT
@@ -50,7 +57,10 @@ set_target_properties(
              "${linkFlagsRelease}")
 
 if(MSVC)
-  target_link_libraries(AppPetrichor LibPetrichor CONAN_PKG::gflags)
+  target_link_libraries(AppPetrichor
+                        LibPetrichor
+                        CONAN_PKG::gflags
+                        OpenImageDenoise)
 else(MSVC)
   target_link_libraries(AppPetrichor
                         LibPetrichor

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
 
 add_library(LibPetrichor STATIC "")
 
@@ -36,6 +36,9 @@ target_sources(LibPetrichor PRIVATE
                Core/Accel/BruteForce.cpp
                Core/Accel/BVHNode.h
                Core/Accel/BVHNode.cpp
+               # Code/Denoiser/
+               Core/Denoiser/IntelOpenImageDenoiser.h
+               Core/Denoiser/IntelOpenImageDenoiser.cpp
                # Core/Geometry/
                Core/Geometry/GeometryBase.h
                Core/Geometry/Mesh.h
@@ -97,11 +100,10 @@ target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
 if(MSVC)
   target_compile_options(LibPetrichor
-                         PRIVATE $<$<CONFIG:Debug>:/MTd>
-                                 $<$<CONFIG:RelWithDebInfo>:/MT
+                         PRIVATE $<$<CONFIG:RelWithDebInfo>:
                                  /fp:fast
                                  /arch:AVX2>
-                                 $<$<CONFIG:Release>:/MT
+                                 $<$<CONFIG:Release>:
                                  /fp:fast
                                  /arch:AVX2>)
 endif(MSVC)
@@ -110,4 +112,9 @@ target_include_directories(LibPetrichor
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
                                    ${CMAKE_SOURCE_DIR}/External)
 
-conan_target_link_libraries(LibPetrichor)
+target_link_libraries(LibPetrichor
+                      PRIVATE OpenImageDenoise
+                              CONAN_PKG::Assimp
+                              CONAN_PKG::stb
+                              CONAN_PKG::jsonformoderncpp
+                              CONAN_PKG::fmt)
