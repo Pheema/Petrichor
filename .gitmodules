@@ -1,3 +1,6 @@
 [submodule "External/tinytoml"]
 	path = External/tinytoml
 	url = https://github.com/mayah/tinytoml.git
+[submodule "External/oidn"]
+	path = External/oidn
+	url = https://github.com/OpenImageDenoise/oidn
