@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Vector3f.h"
 #include <mutex>
@@ -81,8 +81,8 @@ public:
     bool
     IsEmpty() const;
 
-    Tile
-    GetTile();
+    const Tile&
+    GetTile(int tileIndex) const;
 
     int
     GetNumTiles() const
@@ -97,9 +97,7 @@ private:
     int m_tileHeight = 0;
     int m_numTiles = 0;
 
-    std::queue<Tile> m_tiles;
-
-    mutable std::mutex m_mtx;
+    std::vector<Tile> m_tiles;
 };
 
 } // namespace Core

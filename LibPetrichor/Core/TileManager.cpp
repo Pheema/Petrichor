@@ -1,4 +1,4 @@
-﻿#include "TileManager.h"
+#include "TileManager.h"
 
 namespace Petrichor
 {
@@ -45,7 +45,7 @@ TileManager::TileManager(int renderWidth,
 
             tile.SetSize(tileWidth, tileHeight);
 
-            m_tiles.push(tile);
+            m_tiles.emplace_back(tile);
         }
     }
 }
@@ -53,18 +53,13 @@ TileManager::TileManager(int renderWidth,
 bool
 TileManager::IsEmpty() const
 {
-    std::lock_guard lock(m_mtx);
-    bool isEmpty = m_tiles.empty();
-    return isEmpty;
+    return m_tiles.empty();
 }
 
-Tile
-TileManager::GetTile()
+const Tile&
+TileManager::GetTile(int tileIndex) const
 {
-    std::lock_guard lock(m_mtx);
-    const Tile tile = m_tiles.front();
-    m_tiles.pop();
-    return tile;
+    return m_tiles[tileIndex];
 }
 
 } // namespace Core

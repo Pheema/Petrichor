@@ -35,14 +35,13 @@ public:
     }
 
     //! レンダリング済みタイルの個数を取得する。
-    int
+    uint32_t
     GetNumRenderedTiles() const
     {
         return m_numRenderedTiles;
     }
 
-    //! タイルの個数を取得する。
-    int
+    uint32_t
     GetNumTiles() const
     {
         return m_numTiles;
@@ -54,16 +53,16 @@ private:
 
 private:
     //! レンダリング済みタイルの個数
-    std::atomic<int> m_numRenderedTiles = 0;
-
-    //! タイルの最大個数
-    int m_numTiles = 0;
+    std::atomic<uint32_t> m_numRenderedTiles = 0;
 
     //! レンダリング時間計測用
     ClockType::time_point m_timeRenderingBegin{};
 
     //! レンダリング終了時に呼ばれる
     std::function<void(const RenderingResult&)> m_onRenderingFinished;
+
+    //!
+    uint32_t m_numTiles = 0;
 };
 
 } // namespace Core
