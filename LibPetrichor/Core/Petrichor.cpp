@@ -43,10 +43,11 @@ Petrichor::Render(const Scene& scene)
     const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
     const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
 
-    Texture2D* const targetTexure = scene.GetTargetTexture();
+    Texture2D* const targetTexure =
+      scene.GetTargetTexture(Scene::RenderPassType::Rendered);
     if (targetTexure == nullptr)
     {
-        std::cerr << "[Error] Target texture has not been set." << std::endl;
+        std::cerr << "[Error] Target texture has not been' set." << std::endl;
         return;
     }
     const uint32_t outputWidth = targetTexure->GetWidth();

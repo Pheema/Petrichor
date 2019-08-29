@@ -26,6 +26,19 @@ class Scene
     static constexpr int kMaxNumMaterials = 128;
 
 public:
+    //! パスの種類
+    struct RenderPassType
+    {
+        enum Value
+        {
+            Rendered,
+            Normal,
+
+            RenderPassTypeMax
+        };
+    };
+
+public:
     Scene() { m_materials.reserve(kMaxNumMaterials); };
 
     // シーンにジオメトリを追加
@@ -122,16 +135,16 @@ public:
 
     // レンダリング先のテクスチャを設定
     void
-    SetTargetTexture(Texture2D* targetTex)
+    SetTargetTexture(RenderPassType::Value renderPassType, Texture2D* targetTex)
     {
-        m_targetTex = targetTex;
+        m_targetTextures[renderPassType] = targetTex;
     }
 
     // レンダリング先のテクスチャを取得
     Texture2D*
-    GetTargetTexture() const
+    GetTargetTexture(RenderPassType::Value renderPassType) const
     {
-        return m_targetTex;
+        return m_targetTextures[renderPassType];
     }
 
     //! シーン設定を読み込む
@@ -171,7 +184,8 @@ private:
     std::unique_ptr<Camera> m_mainCamera = nullptr;
 
     //! レンダリング先のテクスチャ
-    Texture2D* m_targetTex = nullptr;
+    std::array<Texture2D*, RenderPassType::RenderPassTypeMax>
+      m_targetTextures = {};
 
     //! レンダリング設定
     RenderSetting m_renderSetting;

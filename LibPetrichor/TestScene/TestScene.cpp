@@ -60,7 +60,7 @@ LoadCornellBoxScene(Scene* scene)
     // レンダリング先を指定
     auto targetTex = new Texture2D(scene->GetRenderSetting().outputWidth,
                                    scene->GetRenderSetting().outputHeight);
-    scene->SetTargetTexture(targetTex);
+    scene->SetTargetTexture(Scene::RenderPassType::Rendered, targetTex);
 }
 
 } // namespace Core

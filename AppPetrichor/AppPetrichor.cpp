@@ -67,13 +67,12 @@ main(int argc, char** argv)
 
     // #TODO: ライトの設定等が仮で直書きになっているのでjson側へ逃がす
     {
-        using namespace Petrichor;
-        using namespace Petrichor::Core;
-
         // レンダリング先を指定
-        auto targetTex = new Texture2D(scene.GetRenderSetting().outputWidth,
-                                       scene.GetRenderSetting().outputHeight);
-        scene.SetTargetTexture(targetTex);
+        auto targetTex =
+          new Petrichor::Core::Texture2D(scene.GetRenderSetting().outputWidth,
+                                         scene.GetRenderSetting().outputHeight);
+        scene.SetTargetTexture(Petrichor::Core::Scene::RenderPassType::Rendered,
+                               targetTex);
     }
 
     Petrichor::Core::Petrichor petrichor;
@@ -104,7 +103,8 @@ main(int argc, char** argv)
                 if (isTimeOver)
                 {
                     Petrichor::Core::Texture2D* targetTexture =
-                      scene.GetTargetTexture();
+                      scene.GetTargetTexture(
+                        Petrichor::Core::Scene::RenderPassType::Rendered);
                     if (targetTexture)
                     {
                         targetTexture->Save(outputDir / "TimeOver.png");
@@ -171,7 +171,8 @@ main(int argc, char** argv)
 
     petrichor.Render(scene);
 
-    Petrichor::Core::Texture2D* targetTexture = scene.GetTargetTexture();
+    Petrichor::Core::Texture2D* targetTexture =
+      scene.GetTargetTexture(Petrichor::Core::Scene::RenderPassType::Rendered);
     if (targetTexture)
     {
         const std::string filename = GetCurrentTimeString() + ".png";
