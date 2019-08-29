@@ -248,7 +248,6 @@ std::optional<HitInfo>
 BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
 {
     thread_local std::vector<int> bvhNodeIndexStack;
-    bvhNodeIndexStack.reserve(m_bvhNodes.size());
     bvhNodeIndexStack.clear();
     bvhNodeIndexStack.emplace_back(0);
 
@@ -324,13 +323,13 @@ BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
 
             if (sqDistLeft < sqDistRight)
             {
-                bvhNodeIndexStack.emplace_back(leftChildIndex);
                 bvhNodeIndexStack.emplace_back(rightChildIndex);
+                bvhNodeIndexStack.emplace_back(leftChildIndex);
             }
             else
             {
-                bvhNodeIndexStack.emplace_back(rightChildIndex);
                 bvhNodeIndexStack.emplace_back(leftChildIndex);
+                bvhNodeIndexStack.emplace_back(rightChildIndex);
             }
         }
     }
