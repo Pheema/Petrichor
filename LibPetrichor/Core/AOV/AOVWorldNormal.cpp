@@ -50,7 +50,7 @@ AOVWorldNormal::Render(uint32_t pixelX,
         }
         else
         {
-            sumPixelColor += -mainCamera->Forward();
+            sumPixelColor += -ray.dir;
         }
     }
 
