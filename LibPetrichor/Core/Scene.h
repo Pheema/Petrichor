@@ -27,14 +27,14 @@ class Scene
 
 public:
     //! パスの種類
-    struct RenderPassType
+    struct AOVType
     {
         enum Value
         {
             Rendered,
-            Normal,
+            WorldNormal,
 
-            RenderPassTypeMax
+            NumAOVTypes
         };
     };
 
@@ -135,16 +135,16 @@ public:
 
     // レンダリング先のテクスチャを設定
     void
-    SetTargetTexture(RenderPassType::Value renderPassType, Texture2D* targetTex)
+    SetTargetTexture(AOVType::Value aovType, Texture2D* targetTex)
     {
-        m_targetTextures[renderPassType] = targetTex;
+        m_targetTextures[aovType] = targetTex;
     }
 
     // レンダリング先のテクスチャを取得
     Texture2D*
-    GetTargetTexture(RenderPassType::Value renderPassType) const
+    GetTargetTexture(AOVType::Value aovType) const
     {
-        return m_targetTextures[renderPassType];
+        return m_targetTextures[aovType];
     }
 
     //! シーン設定を読み込む
@@ -184,8 +184,7 @@ private:
     std::unique_ptr<Camera> m_mainCamera = nullptr;
 
     //! レンダリング先のテクスチャ
-    std::array<Texture2D*, RenderPassType::RenderPassTypeMax>
-      m_targetTextures = {};
+    std::array<Texture2D*, AOVType::NumAOVTypes> m_targetTextures = {};
 
     //! レンダリング設定
     RenderSetting m_renderSetting;

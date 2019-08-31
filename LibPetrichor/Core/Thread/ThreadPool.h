@@ -19,7 +19,7 @@ public:
     ~ThreadPool();
 
     void
-    Run(std::function<void(size_t)>&& task);
+    Push(std::function<void(size_t)>&& task);
 
 private:
     std::vector<std::thread> m_threads;

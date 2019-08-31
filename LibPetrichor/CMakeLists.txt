@@ -64,6 +64,9 @@ target_sources(LibPetrichor PRIVATE
                Core/Material/MaterialBase.h
                Core/Material/MatMix.h
                Core/Material/MatMix.cpp
+               # Core/AOV/
+               Core/AOV/AOVWorldNormal.h
+               Core/AOV/AOVWorldNormal.cpp
                # Core/Sampler/
                Core/Sampler/ISampler1D.h
                Core/Sampler/ISampler2D.h

@@ -27,7 +27,9 @@ public:
     //! デノイズを実行する
 
     Texture2D
-    Denoise(const Texture2D& inputColor, bool isHDR);
+    Denoise(const Texture2D& inputColor,
+            const Texture2D* inputNormal,
+            bool isHDR);
 
 private:
     oidn::DeviceRef m_device = oidn::newDevice();

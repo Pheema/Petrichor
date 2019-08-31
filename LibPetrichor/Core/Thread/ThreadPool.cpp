@@ -141,7 +141,7 @@ ThreadPool::~ThreadPool()
 }
 
 void
-ThreadPool::Run(std::function<void(size_t)>&& task)
+ThreadPool::Push(std::function<void(size_t)>&& task)
 {
     {
         std::unique_lock<std::mutex> lock(m_mutex);

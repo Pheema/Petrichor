@@ -66,14 +66,18 @@ main(int argc, char** argv)
     scene.LoadAssets(FLAGS_assetsPath);
 
     // #TODO: ライトの設定等が仮で直書きになっているのでjson側へ逃がす
-    {
-        // レンダリング先を指定
-        auto targetTex =
-          new Petrichor::Core::Texture2D(scene.GetRenderSetting().outputWidth,
-                                         scene.GetRenderSetting().outputHeight);
-        scene.SetTargetTexture(Petrichor::Core::Scene::RenderPassType::Rendered,
-                               targetTex);
-    }
+    auto targetTexture = std::make_unique<Petrichor::Core::Texture2D>(
+      scene.GetRenderSetting().outputWidth,
+      scene.GetRenderSetting().outputHeight);
+
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
+                           targetTexture.get());
+
+    auto worldNormalTexture = std::make_unique<Petrichor::Core::Texture2D>(
+      targetTexture->GetWidth(), targetTexture->GetHeight());
+
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::WorldNormal,
+                           worldNormalTexture.get());
 
     Petrichor::Core::Petrichor petrichor;
     petrichor.SetRenderCallback(OnRenderingFinished);
@@ -104,7 +108,7 @@ main(int argc, char** argv)
                 {
                     Petrichor::Core::Texture2D* targetTexture =
                       scene.GetTargetTexture(
-                        Petrichor::Core::Scene::RenderPassType::Rendered);
+                        Petrichor::Core::Scene::AOVType::Rendered);
                     if (targetTexture)
                     {
                         targetTexture->Save(outputDir / "TimeOver.png");
@@ -171,19 +175,28 @@ main(int argc, char** argv)
 
     petrichor.Render(scene);
 
-    Petrichor::Core::Texture2D* targetTexture =
-      scene.GetTargetTexture(Petrichor::Core::Scene::RenderPassType::Rendered);
+    const std::string timeString = GetCurrentTimeString();
     if (targetTexture)
     {
-        const std::string filename = GetCurrentTimeString() + ".png";
-        targetTexture->Save(outputDir / filename);
+        {
+            const std::string filename = timeString + ".png";
+            targetTexture->Save(outputDir / filename);
+        }
 
         Petrichor::Core::IntelOpenImageDenoiser denoiser;
         const Petrichor::Core::Texture2D denoised =
-          denoiser.Denoise(*targetTexture, true);
-        const std::string denoisedFilename =
-          GetCurrentTimeString() + "_denoised.png";
-        denoised.Save(outputDir / denoisedFilename);
+          denoiser.Denoise(*targetTexture, nullptr, true);
+
+        {
+            const std::string denoisedFilename = timeString + "_denoised.png";
+            denoised.Save(outputDir / denoisedFilename);
+        }
+    }
+
+    if (worldNormalTexture)
+    {
+        const std::string worldNormalFileName = timeString + "_worldNormal.png";
+        worldNormalTexture->Save(outputDir / worldNormalFileName);
     }
 
     showProgress.join();

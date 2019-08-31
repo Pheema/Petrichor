@@ -1,5 +1,6 @@
 #include "Petrichor.h"
 
+#include "Core/AOV/AOVWorldNormal.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Geometry/Sphere.h"
@@ -32,68 +33,123 @@ Petrichor::Render(const Scene& scene)
 {
     m_timeRenderingBegin = ClockType::now();
 
-    // #TODO: 外部から設定可能にする
-    SimplePathTracing pt;
-
     // #TODO 外部から設定可能にする
     // BruteForce accel;
-    BinnedSAHBVH accel;
-    accel.Build(scene);
+    const BinnedSAHBVH accel = [&] {
+        BinnedSAHBVH accel_;
+        accel_.Build(scene);
+        return accel_;
+    }();
 
     const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
     const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
 
-    Texture2D* const targetTexure =
-      scene.GetTargetTexture(Scene::RenderPassType::Rendered);
-    if (targetTexure == nullptr)
     {
-        std::cerr << "[Error] Target texture has not been' set." << std::endl;
-        return;
-    }
-    const uint32_t outputWidth = targetTexure->GetWidth();
-    const uint32_t outputHeight = targetTexure->GetHeight();
-    const TileManager tileManager(
-      outputWidth, outputHeight, tileWidth, tileHeight);
-    m_numTiles = tileManager.GetNumTiles();
-
-    const uint32_t numThreads = scene.GetRenderSetting().numThreads;
-
-    m_numRenderedTiles = 0;
-    {
-        uint32_t maxIdxTile = 0;
-        ThreadPool threadPool(numThreads);
-
-        for (int indexTile = 0;
-             indexTile < static_cast<int>(tileManager.GetNumTiles());
-             indexTile++)
+        Texture2D* const targetTexure =
+          scene.GetTargetTexture(Scene::AOVType::Rendered);
+        if (targetTexure)
         {
-            const Tile& tile = tileManager.GetTile(indexTile);
-            const auto [x0, y0] = tile.GetInitialPixel();
-            const uint32_t tileWidth = tile.GetWidth();
-            const uint32_t tileHeight = tile.GetHeight();
-            threadPool.Run([&, x0, y0, tileWidth, tileHeight, indexTile](
-                             size_t threadIndex) {
-                RandomSampler1D sampler1D(indexTile);
-                RandomSampler2D sampler2D(indexTile, indexTile + 123456u);
+            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+            ThreadPool threadPool(numThreads);
 
-                for (uint32_t y = y0; y < y0 + tileHeight; y++)
-                {
-                    for (uint32_t x = x0; x < x0 + tileWidth; x++)
+            fmt::print("[Render] Begin\n");
+
+            // #TODO: 外部から設定可能にする
+            SimplePathTracing pt;
+
+            const int outputWidth = targetTexure->GetWidth();
+            const int outputHeight = targetTexure->GetHeight();
+            const TileManager tileManager(
+              outputWidth, outputHeight, tileWidth, tileHeight);
+            m_numTiles = tileManager.GetNumTiles();
+
+            m_numRenderedTiles = 0;
+
+            int tileIndex = 0;
+            for (const TileManager::Tile& tile : tileManager.GetTiles())
+            {
+                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                    RandomSampler1D sampler1D(tileIndex);
+                    RandomSampler2D sampler2D(tile.x, tile.y);
+
+                    for (int y = tile.y; y < tile.y + tile.height; y++)
                     {
-                        pt.Render(x,
-                                  y,
-                                  scene,
-                                  accel,
-                                  targetTexure,
-                                  sampler1D,
-                                  sampler2D);
+                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                        {
+                            pt.Render(x,
+                                      y,
+                                      scene,
+                                      accel,
+                                      targetTexure,
+                                      sampler1D,
+                                      sampler2D);
+                        }
                     }
-                }
 
-                m_numRenderedTiles++;
-            });
+                    m_numRenderedTiles++;
+                });
+            }
+
+            fmt::print("[Render] End\n");
+        }
+        else
+        {
+            fmt::print("[Error] Target texture has not been set.\n");
         }
     }
+
+    {
+        Texture2D* const aovWorldNormalTexture =
+          scene.GetTargetTexture(Scene::AOVType::WorldNormal);
+        if (aovWorldNormalTexture)
+        {
+            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+            ThreadPool threadPool(numThreads);
+
+            fmt::print("[AOV][WorldNormal] Begin\n");
+
+            AOVWorldNormal renderer;
+
+            const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
+            const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
+
+            const int outputWidth = aovWorldNormalTexture->GetWidth();
+            const int outputHeight = aovWorldNormalTexture->GetHeight();
+            const TileManager tileManager(
+              outputWidth, outputHeight, tileWidth, tileHeight);
+
+            m_numRenderedTiles = 0;
+
+            int tileIndex = 0;
+            for (const TileManager::Tile& tile : tileManager.GetTiles())
+            {
+                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                    RandomSampler1D sampler1D(tileIndex);
+                    RandomSampler2D sampler2D(tile.x, tile.y);
+
+                    for (int y = tile.y; y < tile.y + tile.height; y++)
+                    {
+                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                        {
+                            renderer.Render(x,
+                                            y,
+                                            scene,
+                                            accel,
+                                            aovWorldNormalTexture,
+                                            sampler1D,
+                                            sampler2D);
+                        }
+                    }
+
+                    m_numRenderedTiles++;
+                });
+                tileIndex++;
+            }
+
+            fmt::print("[AOV][WorldNormal] End\n");
+        }
+    }
+
     Finalize();
 }
 

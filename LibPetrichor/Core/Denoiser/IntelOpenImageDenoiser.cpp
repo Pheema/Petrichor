@@ -12,20 +12,31 @@ IntelOpenImageDenoiser::IntelOpenImageDenoiser()
     m_device.commit();
 }
 
-Texture2D
-IntelOpenImageDenoiser::Denoise(const Texture2D& colorTexture, bool isHDR)
+Petrichor::Core::Texture2D
+IntelOpenImageDenoiser::Denoise(const Texture2D& inputColor,
+                                const Texture2D* inputNormal,
+                                bool isHDR)
 {
     oidn::FilterRef filter = m_device.newFilter("RT");
 
     // 入力画像を指定する引数がvoid*なのでしぶしぶconst_cast
     // "color"指定ならcolorTextureのデータも書き換わらないはず
     filter.setImage("color",
-                    const_cast<Texture2D&>(colorTexture).GetRawDataPtr(),
+                    const_cast<Texture2D&>(inputColor).GetRawDataPtr(),
                     oidn::Format::Float3,
-                    colorTexture.GetWidth(),
-                    colorTexture.GetHeight());
+                    inputColor.GetWidth(),
+                    inputColor.GetHeight());
 
-    Texture2D outputTexture(colorTexture.GetWidth(), colorTexture.GetHeight());
+    if (inputNormal)
+    {
+        filter.setImage("normal",
+                        const_cast<Texture2D&>(*inputNormal).GetRawDataPtr(),
+                        oidn::Format::Float3,
+                        inputNormal->GetWidth(),
+                        inputNormal->GetHeight());
+    }
+
+    Texture2D outputTexture(inputColor.GetWidth(), inputColor.GetHeight());
     filter.setImage("output",
                     outputTexture.GetRawDataPtr(),
                     oidn::Format::Float3,

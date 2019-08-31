@@ -58,9 +58,10 @@ LoadCornellBoxScene(Scene* scene)
     scene->SetMainCamera(std::move(camera));
 
     // レンダリング先を指定
-    auto targetTex = new Texture2D(scene->GetRenderSetting().outputWidth,
-                                   scene->GetRenderSetting().outputHeight);
-    scene->SetTargetTexture(Scene::RenderPassType::Rendered, targetTex);
+    auto targetTex =
+      std::make_unique<Texture2D>(scene->GetRenderSetting().outputWidth,
+                                  scene->GetRenderSetting().outputHeight);
+    scene->SetTargetTexture(Scene::AOVType::Rendered, targetTex.get());
 }
 
 } // namespace Core

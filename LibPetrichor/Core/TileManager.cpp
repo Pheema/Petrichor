@@ -28,38 +28,18 @@ TileManager::TileManager(int renderWidth,
     {
         for (int i = 0; i < numTileX + 1; i++)
         {
-            Tile tile;
-            tile.SetInitPixel(i * m_tileWidth, j * m_tileHeight);
-
-            int tileWidth = m_tileWidth;
-            int tileHeight = m_tileHeight;
-            if (i == numTileX)
-            {
-                tileWidth = remainedWidth;
-            }
-
-            if (j == numTileY)
-            {
-                tileHeight = remainedHeight;
-            }
-
-            tile.SetSize(tileWidth, tileHeight);
+            const Tile tile = [&]() {
+                Tile t;
+                t.x = i * m_tileWidth;
+                t.y = j * m_tileHeight;
+                t.width = (i != numTileX) ? m_tileWidth : remainedWidth;
+                t.height = (j != numTileY) ? m_tileHeight : remainedHeight;
+                return t;
+            }();
 
             m_tiles.emplace_back(tile);
         }
     }
-}
-
-bool
-TileManager::IsEmpty() const
-{
-    return m_tiles.empty();
-}
-
-const Tile&
-TileManager::GetTile(int tileIndex) const
-{
-    return m_tiles[tileIndex];
 }
 
 } // namespace Core
