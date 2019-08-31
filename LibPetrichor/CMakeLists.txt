@@ -65,8 +65,8 @@ target_sources(LibPetrichor PRIVATE
                Core/Material/MatMix.h
                Core/Material/MatMix.cpp
                # Core/AOV/
-               Core/AOV/AOVWorldNormal.h
-               Core/AOV/AOVWorldNormal.cpp
+               Core/AOV/AOVDenoisingNormal.h
+               Core/AOV/AOVDenoisingNormal.cpp
                Core/AOV/AOVDenoisingAlbedo.h
                Core/AOV/AOVDenoisingAlbedo.cpp
                # Core/Sampler/

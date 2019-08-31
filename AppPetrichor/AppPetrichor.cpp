@@ -81,7 +81,7 @@ main(int argc, char** argv)
     auto worldNormalTexture = std::make_unique<Petrichor::Core::Texture2D>(
       targetTexture->GetWidth(), targetTexture->GetHeight());
 
-    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::WorldNormal,
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::DenoisingNormal,
                            worldNormalTexture.get());
 
     Petrichor::Core::Petrichor petrichor;

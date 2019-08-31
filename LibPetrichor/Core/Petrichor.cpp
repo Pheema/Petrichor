@@ -1,7 +1,7 @@
 #include "Petrichor.h"
 
 #include "Core/AOV/AOVDenoisingAlbedo.h"
-#include "Core/AOV/AOVWorldNormal.h"
+#include "Core/AOV/AOVDenoisingNormal.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Geometry/Sphere.h"
@@ -159,12 +159,12 @@ Petrichor::Render(const Scene& scene)
     // WorldNormal
     {
         Texture2D* const aovWorldNormalTexture =
-          scene.GetTargetTexture(Scene::AOVType::WorldNormal);
+          scene.GetTargetTexture(Scene::AOVType::DenoisingNormal);
         if (aovWorldNormalTexture)
         {
             fmt::print("[AOV][WorldNormal] Begin\n");
 
-            AOVWorldNormal renderer;
+            AOVDenoisingNormal renderer;
 
             const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
             const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;

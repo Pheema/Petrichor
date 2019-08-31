@@ -31,9 +31,9 @@ public:
     {
         enum Value
         {
-            Rendered,
+            Rendered,        //!< Rendered image
             DenoisingAlbedo, //!< Albedo for denoising
-            WorldNormal,
+            DenoisingNormal, //!< Normal for denoising
 
             NumAOVTypes
         };

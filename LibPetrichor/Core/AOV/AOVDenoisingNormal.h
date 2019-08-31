@@ -11,7 +11,7 @@ namespace Petrichor
 namespace Core
 {
 
-class AOVWorldNormal
+class AOVDenoisingNormal
 {
 public:
     void

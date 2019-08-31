@@ -1,4 +1,4 @@
-#include "AOVWorldNormal.h"
+#include "AOVDenoisingNormal.h"
 
 #include "Core/HitInfo.h"
 #include "Core/Material/Emission.h"
@@ -14,13 +14,13 @@ namespace Core
 {
 
 void
-AOVWorldNormal::Render(uint32_t pixelX,
-                       uint32_t pixelY,
-                       const Scene& scene,
-                       const AccelBase& accel,
-                       Texture2D* targetTex,
-                       ISampler1D& sampler1D,
-                       ISampler2D& sampler2D)
+AOVDenoisingNormal::Render(uint32_t pixelX,
+                           uint32_t pixelY,
+                           const Scene& scene,
+                           const AccelBase& accel,
+                           Texture2D* targetTex,
+                           ISampler1D& sampler1D,
+                           ISampler2D& sampler2D)
 {
     const auto* const mainCamera = scene.GetMainCamera();
     if (mainCamera == nullptr)
