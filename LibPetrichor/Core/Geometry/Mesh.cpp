@@ -36,6 +36,7 @@ Mesh::Load(const std::filesystem::path& path,
     if (aiscene == nullptr)
     {
         printf("Unable to load mesh: %s\n", importer.GetErrorString());
+        return;
     }
 
     if (aiscene->HasMeshes())
