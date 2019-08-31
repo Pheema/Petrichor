@@ -50,9 +50,6 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::Rendered);
         if (targetTexure)
         {
-            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
-            ThreadPool threadPool(numThreads);
-
             fmt::print("[Render] Begin\n");
 
             // #TODO: 外部から設定可能にする
@@ -66,29 +63,34 @@ Petrichor::Render(const Scene& scene)
 
             m_numRenderedTiles = 0;
 
-            int tileIndex = 0;
-            for (const TileManager::Tile& tile : tileManager.GetTiles())
             {
-                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
-                    RandomSampler1D sampler1D(tileIndex);
-                    RandomSampler2D sampler2D(tile.x, tile.y);
+                const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+                ThreadPool threadPool(numThreads);
 
-                    for (int y = tile.y; y < tile.y + tile.height; y++)
-                    {
-                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                int tileIndex = 0;
+                for (const TileManager::Tile& tile : tileManager.GetTiles())
+                {
+                    threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                        RandomSampler1D sampler1D(tileIndex);
+                        RandomSampler2D sampler2D(tile.x, tile.y);
+
+                        for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
-                            pt.Render(x,
-                                      y,
-                                      scene,
-                                      accel,
-                                      targetTexure,
-                                      sampler1D,
-                                      sampler2D);
+                            for (int x = tile.x; x < tile.x + tile.width; x++)
+                            {
+                                pt.Render(x,
+                                          y,
+                                          scene,
+                                          accel,
+                                          targetTexure,
+                                          sampler1D,
+                                          sampler2D);
+                            }
                         }
-                    }
 
-                    m_numRenderedTiles++;
-                });
+                        m_numRenderedTiles++;
+                    });
+                }
             }
 
             fmt::print("[Render] End\n");
@@ -105,9 +107,6 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::DenoisingAlbedo);
         if (denoisingAlbedoTexture)
         {
-            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
-            ThreadPool threadPool(numThreads);
-
             fmt::print("[AOV][DenoisingAlbedo] Begin\n");
 
             AOVDenoisingAlbedo renderer;
@@ -122,30 +121,35 @@ Petrichor::Render(const Scene& scene)
 
             m_numRenderedTiles = 0;
 
-            int tileIndex = 0;
-            for (const TileManager::Tile& tile : tileManager.GetTiles())
             {
-                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
-                    RandomSampler1D sampler1D(tileIndex);
-                    RandomSampler2D sampler2D(tile.x, tile.y);
+                const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+                ThreadPool threadPool(numThreads);
 
-                    for (int y = tile.y; y < tile.y + tile.height; y++)
-                    {
-                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                int tileIndex = 0;
+                for (const TileManager::Tile& tile : tileManager.GetTiles())
+                {
+                    threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                        RandomSampler1D sampler1D(tileIndex);
+                        RandomSampler2D sampler2D(tile.x, tile.y);
+
+                        for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
-                            renderer.Render(x,
-                                            y,
-                                            scene,
-                                            accel,
-                                            denoisingAlbedoTexture,
-                                            sampler1D,
-                                            sampler2D);
+                            for (int x = tile.x; x < tile.x + tile.width; x++)
+                            {
+                                renderer.Render(x,
+                                                y,
+                                                scene,
+                                                accel,
+                                                denoisingAlbedoTexture,
+                                                sampler1D,
+                                                sampler2D);
+                            }
                         }
-                    }
 
-                    m_numRenderedTiles++;
-                });
-                tileIndex++;
+                        m_numRenderedTiles++;
+                    });
+                    tileIndex++;
+                }
             }
 
             fmt::print("[AOV][DenoisingAlbedo] End\n");
@@ -158,9 +162,6 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::WorldNormal);
         if (aovWorldNormalTexture)
         {
-            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
-            ThreadPool threadPool(numThreads);
-
             fmt::print("[AOV][WorldNormal] Begin\n");
 
             AOVWorldNormal renderer;
@@ -175,30 +176,35 @@ Petrichor::Render(const Scene& scene)
 
             m_numRenderedTiles = 0;
 
-            int tileIndex = 0;
-            for (const TileManager::Tile& tile : tileManager.GetTiles())
             {
-                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
-                    RandomSampler1D sampler1D(tileIndex);
-                    RandomSampler2D sampler2D(tile.x, tile.y);
+                const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+                ThreadPool threadPool(numThreads);
 
-                    for (int y = tile.y; y < tile.y + tile.height; y++)
-                    {
-                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                int tileIndex = 0;
+                for (const TileManager::Tile& tile : tileManager.GetTiles())
+                {
+                    threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                        RandomSampler1D sampler1D(tileIndex);
+                        RandomSampler2D sampler2D(tile.x, tile.y);
+
+                        for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
-                            renderer.Render(x,
-                                            y,
-                                            scene,
-                                            accel,
-                                            aovWorldNormalTexture,
-                                            sampler1D,
-                                            sampler2D);
+                            for (int x = tile.x; x < tile.x + tile.width; x++)
+                            {
+                                renderer.Render(x,
+                                                y,
+                                                scene,
+                                                accel,
+                                                aovWorldNormalTexture,
+                                                sampler1D,
+                                                sampler2D);
+                            }
                         }
-                    }
 
-                    m_numRenderedTiles++;
-                });
-                tileIndex++;
+                        m_numRenderedTiles++;
+                    });
+                    tileIndex++;
+                }
             }
 
             fmt::print("[AOV][WorldNormal] End\n");
