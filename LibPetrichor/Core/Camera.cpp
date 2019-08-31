@@ -77,8 +77,7 @@ Camera::GenerateRay(
     // レイの方向
     const Vector3f rayDir = (pointOnSensor - pointOnLens).Normalized();
 
-    // レイが保持する色
-    const Vector3f weight = [&]() {
+    const Color3f throughput = [&]() {
         const float dot = Dot(rayDir, Forward());
 
         return Color3f::One() * dot * dot * m_focusDist * m_focusDist /
@@ -86,7 +85,7 @@ Camera::GenerateRay(
     }();
 
     Ray cameraRay = Ray(pointOnLens, rayDir, RayTypes::Camera);
-    cameraRay.throughput = weight;
+    cameraRay.throughput = throughput;
 
     return cameraRay;
 }
