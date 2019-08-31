@@ -1,5 +1,6 @@
 #include "Petrichor.h"
 
+#include "Core/AOV/AOVDenoisingAlbedo.h"
 #include "Core/AOV/AOVWorldNormal.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
@@ -98,6 +99,60 @@ Petrichor::Render(const Scene& scene)
         }
     }
 
+    // Albedo
+    {
+        Texture2D* const denoisingAlbedoTexture =
+          scene.GetTargetTexture(Scene::AOVType::DenoisingAlbedo);
+        if (denoisingAlbedoTexture)
+        {
+            const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+            ThreadPool threadPool(numThreads);
+
+            fmt::print("[AOV][DenoisingAlbedo] Begin\n");
+
+            AOVDenoisingAlbedo renderer;
+
+            const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
+            const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
+
+            const int outputWidth = denoisingAlbedoTexture->GetWidth();
+            const int outputHeight = denoisingAlbedoTexture->GetHeight();
+            const TileManager tileManager(
+              outputWidth, outputHeight, tileWidth, tileHeight);
+
+            m_numRenderedTiles = 0;
+
+            int tileIndex = 0;
+            for (const TileManager::Tile& tile : tileManager.GetTiles())
+            {
+                threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                    RandomSampler1D sampler1D(tileIndex);
+                    RandomSampler2D sampler2D(tile.x, tile.y);
+
+                    for (int y = tile.y; y < tile.y + tile.height; y++)
+                    {
+                        for (int x = tile.x; x < tile.x + tile.width; x++)
+                        {
+                            renderer.Render(x,
+                                            y,
+                                            scene,
+                                            accel,
+                                            denoisingAlbedoTexture,
+                                            sampler1D,
+                                            sampler2D);
+                        }
+                    }
+
+                    m_numRenderedTiles++;
+                });
+                tileIndex++;
+            }
+
+            fmt::print("[AOV][DenoisingAlbedo] End\n");
+        }
+    }
+
+    // WorldNormal
     {
         Texture2D* const aovWorldNormalTexture =
           scene.GetTargetTexture(Scene::AOVType::WorldNormal);

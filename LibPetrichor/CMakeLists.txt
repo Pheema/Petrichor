@@ -67,6 +67,8 @@ target_sources(LibPetrichor PRIVATE
                # Core/AOV/
                Core/AOV/AOVWorldNormal.h
                Core/AOV/AOVWorldNormal.cpp
+               Core/AOV/AOVDenoisingAlbedo.h
+               Core/AOV/AOVDenoisingAlbedo.cpp
                # Core/Sampler/
                Core/Sampler/ISampler1D.h
                Core/Sampler/ISampler2D.h

@@ -121,5 +121,16 @@ Lambert::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
     return MaterialTypes::Lambert;
 }
 
+Color3f
+Lambert::GetAlbedo(const ShadingInfo& shadingInfo) const
+{
+    if (!m_texAlbedo)
+    {
+        return Color3f::One();
+    }
+
+    return m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
+}
+
 } // namespace Core
 } // namespace Petrichor

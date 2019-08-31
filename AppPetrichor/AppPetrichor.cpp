@@ -65,13 +65,18 @@ main(int argc, char** argv)
     scene.LoadRenderSetting(FLAGS_renderSettingPath);
     scene.LoadAssets(FLAGS_assetsPath);
 
-    // #TODO: ライトの設定等が仮で直書きになっているのでjson側へ逃がす
     auto targetTexture = std::make_unique<Petrichor::Core::Texture2D>(
       scene.GetRenderSetting().outputWidth,
       scene.GetRenderSetting().outputHeight);
 
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
                            targetTexture.get());
+
+    auto denoisingAlbedoTexture = std::make_unique<Petrichor::Core::Texture2D>(
+      targetTexture->GetWidth(), targetTexture->GetHeight());
+
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::DenoisingAlbedo,
+                           denoisingAlbedoTexture.get());
 
     auto worldNormalTexture = std::make_unique<Petrichor::Core::Texture2D>(
       targetTexture->GetWidth(), targetTexture->GetHeight());
@@ -191,6 +196,12 @@ main(int argc, char** argv)
             const std::string denoisedFilename = timeString + "_denoised.png";
             denoised.Save(outputDir / denoisedFilename);
         }
+    }
+
+    if (denoisingAlbedoTexture)
+    {
+        const std::string fileName = timeString + "_denoisingAlbedo.png";
+        denoisingAlbedoTexture->Save(outputDir / fileName);
     }
 
     if (worldNormalTexture)

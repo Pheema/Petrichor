@@ -56,7 +56,8 @@ public:
     const float
     GetAlpha(const ShadingInfo& shadingInfo) const
     {
-        float alpha = 0.0f;
+        ASSERT(m_alpha >= 0.0f);
+
         if (m_roughnessMap)
         {
             const float roughness = m_roughnessMapStrength *
@@ -64,13 +65,12 @@ public:
                                       shadingInfo.uv.x,
                                       shadingInfo.uv.y,
                                       Texture2D::InterplationTypes::Bilinear));
-            alpha = roughness * roughness;
+            return roughness * roughness;
         }
         else
         {
-            alpha = m_alpha;
+            return m_alpha;
         }
-        return alpha;
     }
 
     void

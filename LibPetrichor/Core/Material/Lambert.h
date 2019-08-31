@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "MaterialBase.h"
 
@@ -39,6 +39,9 @@ public:
     {
         m_texAlbedo = texAlbedo;
     }
+
+    Color3f
+    GetAlbedo(const ShadingInfo& shadingInfo) const;
 
 private:
     Color3f m_kd; // 拡散係数

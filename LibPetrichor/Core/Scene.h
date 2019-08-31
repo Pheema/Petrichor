@@ -32,6 +32,7 @@ public:
         enum Value
         {
             Rendered,
+            DenoisingAlbedo, //!< Albedo for denoising
             WorldNormal,
 
             NumAOVTypes
