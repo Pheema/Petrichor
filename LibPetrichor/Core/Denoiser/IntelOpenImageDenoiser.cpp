@@ -13,30 +13,66 @@ IntelOpenImageDenoiser::IntelOpenImageDenoiser()
 }
 
 Petrichor::Core::Texture2D
-IntelOpenImageDenoiser::Denoise(const Texture2D& inputColor,
-                                const Texture2D* inputNormal,
+IntelOpenImageDenoiser::Denoise(const Texture2D& color, bool isHDR)
+{
+    oidn::FilterRef filter = m_device.newFilter("RT");
+
+    filter.setImage("color",
+                    const_cast<Texture2D&>(color).GetRawDataPtr(),
+                    oidn::Format::Float3,
+                    color.GetWidth(),
+                    color.GetHeight());
+
+    Texture2D outputTexture(color.GetWidth(), color.GetHeight());
+    filter.setImage("output",
+                    outputTexture.GetRawDataPtr(),
+                    oidn::Format::Float3,
+                    outputTexture.GetWidth(),
+                    outputTexture.GetHeight());
+    filter.set("hdr", isHDR);
+
+    filter.commit();
+
+    filter.execute();
+
+    {
+        const char* errorMsg = nullptr;
+        if (m_device.getError(errorMsg) != oidn::Error::None)
+        {
+            fmt::print("{}\n", errorMsg);
+        }
+    }
+
+    return outputTexture;
+}
+
+Petrichor::Core::Texture2D
+IntelOpenImageDenoiser::Denoise(const Texture2D& color,
+                                const Texture2D& albedo,
+                                const Texture2D& normal,
                                 bool isHDR)
 {
     oidn::FilterRef filter = m_device.newFilter("RT");
 
-    // 入力画像を指定する引数がvoid*なのでしぶしぶconst_cast
-    // "color"指定ならcolorTextureのデータも書き換わらないはず
     filter.setImage("color",
-                    const_cast<Texture2D&>(inputColor).GetRawDataPtr(),
+                    const_cast<Texture2D&>(color).GetRawDataPtr(),
                     oidn::Format::Float3,
-                    inputColor.GetWidth(),
-                    inputColor.GetHeight());
+                    color.GetWidth(),
+                    color.GetHeight());
 
-    if (inputNormal)
-    {
-        filter.setImage("normal",
-                        const_cast<Texture2D&>(*inputNormal).GetRawDataPtr(),
-                        oidn::Format::Float3,
-                        inputNormal->GetWidth(),
-                        inputNormal->GetHeight());
-    }
+    filter.setImage("albedo",
+                    const_cast<Texture2D&>(albedo).GetRawDataPtr(),
+                    oidn::Format::Float3,
+                    albedo.GetWidth(),
+                    albedo.GetHeight());
 
-    Texture2D outputTexture(inputColor.GetWidth(), inputColor.GetHeight());
+    filter.setImage("normal",
+                    const_cast<Texture2D&>(normal).GetRawDataPtr(),
+                    oidn::Format::Float3,
+                    normal.GetWidth(),
+                    normal.GetHeight());
+
+    Texture2D outputTexture(color.GetWidth(), color.GetHeight());
     filter.setImage("output",
                     outputTexture.GetRawDataPtr(),
                     oidn::Format::Float3,
@@ -51,7 +87,7 @@ IntelOpenImageDenoiser::Denoise(const Texture2D& inputColor,
         const char* errorMsg = nullptr;
         if (m_device.getError(errorMsg) != oidn::Error::None)
         {
-            fmt::print(errorMsg);
+            fmt::print("{}\n", errorMsg);
         }
     }
 

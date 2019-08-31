@@ -189,8 +189,8 @@ main(int argc, char** argv)
         }
 
         Petrichor::Core::IntelOpenImageDenoiser denoiser;
-        const Petrichor::Core::Texture2D denoised =
-          denoiser.Denoise(*targetTexture, nullptr, true);
+        const Petrichor::Core::Texture2D denoised = denoiser.Denoise(
+          *targetTexture, *denoisingAlbedoTexture, *worldNormalTexture, true);
 
         {
             const std::string denoisedFilename = timeString + "_denoised.png";

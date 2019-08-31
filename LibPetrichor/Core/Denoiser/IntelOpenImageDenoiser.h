@@ -24,11 +24,13 @@ public:
 public:
     IntelOpenImageDenoiser();
 
-    //! デノイズを実行する
+    Texture2D
+    Denoise(const Texture2D& color, bool isHDR);
 
     Texture2D
-    Denoise(const Texture2D& inputColor,
-            const Texture2D* inputNormal,
+    Denoise(const Texture2D& color,
+            const Texture2D& albedo,
+            const Texture2D& normal,
             bool isHDR);
 
 private:
