@@ -17,7 +17,7 @@ enum class MaterialTypes
     Lambert,
     Glass,
     Emission,
-    GGX,
+    Glossy,
     Mix
 };
 

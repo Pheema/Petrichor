@@ -36,7 +36,7 @@ public:
     MaterialTypes
     GetMaterialType() const override
     {
-        return MaterialTypes::GGX;
+        return MaterialTypes::Glossy;
     }
 
     //! ラフネス用のテクスチャを指定する

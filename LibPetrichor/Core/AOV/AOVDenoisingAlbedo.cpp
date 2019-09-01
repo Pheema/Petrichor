@@ -105,7 +105,7 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
             }
             break;
         }
-        case Core::MaterialTypes::GGX:
+        case Core::MaterialTypes::Glossy:
         {
             const auto* const ggx =
               static_cast<const Core::GGX*>(singleMaterial);

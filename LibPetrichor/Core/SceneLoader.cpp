@@ -1,5 +1,6 @@
 #include "SceneLoader.h"
 
+#include "Core/Material/GGX.h"
 #include "Core/Material/Glass.h"
 #include "Core/Material/Lambert.h"
 #include "Core/Material/MixMaterial.h"
@@ -133,8 +134,33 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
 
                 scene.RegisterMaterial(materialName, std::move(glassMat));
             }
-            else if (materialType == "ggx")
+            else if (materialType == "glossy")
             {
+                const auto color = loadVector3f(material, "color");
+
+                float roughness = 0.0f;
+                loadValue(&roughness, material, "roughness");
+
+                auto ggxMat = std::make_unique<GGX>(color, roughness);
+
+                std::string roughnessTexturePath;
+                loadValue(&roughnessTexturePath, material, "roughness_tex");
+                if (!roughnessTexturePath.empty())
+                {
+                    Texture2D roughnessTexture;
+                    if (roughnessTexture.Load(
+                          roughnessTexturePath,
+                          Texture2D::TextureColorType::NonColor))
+                    {
+                        const TextureHandle textureHandle =
+                          scene.RegisterTexture(roughnessTexture);
+
+                        ggxMat->SetRoughnessMap(
+                          &scene.GetTexture(textureHandle));
+                    }
+                }
+
+                scene.RegisterMaterial(materialName, std::move(ggxMat));
             }
             else if (materialType == "emission")
             {
