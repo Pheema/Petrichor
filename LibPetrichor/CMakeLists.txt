@@ -59,6 +59,8 @@ target_sources(LibPetrichor PRIVATE
                Core/Material/Emission.cpp
                Core/Material/GGX.h
                Core/Material/GGX.cpp
+               Core/Material/Glass.h
+               Core/Material/Glass.cpp
                Core/Material/Lambert.h
                Core/Material/Lambert.cpp
                Core/Material/MaterialBase.h

@@ -13,7 +13,8 @@ enum class RayTypes : uint8_t
     Shadow,      // 光源へのレイ
     Diffuse,     // 拡散面で反射したレイ
     Translucent, // 半透明物体を透過したレイ
-    Glossy       // 鏡面で反射したレイ
+    Glossy,      // 鏡面で反射したレイ
+    Refract,     //!< 屈折したレイ
 };
 
 struct Ray

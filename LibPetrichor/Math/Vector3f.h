@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <optional>
 
 namespace Petrichor
 {
@@ -60,8 +61,8 @@ public:
     Reflected(const Vector3f& normal) const;
 
     // normalは正規化されている前提
-    // 全反射になってしまう場合は返り値として(0, 0, 0)が渡される
-    Vector3f
+    // 全反射の場合は nullopt を返す
+    std::optional<Vector3f>
     Refracted(const Vector3f& normal, float relativeIOR) const;
 
     float x = 0.0f;
@@ -203,6 +204,33 @@ Vector3f::Reflected(const Vector3f& normal) const
 {
     IS_NORMALIZED(normal);
     return *this - 2.0f * normal * Dot(*this, normal);
+}
+
+inline std::optional<Vector3f>
+Vector3f::Refracted(const Vector3f& normal, float relativeIOR) const
+{
+    // #TODO: 自分自身は正規化されてなくても使えるようにしたい
+    IS_NORMALIZED(*this);
+
+    IS_NORMALIZED(normal);
+    ASSERT(0.0f < relativeIOR);
+
+    const float indirDotNormal = Dot(*this, normal);
+
+    const float discriminant =
+      Math::Pow<2>(indirDotNormal) - 1 + Math::Pow<2>(relativeIOR);
+    const bool isPerfectReflection = (discriminant < 0);
+
+    // 全反射
+    if (isPerfectReflection)
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return (1.0f / relativeIOR) *
+               (*this - normal * (-indirDotNormal + sqrt(discriminant)));
+    }
 }
 
 inline Vector3f

@@ -2,6 +2,7 @@
 
 #include "Core/AOV/AOVDenoisingAlbedo.h"
 #include "Core/AOV/AOVDenoisingNormal.h"
+#include "Core/AOV/AOVUVCoordinate.h"
 #include "Core/Camera.h"
 #include "Core/Geometry/Mesh.h"
 #include "Core/Geometry/Sphere.h"
@@ -98,6 +99,61 @@ Petrichor::Render(const Scene& scene)
         else
         {
             fmt::print("[Error] Target texture has not been set.\n");
+        }
+    }
+
+    // UV
+    {
+        Texture2D* const uvCoordinateTexture =
+          scene.GetTargetTexture(Scene::AOVType::UV);
+        if (uvCoordinateTexture)
+        {
+            fmt::print("[AOV][UV] Begin\n");
+
+            AOVUVCoordinate renderer;
+
+            const uint32_t tileWidth = scene.GetRenderSetting().tileWidth;
+            const uint32_t tileHeight = scene.GetRenderSetting().tileHeight;
+
+            const int outputWidth = uvCoordinateTexture->GetWidth();
+            const int outputHeight = uvCoordinateTexture->GetHeight();
+            const TileManager tileManager(
+              outputWidth, outputHeight, tileWidth, tileHeight);
+
+            m_numRenderedTiles = 0;
+
+            {
+                const uint32_t numThreads = scene.GetRenderSetting().numThreads;
+                ThreadPool threadPool(numThreads);
+
+                int tileIndex = 0;
+                for (const TileManager::Tile& tile : tileManager.GetTiles())
+                {
+                    threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
+                        RandomSampler1D sampler1D(tileIndex);
+                        RandomSampler2D sampler2D(tileIndex, tileIndex + 1);
+
+                        for (int y = tile.y; y < tile.y + tile.height; y++)
+                        {
+                            for (int x = tile.x; x < tile.x + tile.width; x++)
+                            {
+                                renderer.Render(x,
+                                                y,
+                                                scene,
+                                                accel,
+                                                uvCoordinateTexture,
+                                                sampler1D,
+                                                sampler2D);
+                            }
+                        }
+
+                        m_numRenderedTiles++;
+                    });
+                    tileIndex++;
+                }
+            }
+
+            fmt::print("[AOV][UV] End\n");
         }
     }
 

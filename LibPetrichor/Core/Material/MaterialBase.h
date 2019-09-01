@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Color3f.h"
 #include "Core/HitInfo.h"
@@ -15,6 +15,7 @@ class ISampler2D;
 enum class MaterialTypes
 {
     Lambert,
+    Glass,
     Emission,
     GGX,
     Mix

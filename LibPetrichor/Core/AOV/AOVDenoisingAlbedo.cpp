@@ -3,6 +3,7 @@
 #include "Core/HitInfo.h"
 #include "Core/Material/Emission.h"
 #include "Core/Material/GGX.h"
+#include "Core/Material/Glass.h"
 #include "Core/Material/Lambert.h"
 #include "Core/Sampler/MicroJitteredSampler.h"
 #include "Core/Scene.h"
@@ -83,6 +84,22 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
 
             return ray.throughput * lambert->GetAlbedo(shadingInfo);
         }
+        case Core::MaterialTypes::Glass:
+        {
+            const auto* const glass =
+              static_cast<const Core::Glass*>(shadingInfo.material);
+
+            if (glass->GetAlpha(shadingInfo) != 0)
+            {
+                return ray.throughput * Color3f::One();
+            }
+            else
+            {
+                ray = shadingInfo.material->CreateNextRay(
+                  ray, shadingInfo, sampler2D);
+            }
+            break;
+        }
         case Core::MaterialTypes::GGX:
         {
             const auto* const ggx =
@@ -97,6 +114,7 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
                 ray = shadingInfo.material->CreateNextRay(
                   ray, shadingInfo, sampler2D);
             }
+            break;
         }
         default:
         {

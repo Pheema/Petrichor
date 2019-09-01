@@ -22,6 +22,13 @@ public:
            Texture2D* targetTex,
            ISampler1D& sampler1D,
            ISampler2D& sampler2D);
+
+private:
+    Color3f
+    CalcPathContribution(const Ray& cameraRay,
+                         const AccelBase& accel,
+                         const Scene& scene,
+                         ISampler2D& sampler2D);
 };
 
 } // namespace Core

@@ -1,5 +1,6 @@
 #include "SceneLoader.h"
 
+#include "Core/Material/Glass.h"
 #include "Core/Material/Lambert.h"
 #include "fmt/format.h"
 #include "nlohmann/json.hpp"
@@ -119,6 +120,17 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
                 }
 
                 scene.RegisterMaterial(materialName, std::move(lambertMat));
+            }
+            else if (materialType == "glass")
+            {
+                const auto color = loadVector3f(material, "color");
+
+                float ior = 1.0f;
+                loadValue(&ior, material, "ior");
+
+                auto glassMat = std::make_unique<Glass>(color, ior);
+
+                scene.RegisterMaterial(materialName, std::move(glassMat));
             }
             else if (materialType == "ggx")
             {
