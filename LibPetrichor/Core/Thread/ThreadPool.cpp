@@ -44,7 +44,11 @@ ThreadPool::ThreadPool(size_t numThreads)
 
     if (numThreads == 0)
     {
+#ifdef _WIN32
+        numThreads = GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+#else
         numThreads = std::thread::hardware_concurrency();
+#endif
     }
     m_threads.reserve(numThreads);
 
