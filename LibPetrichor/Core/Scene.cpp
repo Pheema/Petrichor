@@ -27,10 +27,23 @@ void
 Scene::LoadModel(const std::filesystem::path& path)
 {
     // #TODO: 生newやめる
-    // #TODO: マテリアルのアサインをどこにするか考える。
     auto const mesh = new Mesh();
+
     auto const lambert = new Lambert(Color3f::One());
-    mesh->Load(path, lambert, ShadingTypes::Smooth);
+    const auto* defaultMat = GetMaterial("default");
+    mesh->Load(path, defaultMat, ShadingTypes::Smooth);
+    AppendMesh(*mesh);
+}
+
+void
+Scene::LoadModel(const std::filesystem::path& path,
+                 std::string_view materialName)
+{
+    // #TODO: 生newやめる
+    auto const mesh = new Mesh();
+
+    const auto* material = GetMaterial(materialName);
+    mesh->Load(path, material, ShadingTypes::Smooth);
     AppendMesh(*mesh);
 }
 

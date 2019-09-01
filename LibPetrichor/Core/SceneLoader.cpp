@@ -1,5 +1,6 @@
 #include "SceneLoader.h"
 
+#include "Core/Material/Lambert.h"
 #include "fmt/format.h"
 #include "nlohmann/json.hpp"
 #include <fstream>
@@ -71,6 +72,69 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
     };
 
+    // ---- Material ----
+    {
+        {
+            auto defaultMat = std::make_unique<Lambert>(Color3f::One());
+            scene.RegisterMaterial("default", std::move(defaultMat));
+        }
+
+        auto materials = loadedJson["materials"];
+        for (const auto& material : materials)
+        {
+            std::string materialType;
+            loadValue(&materialType, material, "type");
+
+            if (materialType.empty())
+            {
+                continue;
+            }
+
+            std::string materialName;
+            loadValue(&materialName, material, "name");
+            if (materialName.empty())
+            {
+                continue;
+            }
+
+            if (materialType == "lambert")
+            {
+                const auto baseColor = loadVector3f(material, "base_color");
+                auto lambertMat = std::make_unique<Lambert>(baseColor);
+
+                std::string colorTexPath;
+                loadValue(&colorTexPath, material, "color_tex");
+                if (!colorTexPath.empty())
+                {
+                    Texture2D colorTex;
+                    if (colorTex.Load(colorTexPath,
+                                      Texture2D::TextureColorType::Color))
+                    {
+                        const TextureHandle colorTexHandle =
+                          scene.RegisterTexture(colorTex);
+
+                        lambertMat->SetTexAlbedo(
+                          &scene.GetTexture(colorTexHandle));
+                    }
+                }
+
+                scene.RegisterMaterial(materialName, std::move(lambertMat));
+            }
+            else if (materialType == "ggx")
+            {
+            }
+            else if (materialType == "emission")
+            {
+            }
+            else
+            {
+                fmt::print("[SceneLoaderJson] Invalid material type '{}'.",
+                           materialType);
+            }
+        }
+    }
+
+    // ---- Camera ----
     {
         auto camera = std::make_unique<Camera>();
 
@@ -106,6 +170,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         scene.SetMainCamera(std::move(camera));
     }
 
+    // ---- env ---
     {
         const auto envData = loadedJson["env"];
 
@@ -128,15 +193,23 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         scene.SetEnvironment(env);
     }
 
+    // ---- assets ----
     {
-        const auto assetsData = loadedJson["assets"];
-        auto paths = assetsData.get<std::vector<std::string>>();
-        for (const auto& path : paths)
+        const auto assets = loadedJson["assets"];
+        for (const auto& asset : assets)
         {
-            scene.LoadModel(path);
+            if (asset.find("mat") != asset.cend())
+            {
+                scene.LoadModel(asset["path"].get<std::string>(),
+                                asset["mat"].get<std::string>());
+            }
+            else
+            {
+                scene.LoadModel(asset["path"].get<std::string>());
+            }
         }
     }
-}
+} // namespace Core
 
 } // namespace Core
 } // namespace Petrichor

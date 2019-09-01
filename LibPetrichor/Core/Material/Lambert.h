@@ -14,6 +14,8 @@ class Lambert : public MaterialBase
 public:
     explicit Lambert(const Color3f& m_kd);
 
+    Lambert(const Color3f& kd, const Texture2D& albedoTex);
+
     Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,

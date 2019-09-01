@@ -9,10 +9,10 @@
 #include "Core/Geometry/Mesh.h"
 #include "Core/Material/MaterialBase.h"
 #include "Core/RenderSetting.h"
-
-#include <any>
 #include <filesystem>
 #include <optional>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace Petrichor
@@ -20,10 +20,19 @@ namespace Petrichor
 namespace Core
 {
 
+//! #TODO: リソース管理用のクラスを作る？
+struct TextureHandle
+{
+    uint32_t handle;
+};
+
 class Scene
 {
-    // #TODO: マテリアルの個数をファイルから読みこんで動的に変更する
-    static constexpr int kMaxNumMaterials = 128;
+private:
+    //! メモリ再配置によって他から参照されているリソースへのポインタが無効になることを防ぐ。
+    // #TODO: 設計がひどすぎるので、ハンドルかなにかで管理する形に変更する
+    static constexpr size_t kNumMaxMaterials = 128;
+    static constexpr size_t kNumMaxTextures = 128;
 
 public:
     //! パスの種類
@@ -40,7 +49,11 @@ public:
     };
 
 public:
-    Scene() { m_materials.reserve(kMaxNumMaterials); };
+    Scene()
+    {
+        m_textures.reserve(kNumMaxTextures);
+        m_materials.reserve(kNumMaxMaterials);
+    }
 
     // シーンにジオメトリを追加
     void
@@ -98,18 +111,41 @@ public:
         return m_mainCamera.get();
     }
 
-    //! シーン内で使用しているマテリアルを登録
-    template<class T>
-    T*
-    AppendMaterial(T material)
+    //! シーンにマテリアルを登録
+    void
+    RegisterMaterial(std::string_view materialName,
+                     std::unique_ptr<const MaterialBase> material)
     {
-        static_assert(std::is_base_of<MaterialBase, T>::value);
+        m_materials[std::string(materialName)] = std::move(material);
+    }
 
-        if (m_materials.size() >= kMaxNumMaterials)
-        {
-            throw std::runtime_error("Too many materials.");
-        }
-        return std::any_cast<T>(&m_materials.emplace_back(material));
+    //! シーンに登録されたマテリアルを取得
+    const MaterialBase*
+    GetMaterial(std::string_view materialName)
+    {
+        return m_materials[std::string(materialName)].get();
+    }
+
+    //! シーンにテクスチャを登録
+    TextureHandle
+    RegisterTexture(const Texture2D& texture2D)
+    {
+        const TextureHandle textureHandle = [&]() {
+            TextureHandle textureHandle_;
+            textureHandle_.handle =
+              static_cast<decltype(TextureHandle::handle)>(m_textures.size());
+            return textureHandle_;
+        }();
+
+        m_textures.emplace_back(texture2D);
+        return textureHandle;
+    }
+
+    //! シーンに登録してあるテクスチャを取得
+    const Texture2D&
+    GetTexture(const TextureHandle& textureHandle)
+    {
+        return m_textures[textureHandle.handle];
     }
 
     // メインカメラを登録
@@ -157,6 +193,10 @@ public:
     void
     LoadModel(const std::filesystem::path& path);
 
+    //
+    void
+    LoadModel(const std::filesystem::path& path, std::string_view materialName);
+
     //! シーンファイルを元にして各モデルを読む
     void
     LoadAssets(const std::filesystem::path path);
@@ -176,7 +216,13 @@ private:
     std::vector<const GeometryBase*> m_lights;
 
     //! シーンで使用するマテリアル
-    std::vector<std::any> m_materials;
+    // #TODO:
+    // 時間ないのでひとまずこのまま。後でマテリアルの実態には、局所性を持たせたい。
+    std::unordered_map<std::string, std::unique_ptr<const MaterialBase>>
+      m_materials;
+
+    //! レンダリングで使用するテクスチャ
+    std::vector<Texture2D> m_textures{};
 
     //! 環境マップ
     Environment m_environment;

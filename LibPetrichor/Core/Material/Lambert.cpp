@@ -18,6 +18,12 @@ Lambert::Lambert(const Color3f& m_kd)
 {
 }
 
+Lambert::Lambert(const Color3f& kd, const Texture2D& albedoTex)
+  : m_kd(kd)
+  , m_texAlbedo(&albedoTex)
+{
+}
+
 Color3f
 Lambert::BxDF(const Ray& rayIn,
               const Ray& rayOut,
