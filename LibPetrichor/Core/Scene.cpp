@@ -30,7 +30,7 @@ Scene::LoadModel(const std::filesystem::path& path)
     // #TODO: マテリアルのアサインをどこにするか考える。
     auto const mesh = new Mesh();
     auto const lambert = new Lambert(Color3f::One());
-    mesh->Load(path, lambert, ShadingTypes::Flat);
+    mesh->Load(path, lambert, ShadingTypes::Smooth);
     AppendMesh(*mesh);
 }
 
