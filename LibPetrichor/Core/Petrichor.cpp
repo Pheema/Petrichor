@@ -72,7 +72,7 @@ Petrichor::Render(const Scene& scene)
                 {
                     threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
                         RandomSampler1D sampler1D(tileIndex);
-                        RandomSampler2D sampler2D(tile.x, tile.y);
+                        RandomSampler2D sampler2D(tileIndex, tileIndex + 1);
 
                         for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
@@ -130,7 +130,7 @@ Petrichor::Render(const Scene& scene)
                 {
                     threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
                         RandomSampler1D sampler1D(tileIndex);
-                        RandomSampler2D sampler2D(tile.x, tile.y);
+                        RandomSampler2D sampler2D(tileIndex, tileIndex + 1);
 
                         for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
@@ -185,7 +185,7 @@ Petrichor::Render(const Scene& scene)
                 {
                     threadPool.Push([&, tile, tileIndex](size_t threadIndex) {
                         RandomSampler1D sampler1D(tileIndex);
-                        RandomSampler2D sampler2D(tile.x, tile.y);
+                        RandomSampler2D sampler2D(tileIndex, tileIndex + 1);
 
                         for (int y = tile.y; y < tile.y + tile.height; y++)
                         {
