@@ -41,6 +41,7 @@ public:
         enum Value
         {
             Rendered,        //!< Rendered image
+            UV,              //!< UV coordinates
             DenoisingAlbedo, //!< Albedo for denoising
             DenoisingNormal, //!< Normal for denoising
 

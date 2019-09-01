@@ -72,9 +72,20 @@ main(int argc, char** argv)
     scene.LoadRenderSetting(FLAGS_renderSettingPath);
     scene.LoadAssets(FLAGS_assetsPath);
 
+    // #TODO: Render()の引数にAOVType(AOVFlag?)を渡してレンダリングする？
     auto targetTexture = std::make_unique<Petrichor::Core::Texture2D>(
       scene.GetRenderSetting().outputWidth,
       scene.GetRenderSetting().outputHeight);
+
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
+                           targetTexture.get());
+
+    auto uvCoordinateTexture = std::make_unique<Petrichor::Core::Texture2D>(
+      scene.GetRenderSetting().outputWidth,
+      scene.GetRenderSetting().outputHeight);
+
+    scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::UV,
+                           uvCoordinateTexture.get());
 
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
                            targetTexture.get());
@@ -216,6 +227,12 @@ main(int argc, char** argv)
             const std::string denoisedFilename = prefix + "_denoised.png";
             denoised.Save(outputDir / denoisedFilename);
         }
+    }
+
+    if (uvCoordinateTexture)
+    {
+        const std::string fileName = prefix + "_uv.png";
+        uvCoordinateTexture->Save(outputDir / fileName);
     }
 
     if (denoisingAlbedoTexture)

@@ -69,6 +69,8 @@ target_sources(LibPetrichor PRIVATE
                Core/AOV/AOVDenoisingNormal.cpp
                Core/AOV/AOVDenoisingAlbedo.h
                Core/AOV/AOVDenoisingAlbedo.cpp
+               Core/AOV/AOVUVCoordinate.h
+               Core/AOV/AOVUVCoordinate.cpp
                # Core/Sampler/
                Core/Sampler/ISampler1D.h
                Core/Sampler/ISampler2D.h
