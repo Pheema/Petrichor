@@ -31,6 +31,7 @@ Scene::LoadModel(const std::filesystem::path& path)
 
     auto const lambert = new Lambert(Color3f::One());
     const auto* defaultMat = GetMaterial("default");
+    ASSERT(defaultMat);
     mesh->Load(path, defaultMat, ShadingTypes::Smooth);
     AppendMesh(*mesh);
 }
@@ -43,6 +44,7 @@ Scene::LoadModel(const std::filesystem::path& path,
     auto const mesh = new Mesh();
 
     const auto* material = GetMaterial(materialName);
+    ASSERT(material && "Material not found.");
     mesh->Load(path, material, ShadingTypes::Smooth);
     AppendMesh(*mesh);
 }

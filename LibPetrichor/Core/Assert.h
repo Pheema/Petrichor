@@ -1,11 +1,28 @@
 #pragma once
 
 #include "Constants.h"
-#include <cassert>
+#include <iostream>
 
 #ifdef PHM_DEBUG
 
-#define ASSERT(expression) assert(expression)
+#ifdef _MSC_VER
+
+#define DEBUG_BREAK() __debugbreak()
+
+#else
+
+#include <signal.h>
+#define DEBUG_BREAK() raise(SIGTRAP)
+
+#endif
+
+#define ASSERT(expression)                                                     \
+    if (!(expression))                                                         \
+    {                                                                          \
+        std::cout << "[" << __FILE__ << ", " << __LINE__ << "]"                \
+                  << " '" << #expression << "' failed.\n";                     \
+        DEBUG_BREAK();                                                         \
+    }
 
 #define UNIMPLEMENTED() ASSERT(false && "This function is unimplemented")
 #define IS_NORMALIZED(v)                                                       \
