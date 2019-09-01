@@ -86,6 +86,8 @@ target_sources(LibPetrichor PRIVATE
                Math/OrthonormalBasis.cpp
                Math/AliasMethod.h
                Math/AliasMethod.cpp
+               Math/Vector3f.h
+               Math/MathUtils.h
                # Profiler/
                Profiler/Profiler.h Profiler/Profiler.cpp
                # Random/
