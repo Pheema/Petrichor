@@ -18,7 +18,7 @@ Camera::Camera(const Vector3f& pos, const Vector3f& dir)
 }
 
 void
-Camera::SetLens(float focalLength)
+Camera::SetFocalLength(float focalLength)
 {
     m_hPerf = m_sensorHeight / focalLength;
 }

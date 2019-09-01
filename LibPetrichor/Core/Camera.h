@@ -28,7 +28,7 @@ public:
 
     //! レンズの焦点距離を設定する
     void
-    SetLens(float focalLength);
+    SetFocalLength(float focalLength);
 
     //! 与えられた座標に焦点をあわせる
     void
