@@ -10,9 +10,16 @@
 #include <thread>
 
 DEFINE_string(outputDir, "./Output", "relative output path");
+DEFINE_bool(useFixedFilename, false, "use fixed file name.");
 DEFINE_uint32(timeLimit, 0, "Rendering time limit");
 DEFINE_string(renderSettingPath, "settings.json", "Render setting file path.");
 DEFINE_string(assetsPath, "assets.json", "Render setting file path.");
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+#endif
 
 std::string
 GetCurrentTimeString()
@@ -127,6 +134,10 @@ main(int argc, char** argv)
         elapsedTimeChecker.detach();
     }
 
+#ifdef _WIN32
+    fmt::print("GetActiveProcessorCount(ALL_PROCESSOR_GROUPS): {}\n",
+               GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
+#endif
     fmt::print("Hardware Concurrency: {}\n",
                std::thread::hardware_concurrency());
     fmt::print("Number of used threads: {}\n",
@@ -180,11 +191,20 @@ main(int argc, char** argv)
 
     petrichor.Render(scene);
 
-    const std::string timeString = GetCurrentTimeString();
+    std::string prefix;
+    if (FLAGS_useFixedFilename)
+    {
+        prefix = "image";
+    }
+    else
+    {
+        prefix = GetCurrentTimeString();
+    }
+
     if (targetTexture)
     {
         {
-            const std::string filename = timeString + ".png";
+            const std::string filename = prefix + ".png";
             targetTexture->Save(outputDir / filename);
         }
 
@@ -193,20 +213,20 @@ main(int argc, char** argv)
           *targetTexture, *denoisingAlbedoTexture, *worldNormalTexture, true);
 
         {
-            const std::string denoisedFilename = timeString + "_denoised.png";
+            const std::string denoisedFilename = prefix + "_denoised.png";
             denoised.Save(outputDir / denoisedFilename);
         }
     }
 
     if (denoisingAlbedoTexture)
     {
-        const std::string fileName = timeString + "_denoisingAlbedo.png";
+        const std::string fileName = prefix + "_denoisingAlbedo.png";
         denoisingAlbedoTexture->Save(outputDir / fileName);
     }
 
     if (worldNormalTexture)
     {
-        const std::string worldNormalFileName = timeString + "_worldNormal.png";
+        const std::string worldNormalFileName = prefix + "_worldNormal.png";
         worldNormalTexture->Save(outputDir / worldNormalFileName);
     }
 
