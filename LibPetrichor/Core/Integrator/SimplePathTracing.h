@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Accel/AccelBase.h"
 #include "Core/Geometry/GeometryBase.h"

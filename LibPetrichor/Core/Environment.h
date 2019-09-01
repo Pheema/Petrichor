@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/Sampler/ISampler2D.h"
 #include "Texture2D.h"
