@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core/HitInfo.h"
 #include "Core/Ray.h"
@@ -11,10 +11,10 @@ namespace Core
 
 class ISampler2D;
 
-class MatMix : public MaterialBase
+class MixMaterial : public MaterialBase
 {
 public:
-    MatMix(const MaterialBase* mat0, const MaterialBase* mat1, float mix);
+    MixMaterial(const MaterialBase* mat0, const MaterialBase* mat1, float mix);
 
     Color3f
     BxDF(const Ray& rayIn,
@@ -35,9 +35,18 @@ public:
     }
 
     MaterialTypes
-    GetMaterialType(const MaterialBase** mat0 = nullptr,
-                    const MaterialBase** mat1 = nullptr,
-                    float* mix = nullptr) const override;
+    GetMaterialType() const override
+    {
+        return MaterialTypes::Mix;
+    }
+
+    //! ミックスされた2つのマテリアルから1つを取り出す
+    //! @param rand [0, 1]の乱数
+    const MaterialBase*
+    GetSingleMaterial(float rand) const
+    {
+        return m_mix <= rand ? m_mat0 : m_mat1;
+    }
 
 private:
     const MaterialBase* m_mat0 = nullptr;

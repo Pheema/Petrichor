@@ -56,7 +56,7 @@ SimplePathTracing::Render(uint32_t pixelX,
             }
 
             // ---- ヒットした場合 ----
-            const MaterialBase* mat =
+            const MaterialBase* const mat =
               (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             if (mat->GetMaterialType() == MaterialTypes::Emission)
             {
@@ -66,12 +66,12 @@ SimplePathTracing::Render(uint32_t pixelX,
             }
 
             // 次のレイを生成
-            mat = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
+            /*mat = (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
             ASSERT(mat->GetMaterialType() != MaterialTypes::Emission);
-            ASSERT(std::isfinite(ray.dir.x));
+            ASSERT(std::isfinite(ray.dir.x));*/
 
             const auto shadingInfo =
-              (*hitInfo->hitObj).Interpolate(ray, hitInfo.value());
+              (*hitInfo->hitObj).Interpolate(ray, *hitInfo);
             ray = mat->CreateNextRay(ray, shadingInfo, sampler2D);
 
             // 最大反射回数以上でロシアンルーレット

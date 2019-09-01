@@ -34,9 +34,10 @@ public:
                   ISampler2D& sampler2D) const override;
 
     MaterialTypes
-    GetMaterialType(const MaterialBase** mat0 = nullptr,
-                    const MaterialBase** mat1 = nullptr,
-                    float* mix = nullptr) const override;
+    GetMaterialType() const override
+    {
+        return MaterialTypes::GGX;
+    }
 
     //! ラフネス用のテクスチャを指定する
     void

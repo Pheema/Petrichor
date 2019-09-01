@@ -13,7 +13,7 @@
 #include "Core/Material/Emission.h"
 #include "Core/Material/GGX.h"
 #include "Core/Material/Lambert.h"
-#include "Core/Material/MatMix.h"
+#include "Core/Material/MixMaterial.h"
 #include "Core/Sampler/MicroJitteredSampler.h"
 #include "Core/Sampler/RandomSampler1D.h"
 #include "Core/Sampler/RandomSampler2D.h"

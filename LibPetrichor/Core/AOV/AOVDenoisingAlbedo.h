@@ -28,6 +28,7 @@ private:
     CalcPathContribution(const Ray& cameraRay,
                          const AccelBase& accel,
                          const Scene& scene,
+                         ISampler1D& sampler1D,
                          ISampler2D& sampler2D);
 };
 

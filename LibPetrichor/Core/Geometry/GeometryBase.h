@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 
+#include "COre/Material/MixMaterial.h"
 #include "Core/Accel/Bounds.h"
 #include "Core/HitInfo.h"
 #include "Core/Material/MaterialBase.h"
@@ -58,17 +59,11 @@ public:
     inline const MaterialBase*
     GetMaterial(float randValue) const
     {
-        /*const MaterialBase *mat0 = nullptr, *mat1 = nullptr;
-        float mix = 0.0f;
-        if (m_material->GetMaterialType(&mat0, &mat1, &mix) ==
-            MaterialTypes::Mix)
+        if (m_material && m_material->GetMaterialType() == MaterialTypes::Mix)
         {
-            if (randValue < mix)
-            {
-                return mat1;
-            }
-            return mat0;
-        }*/
+            auto mixMaterial = static_cast<const MixMaterial*>(m_material);
+            return mixMaterial->GetSingleMaterial(randValue);
+        }
 
         return m_material;
     }

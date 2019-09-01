@@ -1,4 +1,4 @@
-﻿#include "Emission.h"
+#include "Emission.h"
 
 #include "Core/Ray.h"
 
@@ -28,14 +28,6 @@ Emission::CreateNextRay(const Ray& rayIn,
 {
     ASSERT(false);
     return Ray();
-}
-
-MaterialTypes
-Emission::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
-                          const MaterialBase** mat1 /*= nullptr*/,
-                          float* mix /*= nullptr*/) const
-{
-    return MaterialTypes::Emission;
 }
 
 } // namespace Core

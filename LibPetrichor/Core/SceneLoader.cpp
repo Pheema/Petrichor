@@ -2,6 +2,7 @@
 
 #include "Core/Material/Glass.h"
 #include "Core/Material/Lambert.h"
+#include "Core/Material/MixMaterial.h"
 #include "fmt/format.h"
 #include "nlohmann/json.hpp"
 #include <fstream>
@@ -137,6 +138,22 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
             }
             else if (materialType == "emission")
             {
+            }
+            else if (materialType == "mix")
+            {
+                std::string mat0Name;
+                loadValue(&mat0Name, material, "mat0_name");
+                const auto mat0 = scene.GetMaterial(mat0Name);
+
+                std::string mat1Name;
+                loadValue(&mat1Name, material, "mat1_name");
+                const auto mat1 = scene.GetMaterial(mat1Name);
+
+                float mix = 0.5;
+                loadValue(&mix, material, "mix");
+
+                auto mixedMat = std::make_unique<MixMaterial>(mat0, mat1, mix);
+                scene.RegisterMaterial(materialName, std::move(mixedMat));
             }
             else
             {

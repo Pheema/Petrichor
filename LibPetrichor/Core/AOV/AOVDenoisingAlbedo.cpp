@@ -44,7 +44,8 @@ AOVDenoisingAlbedo::Render(uint32_t pixelX,
                                            targetTex->GetHeight(),
                                            sampler2D);
 
-        contributionSum += CalcPathContribution(ray, accel, scene, sampler2D);
+        contributionSum +=
+          CalcPathContribution(ray, accel, scene, sampler1D, sampler2D);
     }
 
     const Color3f contributionAverage =
@@ -52,10 +53,11 @@ AOVDenoisingAlbedo::Render(uint32_t pixelX,
     targetTex->SetPixel(pixelX, pixelY, contributionAverage);
 }
 
-Color3f
+Petrichor::Color3f
 AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
                                          const AccelBase& accel,
                                          const Scene& scene,
+                                         ISampler1D& sampler1D,
                                          ISampler2D& sampler2D)
 {
     Ray ray = cameraRay;
@@ -69,25 +71,28 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
             return ray.throughput * scene.GetEnvironment().GetColor(ray.dir);
         }
 
+        const MaterialBase* const singleMaterial =
+          (hitInfo->hitObj)->GetMaterial(sampler1D.Next());
+
         const auto shadingInfo = (*hitInfo->hitObj).Interpolate(ray, *hitInfo);
-        if (!shadingInfo.material)
+        if (!singleMaterial)
         {
             return ray.throughput * Color3f::One();
         }
 
-        switch (shadingInfo.material->GetMaterialType())
+        switch (singleMaterial->GetMaterialType())
         {
         case Core::MaterialTypes::Lambert:
         {
             const auto* const lambert =
-              static_cast<const Core::Lambert*>(shadingInfo.material);
+              static_cast<const Core::Lambert*>(singleMaterial);
 
             return ray.throughput * lambert->GetAlbedo(shadingInfo);
         }
         case Core::MaterialTypes::Glass:
         {
             const auto* const glass =
-              static_cast<const Core::Glass*>(shadingInfo.material);
+              static_cast<const Core::Glass*>(singleMaterial);
 
             if (glass->GetAlpha(shadingInfo) != 0)
             {
@@ -95,15 +100,15 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
             }
             else
             {
-                ray = shadingInfo.material->CreateNextRay(
-                  ray, shadingInfo, sampler2D);
+                ray =
+                  singleMaterial->CreateNextRay(ray, shadingInfo, sampler2D);
             }
             break;
         }
         case Core::MaterialTypes::GGX:
         {
             const auto* const ggx =
-              static_cast<const Core::GGX*>(shadingInfo.material);
+              static_cast<const Core::GGX*>(singleMaterial);
 
             if (ggx->GetAlpha(shadingInfo) != 0)
             {
@@ -111,8 +116,8 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
             }
             else
             {
-                ray = shadingInfo.material->CreateNextRay(
-                  ray, shadingInfo, sampler2D);
+                ray =
+                  singleMaterial->CreateNextRay(ray, shadingInfo, sampler2D);
             }
             break;
         }

@@ -44,9 +44,7 @@ public:
                   ISampler2D& sampler2D) const = 0;
 
     virtual MaterialTypes
-    GetMaterialType(const MaterialBase** mat0 = nullptr,
-                    const MaterialBase** mat1 = nullptr,
-                    float* mix = nullptr) const = 0;
+    GetMaterialType() const = 0;
 
     void
     EnableImportanceSampling(bool isEnabled)

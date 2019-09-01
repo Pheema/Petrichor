@@ -141,14 +141,6 @@ GGX::CreateNextRay(const Ray& rayIn,
     return ray;
 }
 
-MaterialTypes
-GGX::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
-                     const MaterialBase** mat1 /*= nullptr*/,
-                     float* mix /*= nullptr*/) const
-{
-    return MaterialTypes::GGX;
-}
-
 float
 GGX::Lambda(const Math::Vector3f& dir,
             const Math::Vector3f& halfDir,

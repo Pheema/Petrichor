@@ -119,10 +119,8 @@ Lambert::CreateNextRay(const Ray& rayIn,
     }
 }
 
-MaterialTypes
-Lambert::GetMaterialType(const MaterialBase** mat0 /*= nullptr*/,
-                         const MaterialBase** mat1 /*= nullptr*/,
-                         float* mix /*= nullptr*/) const
+Petrichor::Core::MaterialTypes
+Lambert::GetMaterialType() const
 {
     return MaterialTypes::Lambert;
 }
