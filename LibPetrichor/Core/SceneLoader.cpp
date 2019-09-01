@@ -72,8 +72,6 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
     };
 
     {
-        // #TODO: unique_ptr使ってシーンに所有権を渡すとか？
-        // #TODO: エラー処理
         auto camera = std::make_unique<Camera>();
 
         const auto cameraData = loadedJson["camera"];
@@ -97,6 +95,12 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
             float fNumber = 2.8f;
             loadValue(&fNumber, cameraData, "f_number");
             camera->SetFNumber(fNumber);
+        }
+
+        {
+            float focalLength = 55e-3f;
+            loadValue(&focalLength, cameraData, "focal_length");
+            camera->SetFocalLength(focalLength);
         }
 
         scene.SetMainCamera(std::move(camera));
