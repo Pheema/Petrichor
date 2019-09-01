@@ -16,12 +16,17 @@ namespace Core
 {
 
 ThreadPool::ThreadPool(size_t numThreads)
-  : m_numThreads(numThreads)
 {
-    if (m_numThreads == 0)
+    if (numThreads == 0)
     {
-        return;
+#ifdef _WIN32
+        numThreads = GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+#else
+        numThreads = std::thread::hardware_concurrency();
+#endif
     }
+
+    m_numThreads = numThreads;
 
 #ifdef _WIN32
     const int numProcessorGroups = GetActiveProcessorGroupCount();
@@ -42,15 +47,7 @@ ThreadPool::ThreadPool(size_t numThreads)
 
 #endif
 
-    if (numThreads == 0)
-    {
-#ifdef _WIN32
-        numThreads = GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
-#else
-        numThreads = std::thread::hardware_concurrency();
-#endif
-    }
-    m_threads.reserve(numThreads);
+    m_threads.reserve(m_numThreads);
 
 #ifdef _WIN32
 

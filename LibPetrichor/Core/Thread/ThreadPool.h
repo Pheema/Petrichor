@@ -24,7 +24,7 @@ public:
 private:
     std::vector<std::thread> m_threads;
     std::queue<std::function<void(size_t)>> m_tasks;
-    const size_t m_numThreads;
+    size_t m_numThreads = 0;
     std::mutex m_mutex;
     std::condition_variable m_cond;
     bool m_isTerminated = false;
