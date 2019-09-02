@@ -29,13 +29,7 @@ Lambert::BxDF(const Ray& rayIn,
               const Ray& rayOut,
               const ShadingInfo& shadingInfo) const
 {
-    Color3f albedo = Color3f::One();
-    if (m_texAlbedo)
-    {
-        albedo = m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
-    }
-
-    return m_kd * albedo * Math::kInvPi;
+    return m_kd * GetAlbedo(shadingInfo) * Math::kInvPi;
 }
 
 float
@@ -80,17 +74,12 @@ Lambert::CreateNextRay(const Ray& rayIn,
         const Math::Vector3f outDir =
           coffU * onb.GetU() + coffV * onb.GetV() + coffW * onb.GetW();
 
-        Color3f outWeight = rayIn.throughput * m_kd;
-        if (m_texAlbedo)
-        {
-            outWeight *=
-              m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
-        }
+        const Color3f throughput = rayIn.throughput * GetAlbedo(shadingInfo);
 
         return { shadingInfo.pos + kEps * normal,
                  outDir,
                  RayTypes::Diffuse,
-                 outWeight,
+                 throughput,
                  rayIn.bounce + 1 };
     }
     else
@@ -133,7 +122,7 @@ Lambert::GetAlbedo(const ShadingInfo& shadingInfo) const
         return Color3f::One();
     }
 
-    return m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
+    return m_kd * m_texAlbedo->GetPixelByUV(shadingInfo.uv.x, shadingInfo.uv.y);
 }
 
 } // namespace Core

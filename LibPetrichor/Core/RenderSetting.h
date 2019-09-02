@@ -9,9 +9,10 @@ namespace Core
 
 struct RenderSetting
 {
-    int outputWidth = 1280;       //!< rendered image width
-    int outputHeight = 720;       //!< rendered image height
-    int numSamplesPerPixel = 128; //!< number of samples in a pixel
+    int outputWidth = 1280;       //!< 出力画像幅[px]
+    int outputHeight = 720;       //!< 出力画像高さ[px]
+    int numSamplesPerPixel = 128; //!< サンプル数
+    int numSppForDenoising = 128; //!< デノイズ用出力のサンプル数
     int numMaxBounces = 16;       //!< maximum number of ray bounces
     int tileWidth = 16;           //!< tile width
     int tileHeight = 16;          //!< tile height
@@ -41,6 +42,7 @@ struct fmt::formatter<Petrichor::Core::RenderSetting>
                          "OutputWidth: {}\n"
                          "OutputHeight: {}\n"
                          "NumSamplesPerPixel: {}\n"
+                         "NumSppForDenoising: {}\n"
                          "NumMaxBounces: {}\n"
                          "TileWidth: {}\n"
                          "TileHeight: {}\n"
@@ -48,6 +50,7 @@ struct fmt::formatter<Petrichor::Core::RenderSetting>
                          input.outputWidth,
                          input.outputHeight,
                          input.numSamplesPerPixel,
+                         input.numSppForDenoising,
                          input.numMaxBounces,
                          input.tileWidth,
                          input.tileHeight,

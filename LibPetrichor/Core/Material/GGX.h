@@ -75,6 +75,12 @@ public:
     }
 
     void
+    SetF0Texture(const Texture2D* texture)
+    {
+        m_reflectanceMap = texture;
+    }
+
+    void
     SetNormalMapStrength(float strength)
     {
         m_normalMapStrength = std::clamp(strength, 0.0f, 1.0f);
@@ -114,6 +120,24 @@ public:
         }
     }
 
+    //!< 垂直入射時の反射率
+    //!< Ref: "4.8.3.2: Reflectance remapping"
+    //!< https://google.github.io/filament/Filament.md.html
+    Color3f
+    GetF0(const ShadingInfo& shadingInfo) const
+    {
+        auto reflectance = m_reflectanceMapStrength;
+
+        if (m_reflectanceMap)
+        {
+            reflectance *= m_reflectanceMap->GetPixelByUV(shadingInfo.uv.x,
+                                                          shadingInfo.uv.y);
+        }
+
+        return 0.16f * Math::Pow<2>(reflectance) * (1.0f - m_metalness) +
+               m_baseColor * m_metalness;
+    }
+
 private:
     float
     Lambda(const Math::Vector3f& dir,
@@ -125,12 +149,17 @@ private:
                   const ShadingInfo& shadingInfo,
                   ISampler2D& rng2D) const;
 
-    Color3f m_f0 = Color3f::One(); //!< 垂直入射時の反射色
-    float m_alpha = 0.0f;          //!< Roughness^2
+private:
+    float m_metalness = 0.0f;
+    Color3f m_baseColor = Color3f::One();
 
+    float m_alpha = 0.0f; //!< Roughness^2
+
+    Color3f m_reflectanceMapStrength = Color3f::One(); //!< 垂直入射時の反射色
     float m_normalMapStrength = 1.0f; //!< ノーマルマップの強度[0, 1]
     float m_roughnessMapStrength = 1.0f; //!< ノーマルマップの強度[0, 1]
 
+    const Texture2D* m_reflectanceMap = nullptr; //!< 垂直入射時の反射色マップ
     const Texture2D* m_roughnessMap = nullptr; //!< ラフネスマップ
     const Texture2D* m_normalMap = nullptr;    //!< ノーマルマップ
 };

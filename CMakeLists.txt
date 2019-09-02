@@ -16,7 +16,13 @@ set(CMAKE_CONFIGURATION_TYPES
     CACHE STRING "" FORCE)
 
 if(MSVC)
-  add_compile_options(/MP /utf-8)
+  add_compile_options(/MP
+                      /utf-8
+                      /arch:AVX2
+                      /Oi
+                      /Gy
+                      $<$<CONFIG:Release>:/GL>)
+  add_link_options($<$<CONFIG:Release>:/LTCG>)
 endif(MSVC)
 
 # ---- Open Image Denoise ----
@@ -30,22 +36,7 @@ add_subdirectory(TestPetrichor)
 
 add_executable(AppPetrichor AppPetrichor/AppPetrichor.cpp)
 
-if(MSVC)
-  target_compile_options(AppPetrichor
-                         PRIVATE $<$<CONFIG:RelWithDebInfo>:
-                                 /fp:fast
-                                 /arch:AVX2>
-                                 $<$<CONFIG:Release>:/MT
-                                 /GL
-                                 /fp:fast
-                                 /arch:AVX2>)
-endif(MSVC)
-
 target_include_directories(AppPetrichor PRIVATE LibPetrichor)
-
-if(MSVC)
-  set(linkFlagsRelease "/LTCG /OPT:REF /OPT:ICF")
-endif(MSVC)
 
 set_target_properties(
   AppPetrichor

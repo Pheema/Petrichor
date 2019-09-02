@@ -50,7 +50,14 @@ void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 {
     std::filesystem::path outputDir(FLAGS_outputDir);
-    const std::string filename = GetCurrentTimeString() + ".txt";
+    std::string filename;
+    filename += "eplasedtime";
+    if (!FLAGS_useFixedFilename)
+    {
+        filename += "_";
+        filename += GetCurrentTimeString();
+    }
+    filename += ".txt";
 
     std::ofstream file(outputDir / filename);
     if (file.fail())
@@ -80,12 +87,12 @@ main(int argc, char** argv)
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
                            targetTexture.get());
 
-    auto uvCoordinateTexture = std::make_unique<Petrichor::Core::Texture2D>(
+    /*auto uvCoordinateTexture = std::make_unique<Petrichor::Core::Texture2D>(
       scene.GetRenderSetting().outputWidth,
       scene.GetRenderSetting().outputHeight);
 
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::UV,
-                           uvCoordinateTexture.get());
+                           uvCoordinateTexture.get());*/
 
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::Rendered,
                            targetTexture.get());
@@ -96,11 +103,11 @@ main(int argc, char** argv)
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::DenoisingAlbedo,
                            denoisingAlbedoTexture.get());
 
-    auto worldNormalTexture = std::make_unique<Petrichor::Core::Texture2D>(
+    auto denoisingNormalTexture = std::make_unique<Petrichor::Core::Texture2D>(
       targetTexture->GetWidth(), targetTexture->GetHeight());
 
     scene.SetTargetTexture(Petrichor::Core::Scene::AOVType::DenoisingNormal,
-                           worldNormalTexture.get());
+                           denoisingNormalTexture.get());
 
     Petrichor::Core::Petrichor petrichor;
     petrichor.SetRenderCallback(OnRenderingFinished);
@@ -214,38 +221,42 @@ main(int argc, char** argv)
 
     if (targetTexture)
     {
-        {
+        /*{
             const std::string filename = prefix + ".png";
             targetTexture->Save(outputDir / filename);
-        }
+        }*/
 
         Petrichor::Core::IntelOpenImageDenoiser denoiser;
-        const Petrichor::Core::Texture2D denoised = denoiser.Denoise(
-          *targetTexture, *denoisingAlbedoTexture, *worldNormalTexture, true);
+        const Petrichor::Core::Texture2D denoised =
+          denoiser.Denoise(*targetTexture,
+                           *denoisingAlbedoTexture,
+                           *denoisingNormalTexture,
+                           true);
 
         {
-            const std::string denoisedFilename = prefix + "_denoised.png";
+            const std::string denoisedFilename = prefix + "_final.png";
             denoised.Save(outputDir / denoisedFilename);
         }
     }
 
-    if (uvCoordinateTexture)
-    {
-        const std::string fileName = prefix + "_uv.png";
-        uvCoordinateTexture->Save(outputDir / fileName);
-    }
+    /* if (uvCoordinateTexture)
+     {
+         const std::string fileName = prefix + "_uv.png";
+         uvCoordinateTexture->Save(outputDir / fileName);
+     }*/
 
-    if (denoisingAlbedoTexture)
+    /*if (denoisingAlbedoTexture)
     {
         const std::string fileName = prefix + "_denoisingAlbedo.png";
         denoisingAlbedoTexture->Save(outputDir / fileName);
     }
 
-    if (worldNormalTexture)
+    if (denoisingNormalTexture)
     {
-        const std::string worldNormalFileName = prefix + "_worldNormal.png";
-        worldNormalTexture->Save(outputDir / worldNormalFileName);
-    }
+        const std::string denoisingNormalFileName =
+          prefix + "_denoisingNormal.png";
+        denoisingNormalTexture->Save(outputDir / denoisingNormalFileName);
+    }*/
 
     showProgress.join();
 

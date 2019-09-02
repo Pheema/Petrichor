@@ -47,7 +47,7 @@ private:
 
 private:
     //! ビンの分割数
-    constexpr static int kNumBins = 4;
+    constexpr static int kNumBins = 16;
 
     std::vector<PrimitiveData> m_primitiveData;
     std::vector<BVHNode> m_bvhNodes;

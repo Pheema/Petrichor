@@ -109,16 +109,6 @@ target_compile_definitions(
 
 target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
-if(MSVC)
-  target_compile_options(LibPetrichor
-                         PRIVATE $<$<CONFIG:RelWithDebInfo>:
-                                 /fp:fast
-                                 /arch:AVX2>
-                                 $<$<CONFIG:Release>:
-                                 /fp:fast
-                                 /arch:AVX2>)
-endif(MSVC)
-
 target_include_directories(LibPetrichor
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
                                    ${CMAKE_SOURCE_DIR}/External)

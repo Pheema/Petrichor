@@ -218,7 +218,7 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::DenoisingNormal);
         if (aovWorldNormalTexture)
         {
-            fmt::print("[AOV][WorldNormal] Begin\n");
+            fmt::print("[AOV][DenoisingNormal] Begin\n");
 
             AOVDenoisingNormal renderer;
 
@@ -263,7 +263,7 @@ Petrichor::Render(const Scene& scene)
                 }
             }
 
-            fmt::print("[AOV][WorldNormal] End\n");
+            fmt::print("[AOV][DenoisingNormal] End\n");
         }
     }
 

@@ -23,7 +23,7 @@ namespace Core
 //! #TODO: リソース管理用のクラスを作る？
 struct TextureHandle
 {
-    uint32_t handle;
+    std::string filePath;
 };
 
 class Scene
@@ -129,24 +129,31 @@ public:
 
     //! シーンにテクスチャを登録
     TextureHandle
-    RegisterTexture(const Texture2D& texture2D)
+    RegisterTexture(std::string_view filePath, const Texture2D& texture2D)
     {
-        const TextureHandle textureHandle = [&]() {
-            TextureHandle textureHandle_;
-            textureHandle_.handle =
-              static_cast<decltype(TextureHandle::handle)>(m_textures.size());
-            return textureHandle_;
-        }();
+        if (m_textures.find(filePath.data()) == m_textures.end())
+        {
+            m_textures[std::string(filePath)] = texture2D;
+        }
 
-        m_textures.emplace_back(texture2D);
+        TextureHandle textureHandle;
+        textureHandle.filePath = filePath;
         return textureHandle;
     }
 
     //! シーンに登録してあるテクスチャを取得
-    const Texture2D&
+    const Texture2D*
     GetTexture(const TextureHandle& textureHandle)
     {
-        return m_textures[textureHandle.handle];
+
+        if (m_textures.find(textureHandle.filePath) != m_textures.end())
+        {
+            return &m_textures[textureHandle.filePath];
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     // メインカメラを登録
@@ -223,7 +230,7 @@ private:
       m_materials;
 
     //! レンダリングで使用するテクスチャ
-    std::vector<Texture2D> m_textures{};
+    std::unordered_map<std::string, Texture2D> m_textures{};
 
     //! 環境マップ
     Environment m_environment;

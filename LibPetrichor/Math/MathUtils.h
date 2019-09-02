@@ -36,14 +36,14 @@ Mod(T x, T m)
 }
 
 template<size_t N, typename T>
-T
+constexpr T
 Pow(T x)
 {
-    static_assert(N >= 0 && std::is_arithmetic<T>::value);
+    static_assert(N >= 0);
 
-    if constexpr (N == 0)
+    if constexpr (N == 1)
     {
-        return static_cast<T>(1);
+        return x;
     }
     else if constexpr (N % 2 == 0)
     {

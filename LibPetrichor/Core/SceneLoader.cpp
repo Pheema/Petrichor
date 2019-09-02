@@ -36,7 +36,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
 
             if (loadedVector.size() != 3)
             {
-                fmt::print("[SceneLoaderJson] '{}' size != 3.", arrayName);
+                fmt::print("[SceneLoaderJson] '{}' size != 3.\n", arrayName);
             }
 
             Math::Vector3f v;
@@ -51,7 +51,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
         else
         {
-            fmt::print("[SceneLoaderJson] '{}' not found.", arrayName);
+            fmt::print("[SceneLoaderJson] '{}' not found.\n", arrayName);
             return Math::Vector3f::Zero();
         }
     };
@@ -71,7 +71,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
         else
         {
-            fmt::print("[SceneLoaderJson] '{}' not found.", keyName);
+            fmt::print("[SceneLoaderJson] '{}' not found.\n", keyName);
         }
     };
 
@@ -105,19 +105,19 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
                 const auto baseColor = loadVector3f(material, "base_color");
                 auto lambertMat = std::make_unique<Lambert>(baseColor);
 
-                std::string colorTexPath;
-                loadValue(&colorTexPath, material, "color_tex");
-                if (!colorTexPath.empty())
+                std::string colorTexturePath;
+                loadValue(&colorTexturePath, material, "color_tex");
+                if (!colorTexturePath.empty())
                 {
                     Texture2D colorTex;
-                    if (colorTex.Load(colorTexPath,
+                    if (colorTex.Load(colorTexturePath,
                                       Texture2D::TextureColorType::Color))
                     {
                         const TextureHandle colorTexHandle =
-                          scene.RegisterTexture(colorTex);
+                          scene.RegisterTexture(colorTexturePath, colorTex);
 
                         lambertMat->SetTexAlbedo(
-                          &scene.GetTexture(colorTexHandle));
+                          scene.GetTexture(colorTexHandle));
                     }
                 }
 
@@ -143,6 +143,21 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
 
                 auto ggxMat = std::make_unique<GGX>(color, roughness);
 
+                std::string colorTexturePath;
+                loadValue(&colorTexturePath, material, "color_tex");
+                if (!colorTexturePath.empty())
+                {
+                    Texture2D colorTexture;
+                    if (colorTexture.Load(colorTexturePath,
+                                          Texture2D::TextureColorType::Color))
+                    {
+                        const TextureHandle textureHandle =
+                          scene.RegisterTexture(colorTexturePath, colorTexture);
+
+                        ggxMat->SetF0Texture(scene.GetTexture(textureHandle));
+                    }
+                }
+
                 std::string roughnessTexturePath;
                 loadValue(&roughnessTexturePath, material, "roughness_tex");
                 if (!roughnessTexturePath.empty())
@@ -153,10 +168,11 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
                           Texture2D::TextureColorType::NonColor))
                     {
                         const TextureHandle textureHandle =
-                          scene.RegisterTexture(roughnessTexture);
+                          scene.RegisterTexture(roughnessTexturePath,
+                                                roughnessTexture);
 
                         ggxMat->SetRoughnessMap(
-                          &scene.GetTexture(textureHandle));
+                          scene.GetTexture(textureHandle));
                     }
                 }
 

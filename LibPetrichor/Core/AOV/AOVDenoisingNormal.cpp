@@ -30,7 +30,7 @@ AOVDenoisingNormal::Render(uint32_t pixelX,
         return;
     }
 
-    const int numSamples = scene.GetRenderSetting().numSamplesPerPixel;
+    const int numSamples = scene.GetRenderSetting().numSppForDenoising;
     const int maxNumBounces = scene.GetRenderSetting().numMaxBounces;
 
     Color3f contributionSum;

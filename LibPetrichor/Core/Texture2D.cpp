@@ -39,26 +39,43 @@ Clamp(const Color3f& color, float min, float max)
 }
 
 float
-ApplyGamma(float value)
+ApplyGamma(float value, float gamma = 2.2f)
 {
-    return std::pow(value, 2.2f);
+    return std::pow(value, gamma);
 }
 
 Color3f
-ApplyGamma(const Color3f& color)
+ApplyGamma(const Color3f& color, float gamma = 2.2f)
 {
-    return { ApplyGamma(color.x), ApplyGamma(color.y), ApplyGamma(color.z) };
+    return { ApplyGamma(color.x, gamma),
+             ApplyGamma(color.y, gamma),
+             ApplyGamma(color.z, gamma) };
+}
+
+// #TODO: 時間ないのでハードコード、LUT読みにしたい…。
+Color3f
+RTCamp7Tonemap(const Color3f& color)
+{
+    Color3f c = ApplyGamma(color, 1.2f);
+    const auto x0 = ApplyGamma(0.06f * Color3f::One());
+    const auto x1 = ApplyGamma(0.90f * Color3f::One());
+    c = (c - x0) / (x1 - x0);
+    c.y = ApplyGamma(c.y, 1.2f);
+    c.z = ApplyGamma(c.z, 1.3f);
+    return c;
 }
 
 Color3f
 ApplyToneMapping(const Math::Vector3f& color)
 {
-    return ACESFilm(color);
+    // #TODO: 分離
+    return RTCamp7Tonemap(ACESFilm(color));
 }
 
 float
 ApplyDegamma(float value)
 {
+    value = std::pow(value, 1.1f);
     value = std::clamp(value, 0.0f, 1.0f);
     return std::pow(value, 1 / 2.2f);
 }

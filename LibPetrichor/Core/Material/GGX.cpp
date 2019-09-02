@@ -14,7 +14,7 @@ namespace Core
 {
 
 GGX::GGX(const Color3f& f0, float roughness)
-  : m_f0(f0)
+  : m_reflectanceMapStrength(f0)
   , m_alpha(roughness * roughness)
 {
 }
@@ -44,10 +44,9 @@ GGX::BxDF(const Ray& rayIn,
 
     // F
     const float hDotL = std::abs(Dot(halfVec, rayOut.dir));
-    const float oneMinusCos = 1.0f - hDotL;
-    const float oneMinusCos2 = oneMinusCos * oneMinusCos;
-    const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
-    const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
+    const auto fTerm =
+      GetF0(shadingInfo) +
+      (Color3f::One() - GetF0(shadingInfo)) * Math::Pow<5>(1.0f - hDotL);
 
     const float lDotN = std::abs(Dot(rayOut.dir, normal));
     const float vDotN = std::abs(Dot(-rayIn.dir, normal));
@@ -93,10 +92,8 @@ GGX::CreateNextRay(const Ray& rayIn,
 
     // TODO: あとでFresnel()にまとめる
     const float hDotL = std::abs(Math::Dot(sampledHalfVec, outDir));
-    const float oneMinusCos = 1.0f - hDotL;
-    const float oneMinusCos2 = oneMinusCos * oneMinusCos;
-    const float oneMinusCos5 = oneMinusCos2 * oneMinusCos2 * oneMinusCos;
-    const auto fTerm = m_f0 + (Color3f::One() - m_f0) * oneMinusCos5;
+    const Color3f f0 = GetF0(shadingInfo);
+    const auto fTerm = f0 + (Color3f::One() - f0) * Math::Pow<5>(1.0f - hDotL);
 
     Ray ray(shadingInfo.pos,
             outDir,

@@ -32,7 +32,7 @@ AOVDenoisingAlbedo::Render(uint32_t pixelX,
         return;
     }
 
-    const int numSamples = scene.GetRenderSetting().numSamplesPerPixel;
+    const int numSamples = scene.GetRenderSetting().numSppForDenoising;
     const int maxNumBounces = scene.GetRenderSetting().numMaxBounces;
 
     Color3f contributionSum;
@@ -112,7 +112,7 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
 
             if (ggx->GetAlpha(shadingInfo) != 0)
             {
-                return ray.throughput * Color3f::One();
+                return ray.throughput * ggx->GetF0(shadingInfo);
             }
             else
             {

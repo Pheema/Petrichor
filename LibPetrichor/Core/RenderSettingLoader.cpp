@@ -51,6 +51,8 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
     readValueIfKeyExists(
       &renderSetting.numSamplesPerPixel, "spp", renderSettingJson);
     readValueIfKeyExists(
+      &renderSetting.numSppForDenoising, "denoising_spp", renderSettingJson);
+    readValueIfKeyExists(
       &renderSetting.numMaxBounces, "maxBounces", renderSettingJson);
     readValueIfKeyExists(
       &renderSetting.tileWidth, "tileWidth", renderSettingJson);
