@@ -51,13 +51,13 @@ OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 {
     std::filesystem::path outputDir(FLAGS_outputDir);
     std::string filename;
-    filename += "eplasedtime";
+
     if (!FLAGS_useFixedFilename)
     {
-        filename += "_";
         filename += GetCurrentTimeString();
+        filename += "_";
     }
-    filename += ".txt";
+    filename += "elapsedtime.txt";
 
     std::ofstream file(outputDir / filename);
     if (file.fail())

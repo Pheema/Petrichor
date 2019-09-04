@@ -118,4 +118,4 @@ target_link_libraries(LibPetrichor
                               CONAN_PKG::Assimp
                               CONAN_PKG::stb
                               CONAN_PKG::jsonformoderncpp
-                              CONAN_PKG::fmt)
+                      PUBLIC CONAN_PKG::fmt)

@@ -57,11 +57,11 @@ Color3f
 RTCamp7Tonemap(const Color3f& color)
 {
     Color3f c = ApplyGamma(color, 1.2f);
-    const auto x0 = ApplyGamma(0.06f * Color3f::One());
-    const auto x1 = ApplyGamma(0.90f * Color3f::One());
+    const auto x0 = ApplyGamma(0.05f * Color3f::One());
+    const auto x1 = ApplyGamma(0.9f * Color3f::One());
     c = (c - x0) / (x1 - x0);
-    c.y = ApplyGamma(c.y, 1.2f);
-    c.z = ApplyGamma(c.z, 1.3f);
+    c.y = ApplyGamma(c.y, 1.3f);
+    c.z = ApplyGamma(c.z, 1.6f);
     return c;
 }
 
