@@ -29,8 +29,7 @@ ThreadPool::ThreadPool(size_t numThreads)
     m_numThreads = numThreads;
 
 #ifdef _WIN32
-    const int numProcessorGroups = GetActiveProcessorGroupCount();
-
+    const WORD numProcessorGroups = GetActiveProcessorGroupCount();
     const auto cumulativeNumProcessors = [numProcessorGroups] {
         std::vector<DWORD> cumulativeNumProcessors_;
         cumulativeNumProcessors_.emplace_back(0);
@@ -50,27 +49,28 @@ ThreadPool::ThreadPool(size_t numThreads)
     m_threads.reserve(m_numThreads);
 
 #ifdef _WIN32
-
     std::vector<DWORD> threadIndexToGroupIndex;
     threadIndexToGroupIndex.resize(numThreads);
 
-    auto iter = cumulativeNumProcessors.cbegin();
-    int groupIndex = 0;
+    DWORD groupIndex = 0;
     for (DWORD threadIndex = 0; threadIndex < numThreads; threadIndex++)
     {
-        if (iter == cumulativeNumProcessors.cend())
+        if (cumulativeNumProcessors.size() <= groupIndex + 1)
         {
             break;
         }
 
-        if (*iter <= threadIndex && threadIndex < *std::next(iter))
+        const DWORD lowerThreadIndex = cumulativeNumProcessors[groupIndex];
+        const DWORD upperThreadIndex = cumulativeNumProcessors[groupIndex + 1];
+
+        if (threadIndex <= threadIndex && threadIndex < upperThreadIndex)
         {
             threadIndexToGroupIndex[threadIndex] = groupIndex;
         }
         else
         {
-            iter++;
             groupIndex++;
+            threadIndexToGroupIndex[threadIndex] = groupIndex;
         }
     }
 
