@@ -19,6 +19,13 @@ enum class AccelType
     BVH         // BVH
 };
 
+//!< #TODO: 仮
+struct PrecalcedData
+{
+    Math::Vector3f invRayDir{};
+    int8_t sign[3] = {};
+};
+
 class AccelBase
 {
 public:

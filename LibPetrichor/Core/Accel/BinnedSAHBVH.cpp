@@ -247,6 +247,15 @@ BinnedSAHBVH::GetSAHCost(int binPartitionIndex,
 std::optional<HitInfo>
 BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
 {
+    const PrecalcedData precalced = [&] {
+        PrecalcedData precalced_;
+        precalced_.invRayDir = Math::Vector3f::One() / ray.dir;
+        precalced_.sign[0] = (precalced_.invRayDir[0] < 0.0f);
+        precalced_.sign[1] = (precalced_.invRayDir[1] < 0.0f);
+        precalced_.sign[2] = (precalced_.invRayDir[2] < 0.0f);
+        return precalced_;
+    }();
+
     thread_local std::vector<int> bvhNodeIndexStack;
     bvhNodeIndexStack.clear();
     bvhNodeIndexStack.emplace_back(0);
@@ -264,10 +273,10 @@ BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
         bvhNodeIndexStack.erase(std::end(bvhNodeIndexStack) - 1);
         const BVHNode& currentNode = m_bvhNodes[currentNodeIndex];
 
-        const auto hitInfoNode = currentNode.Intersect(ray);
+        const auto hitInfoNode = currentNode.Intersect(ray, precalced);
 
         // そもそもBVHノードに当たる軌道ではない
-        if (hitInfoNode == std::nullopt)
+        if (!hitInfoNode)
         {
             continue;
         }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Vector3f.h"
 
@@ -33,6 +33,12 @@ public:
     //! @return 軸番号(X: 0, Y: 1, Z: 2)
     int
     GetWidestAxis() const;
+
+    const Math::Vector3f& operator[](int i) const
+    {
+        ASSERT(0 <= i && i < 2);
+        return i ? vMax : vMin;
+    }
 
     Math::Vector3f vMin, vMax;
 };
