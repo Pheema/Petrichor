@@ -51,12 +51,14 @@ if(MSVC)
   target_link_libraries(AppPetrichor
                         LibPetrichor
                         CONAN_PKG::gflags
+                        CONAN_PKG::fmt
                         OpenImageDenoise)
 else(MSVC)
   target_link_libraries(AppPetrichor
                         LibPetrichor
                         stdc++fs
-                        CONAN_PKG::gflags)
+                        CONAN_PKG::gflags
+                        CONAN_PKG::fmt)
 endif(MSVC)
 
 # Startup project

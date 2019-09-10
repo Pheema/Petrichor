@@ -109,9 +109,9 @@ target_compile_definitions(
 
 target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
-target_include_directories(LibPetrichor
-                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-                                   ${CMAKE_SOURCE_DIR}/External)
+target_include_directories(LibPetrichor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(LibPetrichor SYSTEM
+                           PRIVATE ${CMAKE_SOURCE_DIR}/External)
 
 target_link_libraries(LibPetrichor
                       PRIVATE OpenImageDenoise
