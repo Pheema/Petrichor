@@ -109,7 +109,7 @@ target_compile_definitions(
 
 target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
-target_include_directories(LibPetrichor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(LibPetrichor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(LibPetrichor SYSTEM
                            PRIVATE ${CMAKE_SOURCE_DIR}/External)
 
@@ -118,4 +118,4 @@ target_link_libraries(LibPetrichor
                               CONAN_PKG::Assimp
                               CONAN_PKG::stb
                               CONAN_PKG::jsonformoderncpp
-                      PUBLIC CONAN_PKG::fmt)
+                              CONAN_PKG::fmt)
