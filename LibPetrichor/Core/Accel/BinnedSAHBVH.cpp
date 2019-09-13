@@ -14,8 +14,7 @@ namespace Core
 void
 BinnedSAHBVH::Build(const Scene& scene)
 {
-    m_scene = &scene;
-    const int numPrimitives = static_cast<int>(scene.GetGeometries().size());
+    const auto numPrimitives = scene.GetGeometries().size();
 
     // 事前に全プリミティブのバウンディングボックスと重心を計算しておく
     {
@@ -38,7 +37,7 @@ BinnedSAHBVH::Build(const Scene& scene)
 
         // メモリ再配置が起こると落ちるので、ノード数より大きい数を保証する
         // TODO: 最適な上限を求める
-        m_bvhNodes.reserve(2 * numPrimitives);
+        m_bvhNodes.reserve(2ll * numPrimitives);
 
         Bounds rootBounds;
         for (auto* primitive : scene.GetGeometries())
@@ -245,7 +244,10 @@ BinnedSAHBVH::GetSAHCost(int binPartitionIndex,
 }
 
 std::optional<HitInfo>
-BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
+BinnedSAHBVH::Intersect(const Ray& ray,
+                        const Scene& scene,
+                        float distMin,
+                        float distMax) const
 {
     const PrecalcedData precalced = [&] {
         PrecalcedData precalced_;
@@ -299,7 +301,7 @@ BinnedSAHBVH::Intersect(const Ray& ray, float distMin, float distMax) const
                 const int primitiveID = m_primitiveIDs[index];
 
                 const GeometryBase* const geometry =
-                  m_scene->GetGeometries()[primitiveID];
+                  scene.GetGeometries()[primitiveID];
 
                 const auto hitInfoGeometry = geometry->Intersect(ray);
                 if (hitInfoGeometry)

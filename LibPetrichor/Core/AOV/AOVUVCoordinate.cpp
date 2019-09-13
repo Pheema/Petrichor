@@ -36,7 +36,7 @@ AOVUVCoordinate::Render(uint32_t pixelX,
                                            targetTex->GetHeight(),
                                            sampler2D);
 
-        const auto hitInfo = accel.Intersect(ray, kEps);
+        const auto hitInfo = accel.Intersect(ray, scene, kEps);
         if (hitInfo)
         {
             const auto shadingInfo =

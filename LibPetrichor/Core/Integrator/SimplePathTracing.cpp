@@ -44,7 +44,7 @@ SimplePathTracing::Render(uint32_t pixelX,
         Color3f contribution;
         for (int bounce = 0;; bounce++)
         {
-            const auto hitInfo = accel.Intersect(ray, kEps);
+            const auto hitInfo = accel.Intersect(ray, scene, kEps);
 
             // ヒットしなかった場合
             if (!hitInfo)

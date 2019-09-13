@@ -47,7 +47,7 @@ PathTracing::Render(uint32_t pixelX,
 
         ShadingInfo shadingInfo;
         {
-            const auto hitInfo = accel.Intersect(ray);
+            const auto hitInfo = accel.Intersect(ray, scene);
             if (hitInfo == std::nullopt)
             {
                 // IBL
@@ -88,7 +88,8 @@ PathTracing::Render(uint32_t pixelX,
             }
 
             // MIS
-            if (const auto hitInfoNext = accel.Intersect(ray); hitInfoNext)
+            if (const auto hitInfoNext = accel.Intersect(ray, scene);
+                hitInfoNext)
             {
                 const ShadingInfo shadingInfoNext =
                   hitInfoNext->hitObj->Interpolate(ray, *hitInfoNext);
@@ -228,7 +229,7 @@ PathTracing::CalcLightContribution(const Scene& scene,
         Ray rayToLight(
           p, (pointOnLight.pos - p).Normalized(), RayTypes::Shadow);
 
-        const auto hitInfoLight = accel.Intersect(rayToLight);
+        const auto hitInfoLight = accel.Intersect(rayToLight, scene);
         if (hitInfoLight && hitInfoLight->hitObj->GetMaterial(sampler1D.Next())
                                 ->GetMaterialType() == MaterialTypes::Emission)
         {
@@ -289,7 +290,7 @@ PathTracing::CalcLightContribution(const Scene& scene,
           kEps * std::copysign(1.0f, dot) * shadingInfo.normal;
 
         Ray rayToEnv(rayOrigin, sampledDir, RayTypes::Shadow);
-        const std::optional<HitInfo> hitInfo = accel.Intersect(rayToEnv);
+        const std::optional<HitInfo> hitInfo = accel.Intersect(rayToEnv, scene);
 
         // 物体に遮られず、環境マップが見えた場合
         if (hitInfo == std::nullopt)

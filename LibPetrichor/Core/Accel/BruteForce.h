@@ -21,7 +21,10 @@ public:
     Build(const Scene& scene) override;
 
     std::optional<HitInfo>
-    Intersect(const Ray& ray, float distMin, float distMax) const override;
+    Intersect(const Ray& ray,
+              const Scene& scene,
+              float distMin,
+              float distMax) const override;
 
 private:
     std::vector<const GeometryBase*> m_geometries;

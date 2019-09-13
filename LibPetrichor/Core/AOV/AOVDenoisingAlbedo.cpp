@@ -65,7 +65,7 @@ AOVDenoisingAlbedo::CalcPathContribution(const Ray& cameraRay,
     const int numMaxBounces = scene.GetRenderSetting().numMaxBounces;
     for (int bounce = 0; bounce < numMaxBounces; bounce++)
     {
-        const auto hitInfo = accel.Intersect(ray, kEps);
+        const auto hitInfo = accel.Intersect(ray, scene, kEps);
         if (!hitInfo)
         {
             return ray.throughput * scene.GetEnvironment().GetColor(ray.dir);

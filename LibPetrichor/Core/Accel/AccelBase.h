@@ -35,20 +35,23 @@ public:
 
     //! 交差判定
     virtual std::optional<HitInfo>
-    Intersect(const Ray& ray, float distMin, float distMax) const = 0;
+    Intersect(const Ray& ray,
+              const Scene& scene,
+              float distMin,
+              float distMax) const = 0;
 
     //! 交差判定(デフォルト引数版)
-    std::optional<HitInfo>
-    Intersect(const Ray& ray) const
+    std::optional<Petrichor::Core::HitInfo>
+    Intersect(const Ray& ray, const Scene& scene) const
     {
-        return Intersect(ray, 0.0f, kInfinity);
+        return Intersect(ray, scene, 0.0f, std::numeric_limits<float>::max());
     }
 
     //! 交差判定(デフォルト引数版)
     std::optional<HitInfo>
-    Intersect(const Ray& ray, float distMin) const
+    Intersect(const Ray& ray, const Scene& scene, float distMin) const
     {
-        return Intersect(ray, distMin, kInfinity);
+        return Intersect(ray, scene, distMin, kInfinity);
     }
 };
 

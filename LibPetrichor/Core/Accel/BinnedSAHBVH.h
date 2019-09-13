@@ -31,10 +31,12 @@ public:
     Build(const Scene& scene) override;
 
     std::optional<HitInfo>
-    Intersect(const Ray& ray, float distMin, float distMax) const override;
+    Intersect(const Ray& ray,
+              const Scene& scene,
+              float distMin,
+              float distMax) const override;
 
 private:
-    //!
     //! @param binPartitionIndex どのビン番号でノードを左右に分割するか
     //! @param primitiveDataArray
     //! @param primitiveIDs
@@ -52,7 +54,6 @@ private:
     std::vector<PrimitiveData> m_primitiveData;
     std::vector<BVHNode> m_bvhNodes;
     std::vector<int> m_primitiveIDs;
-    const Scene* m_scene = nullptr;
 };
 
 } // namespace Core
