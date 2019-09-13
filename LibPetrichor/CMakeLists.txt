@@ -115,6 +115,5 @@ target_include_directories(LibPetrichor SYSTEM
 target_link_libraries(LibPetrichor
                       PRIVATE OpenImageDenoise
                               CONAN_PKG::Assimp
-                              CONAN_PKG::stb
                               CONAN_PKG::jsonformoderncpp
                               CONAN_PKG::fmt)

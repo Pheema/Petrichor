@@ -7,3 +7,6 @@
 [submodule "External/benchmark"]
 	path = External/benchmark
 	url = https://github.com/google/benchmark.git
+[submodule "External/stb"]
+	path = External/stb
+	url = https://github.com/nothings/stb.git
