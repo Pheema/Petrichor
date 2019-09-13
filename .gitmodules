@@ -4,3 +4,6 @@
 [submodule "External/oidn"]
 	path = External/oidn
 	url = https://github.com/OpenImageDenoise/oidn
+[submodule "External/benchmark"]
+	path = External/benchmark
+	url = https://github.com/google/benchmark.git

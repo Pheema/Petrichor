@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
 add_library(LibPetrichor STATIC "")
-
 target_sources(LibPetrichor PRIVATE
                # Core/
                Core/Assert.h

@@ -34,5 +34,3 @@ BM_Vector3fDotTest(benchmark::State& state)
     }
 }
 BENCHMARK(BM_Vector3fDotTest)->Arg(kNumLoops);
-
-BENCHMARK_MAIN();
