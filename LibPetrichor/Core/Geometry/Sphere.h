@@ -15,8 +15,8 @@ public:
 
     Sphere(const Math::Vector3f& o, float r);
 
-    Bounds
-    GetBounds() const override;
+    AABB
+    CalcBoundary() const override;
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const override;

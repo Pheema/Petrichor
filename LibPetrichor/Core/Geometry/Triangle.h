@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "GeometryBase.h"
 #include "Vertex.h"
@@ -33,8 +33,8 @@ public:
     void
     SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2);
 
-    Bounds
-    GetBounds() const override;
+    AABB
+    CalcBoundary() const override;
 
     std::optional<HitInfo>
     Intersect(const Ray& ray) const override;

@@ -29,12 +29,12 @@ target_sources(LibPetrichor PRIVATE
                Core/Accel/AccelBase.h
                Core/Accel/BinnedSAHBVH.h
                Core/Accel/BinnedSAHBVH.cpp
-               Core/Accel/Bounds.h
-               Core/Accel/Bounds.cpp
                Core/Accel/BruteForce.h
                Core/Accel/BruteForce.cpp
-               Core/Accel/BVHNode.h
-               Core/Accel/BVHNode.cpp
+              #  Core/Accel/BVHNode.h
+              #  Core/Accel/BVHNode.cpp
+               Core/Accel/AABB.h
+               Core/Accel/AABB.cpp
                # Code/Denoiser/
                Core/Denoiser/IntelOpenImageDenoiser.h
                Core/Denoiser/IntelOpenImageDenoiser.cpp

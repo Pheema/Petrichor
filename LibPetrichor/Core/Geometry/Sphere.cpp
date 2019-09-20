@@ -21,12 +21,12 @@ Sphere::Sphere(const Math::Vector3f& o, float r)
     // Do nothing
 }
 
-Bounds
-Sphere::GetBounds() const
+AABB
+Sphere::CalcBoundary() const
 {
-    const auto vMin = m_origin - Math::Vector3f::One() * m_radius;
-    const auto vMax = m_origin + Math::Vector3f::One() * m_radius;
-    return Bounds(vMin, vMax);
+    const auto lower = m_origin - Math::Vector3f::One() * m_radius;
+    const auto upper = m_origin + Math::Vector3f::One() * m_radius;
+    return AABB(lower, upper);
 }
 
 std::optional<HitInfo>

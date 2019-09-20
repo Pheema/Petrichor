@@ -1,7 +1,7 @@
 #pragma once
 
 #include "COre/Material/MixMaterial.h"
-#include "Core/Accel/Bounds.h"
+#include "Core/Accel/AABB.h"
 #include "Core/HitInfo.h"
 #include "Core/Material/MaterialBase.h"
 #include <optional>
@@ -24,8 +24,8 @@ class GeometryBase
 {
 public:
     // AABBの計算
-    virtual Bounds
-    GetBounds() const = 0;
+    virtual AABB
+    CalcBoundary() const = 0;
 
     // レイとの簡易交差判定
     virtual std::optional<HitInfo>

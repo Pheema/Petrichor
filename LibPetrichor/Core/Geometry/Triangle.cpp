@@ -38,14 +38,14 @@ Triangle::SetVertices(const Vertex* v0, const Vertex* v1, const Vertex* v2)
     m_vertices[2] = v2;
 }
 
-Bounds
-Triangle::GetBounds() const
+AABB
+Triangle::CalcBoundary() const
 {
-    Bounds bounds;
-    bounds.Merge(m_vertices[0]->pos);
-    bounds.Merge(m_vertices[1]->pos);
-    bounds.Merge(m_vertices[2]->pos);
-    return bounds;
+    AABB boundary;
+    boundary.Merge(m_vertices[0]->pos);
+    boundary.Merge(m_vertices[1]->pos);
+    boundary.Merge(m_vertices[2]->pos);
+    return boundary;
 }
 
 std::optional<HitInfo>
