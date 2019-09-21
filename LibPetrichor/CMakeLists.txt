@@ -107,10 +107,10 @@ target_compile_definitions(
 target_compile_features(LibPetrichor PUBLIC cxx_std_17)
 
 target_include_directories(LibPetrichor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(
-  LibPetrichor SYSTEM
-  PRIVATE ${CMAKE_SOURCE_DIR}/External/stb
-          ${CMAKE_SOURCE_DIR}/External/tinytoml/include)
+target_include_directories(LibPetrichor SYSTEM
+                           PRIVATE ${CMAKE_SOURCE_DIR}/External/stb
+                                   ${CMAKE_SOURCE_DIR}/External/tinytoml/include
+                                   ${CMAKE_SOURCE_DIR}/External/spdlog/include)
 
 target_link_libraries(LibPetrichor
                       PRIVATE OpenImageDenoise
