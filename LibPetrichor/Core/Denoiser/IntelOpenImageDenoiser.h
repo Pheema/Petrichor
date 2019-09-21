@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Texture2D.h"
-#include <OpenImageDenoise/oidn.hpp>
+#include "OpenImageDenoise/oidn.hpp"
 
 namespace Petrichor
 {

@@ -1,6 +1,6 @@
 #include "RenderSettingLoader.h"
 #include "nlohmann/json.hpp"
-#include "tinytoml/include/toml/toml.h"
+#include "toml/toml.h"
 #include <fstream>
 #include <iostream>
 #include <string>
