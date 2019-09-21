@@ -105,10 +105,14 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
                 const auto baseColor = loadVector3f(material, "base_color");
                 auto lambertMat = std::make_unique<Lambert>(baseColor);
 
-                std::string colorTexturePath;
-                loadValue(&colorTexturePath, material, "color_tex");
-                if (!colorTexturePath.empty())
+                std::string colorTexturePathString;
+                loadValue(&colorTexturePathString, material, "color_tex");
+
+                if (!colorTexturePathString.empty())
                 {
+                    std::filesystem::path colorTexturePath =
+                      path.parent_path() / colorTexturePathString;
+
                     Texture2D colorTex;
                     if (colorTex.Load(colorTexturePath,
                                       Texture2D::TextureColorType::Color))
@@ -143,12 +147,15 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
 
                 auto ggxMat = std::make_unique<GGX>(color, roughness);
 
-                std::string colorTexturePath;
-                loadValue(&colorTexturePath, material, "color_tex");
-                if (!colorTexturePath.empty())
+                std::string colorTexturePathString;
+                loadValue(&colorTexturePathString, material, "color_tex");
+                if (!colorTexturePathString.empty())
                 {
+                    const std::filesystem::path colorTexturePath =
+                      colorTexturePathString;
+
                     Texture2D colorTexture;
-                    if (colorTexture.Load(colorTexturePath,
+                    if (colorTexture.Load(path.parent_path() / colorTexturePath,
                                           Texture2D::TextureColorType::Color))
                     {
                         const TextureHandle textureHandle =
@@ -253,10 +260,12 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
 
         {
-            std::string texturePath("");
-            loadValue(&texturePath, envData, "texture");
-            if (!texturePath.empty())
+            std::string texturePathString("");
+            loadValue(&texturePathString, envData, "texture");
+            if (!texturePathString.empty())
             {
+                const std::filesystem::path texturePath =
+                  path.parent_path() / texturePathString;
                 env.Load(texturePath);
             }
         }
@@ -271,12 +280,14 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         {
             if (asset.find("mat") != asset.cend())
             {
-                scene.LoadModel(asset["path"].get<std::string>(),
+                scene.LoadModel(path.parent_path() /
+                                  asset["path"].get<std::string>(),
                                 asset["mat"].get<std::string>());
             }
             else
             {
-                scene.LoadModel(asset["path"].get<std::string>());
+                scene.LoadModel(path.parent_path() /
+                                asset["path"].get<std::string>());
             }
         }
     }

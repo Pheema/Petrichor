@@ -1,4 +1,4 @@
-﻿#include "Environment.h"
+#include "Environment.h"
 
 #include "Core/Color3f.h"
 #include "Core/Constants.h"
@@ -12,7 +12,7 @@ namespace Core
 {
 
 void
-Environment::Load(std::string path)
+Environment::Load(const std::filesystem::path& path)
 {
     if (m_texEnv == nullptr)
     {

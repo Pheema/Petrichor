@@ -9,11 +9,11 @@
 #include <gflags/gflags.h>
 #include <thread>
 
-DEFINE_string(outputDir, "./Output", "relative output path");
+DEFINE_string(imageOutputDir, "./RenderedImage", "image output path");
 DEFINE_bool(useFixedFilename, false, "use fixed file name.");
 DEFINE_uint32(timeLimit, 0, "Rendering time limit");
-DEFINE_string(renderSettingPath, "settings.json", "Render setting file path.");
-DEFINE_string(assetsPath, "assets.json", "Render setting file path.");
+DEFINE_string(renderSetting, "settings.json", "Render setting file path.");
+DEFINE_string(assetSetting, "assets.json", "Asset setting file path.");
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -49,7 +49,18 @@ GetCurrentTimeString()
 void
 OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
 {
-    std::filesystem::path outputDir(FLAGS_outputDir);
+    std::filesystem::path outputDir(FLAGS_imageOutputDir);
+    if (!std::filesystem::is_directory(outputDir))
+    {
+        fmt::print("Invalid output directory.\n");
+        return;
+    }
+
+    if (!std::filesystem::exists(outputDir))
+    {
+        std::filesystem::create_directory(outputDir);
+    }
+
     std::string filename;
 
     if (!FLAGS_useFixedFilename)
@@ -76,8 +87,9 @@ main(int argc, char** argv)
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     Petrichor::Core::Scene scene;
-    scene.LoadRenderSetting(FLAGS_renderSettingPath);
-    scene.LoadAssets(FLAGS_assetsPath);
+    scene.LoadRenderSetting(
+      std::filesystem::weakly_canonical(FLAGS_renderSetting));
+    scene.LoadAssets(std::filesystem::weakly_canonical(FLAGS_assetSetting));
 
     // #TODO: Render()の引数にAOVType(AOVFlag?)を渡してレンダリングする？
     auto targetTexture = std::make_unique<Petrichor::Core::Texture2D>(
@@ -112,11 +124,11 @@ main(int argc, char** argv)
     Petrichor::Core::Petrichor petrichor;
     petrichor.SetRenderCallback(OnRenderingFinished);
 
-    std::filesystem::path outputDir(FLAGS_outputDir);
-    if (!std::filesystem::is_directory(outputDir))
+    std::filesystem::path outputDir(
+      std::filesystem::weakly_canonical(FLAGS_imageOutputDir));
+    if (!std::filesystem::exists(outputDir))
     {
-        fmt::print("Invalid output directory.\n");
-        return 1;
+        std::filesystem::create_directory(outputDir);
     }
 
     // 時間制限あればセット

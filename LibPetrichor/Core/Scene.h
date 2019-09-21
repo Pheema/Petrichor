@@ -129,15 +129,16 @@ public:
 
     //! シーンにテクスチャを登録
     TextureHandle
-    RegisterTexture(std::string_view filePath, const Texture2D& texture2D)
+    RegisterTexture(const std::filesystem::path& filePath,
+                    const Texture2D& texture2D)
     {
-        if (m_textures.find(filePath.data()) == m_textures.end())
+        if (m_textures.find(filePath.string()) == m_textures.end())
         {
-            m_textures[std::string(filePath)] = texture2D;
+            m_textures[filePath.string()] = texture2D;
         }
 
         TextureHandle textureHandle;
-        textureHandle.filePath = filePath;
+        textureHandle.filePath = filePath.string();
         return textureHandle;
     }
 

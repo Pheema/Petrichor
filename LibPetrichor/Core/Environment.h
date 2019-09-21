@@ -14,7 +14,7 @@ public:
 
     //! 画像を読み込む
     void
-    Load(std::string path);
+    Load(const std::filesystem::path& path);
 
     //! World座標系において、dir方向のテクセルをサンプリングする
     Color3f

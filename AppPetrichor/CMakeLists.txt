@@ -6,7 +6,9 @@ target_include_directories(AppPetrichor PRIVATE LibPetrichor)
 set_target_properties(
   AppPetrichor
   PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
-             "${CMAKE_SOURCE_DIR}"
+             "${CMAKE_BINARY_DIR}"
+             VS_DEBUGGER_COMMAND_ARGUMENTS
+             "--assetSetting ${CMAKE_SOURCE_DIR}/assets.json --renderSetting ${CMAKE_SOURCE_DIR}/settings.json"
              VS_USER_PROPS
              "${CMAKE_BINARY_DIR}/conanbuildinfo_multi.props"
              LINK_FLAGS_RELEASE
