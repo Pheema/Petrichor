@@ -1,8 +1,7 @@
 #include "ThreadPool.h"
 
-#include "fmt/format.h"
+#include "Core/Logger.h"
 #include <iostream>
-#include <unordered_map>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -36,8 +35,8 @@ ThreadPool::ThreadPool(size_t numThreads)
         for (int groupIndex = 0; groupIndex < numProcessorGroups; groupIndex++)
         {
             const DWORD numProssors = GetActiveProcessorCount(groupIndex);
-            fmt::print(
-              "Processor group {} has {} cores.\n", groupIndex, numProssors);
+            Logger::Info(
+              "Processor group {} has {} cores.", groupIndex, numProssors);
             const DWORD prev = cumulativeNumProcessors_.back();
             cumulativeNumProcessors_.emplace_back(prev + numProssors);
         }
@@ -96,9 +95,9 @@ ThreadPool::ThreadPool(size_t numThreads)
                         SetThreadGroupAffinity(
                           GetCurrentThread(), &groupAffinity, nullptr);
                     }
-                    fmt::print("Thread {} is binded to group {}.\n",
-                               threadIndex,
-                               groupIndex);
+                    Logger::Info("Thread {} is binded to group {}.",
+                                 threadIndex,
+                                 groupIndex);
                 };
                 bindThreadToGroup(threadIndex, groupIndex);
             }

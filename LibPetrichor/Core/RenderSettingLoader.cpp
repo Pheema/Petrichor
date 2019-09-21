@@ -1,4 +1,5 @@
 #include "RenderSettingLoader.h"
+#include "Core/Logger.h"
 #include "nlohmann/json.hpp"
 #include "toml/toml.h"
 #include <fstream>
@@ -19,7 +20,7 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
     std::ifstream file(path, std::ios::in);
     if (file.fail())
     {
-        std::cout << "Couldn't read the setting file" << std::endl;
+        Logger::Error("Failed to read the setting file");
         return RenderSetting{};
     }
 
@@ -28,6 +29,8 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
     Json renderSettingJson;
     file >> renderSettingJson;
     file.close();
+
+    Logger::Info("Render setting file loaded. [{}]", path.string());
 
     auto readValueIfKeyExists =
       [](auto* result, const std::string& key, const Json& json) -> void {
@@ -40,8 +43,7 @@ RenderSettingLoaderJson::Load(const std::filesystem::path& path)
             return;
         }
 
-        std::cout << "RenderSetting: key (" << key << ") is not found."
-                  << std::endl;
+        Logger::Error("RenderSetting: key is not found. [{}]", key);
     };
 
     readValueIfKeyExists(
@@ -72,14 +74,14 @@ SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
     std::ifstream file(path, std::ios::in);
     if (file.fail())
     {
-        std::cerr << "Couldn't read the setting file" << std::endl;
+        Logger::Error("Failed to read the setting file");
         return sceneSettings;
     }
 
     const toml::ParseResult parsedData = toml::parse(file);
     if (!parsedData.valid())
     {
-        std::cerr << "Parsing toml file failed.\n";
+        Logger::Error("Failed to parse the toml file.");
         return sceneSettings;
     }
 
@@ -96,7 +98,7 @@ SceneSettingsTomlLoader::Load(const std::filesystem::path& path)
         }
         else
         {
-            std::cout << "RenderSetting: key (" << key << ") is not found.\n";
+            Logger::Error("RenderSetting: key is not found. [{}]", key);
         }
     };
 

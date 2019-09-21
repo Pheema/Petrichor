@@ -1,5 +1,6 @@
 #include "SceneLoader.h"
 
+#include "Core/Logger.h"
 #include "Core/Material/GGX.h"
 #include "Core/Material/Glass.h"
 #include "Core/Material/Lambert.h"
@@ -20,7 +21,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         std::ifstream file(path, std::ios::in);
         if (file.fail())
         {
-            fmt::print("Couldn't read the scene file\n({})\n", path.string());
+            Logger::Error("Failed to read the scene file. [{}]", path.string());
             return nlohmann::json{};
         }
 
@@ -29,6 +30,8 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         return ret;
     }();
 
+    Logger::Info("Scene file loaded. [{}]", path.string());
+
     auto loadVector3f = [](const nlohmann::json& json, const char* arrayName) {
         if (json.find(arrayName) != json.cend())
         {
@@ -36,7 +39,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
 
             if (loadedVector.size() != 3)
             {
-                fmt::print("[SceneLoaderJson] '{}' size != 3.\n", arrayName);
+                Logger::Error("[SceneLoaderJson] '{}' size != 3.", arrayName);
             }
 
             Math::Vector3f v;
@@ -51,7 +54,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
         else
         {
-            fmt::print("[SceneLoaderJson] '{}' not found.\n", arrayName);
+            Logger::Error("[SceneLoaderJson] '{}' not found.", arrayName);
             return Math::Vector3f::Zero();
         }
     };
@@ -71,7 +74,7 @@ SceneLoaderJson::Load(const std::filesystem::path& path, Scene& scene)
         }
         else
         {
-            fmt::print("[SceneLoaderJson] '{}' not found.\n", keyName);
+            Logger::Error("[SceneLoaderJson] '{}' not found.", keyName);
         }
     };
 

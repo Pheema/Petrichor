@@ -1,5 +1,6 @@
 #include "Core/Denoiser/IntelOpenImageDenoiser.h"
 #include "Core/Geometry/Sphere.h"
+#include "Core/Logger.h"
 #include "Core/Petrichor.h"
 #include "TestScene/TestScene.h"
 #include <cstdlib>
@@ -46,45 +47,33 @@ GetCurrentTimeString()
                        tm.tm_sec);
 }
 
-void
-OnRenderingFinished(const Petrichor::RenderingResult& renderingResult)
-{
-    std::filesystem::path outputDir(FLAGS_imageOutputDir);
-    if (!std::filesystem::is_directory(outputDir))
-    {
-        fmt::print("Invalid output directory.\n");
-        return;
-    }
-
-    if (!std::filesystem::exists(outputDir))
-    {
-        std::filesystem::create_directory(outputDir);
-    }
-
-    std::string filename;
-
-    if (!FLAGS_useFixedFilename)
-    {
-        filename += GetCurrentTimeString();
-        filename += "_";
-    }
-    filename += "elapsedtime.txt";
-
-    std::ofstream file(outputDir / filename);
-    if (file.fail())
-    {
-        return;
-    }
-
-    file << fmt::format("Total time: {:.2f} [s]\n", renderingResult.totalSec);
-    file.close();
-}
-
 int
 main(int argc, char** argv)
 {
     using namespace std::chrono_literals;
     gflags::ParseCommandLineFlags(&argc, &argv, true);
+
+    std::filesystem::path outputDir(
+      std::filesystem::weakly_canonical(FLAGS_imageOutputDir));
+    if (!std::filesystem::exists(outputDir))
+    {
+        std::filesystem::create_directory(outputDir);
+    }
+
+    std::string filenamePrefix;
+    if (!FLAGS_useFixedFilename)
+    {
+        filenamePrefix += GetCurrentTimeString();
+        filenamePrefix += "_";
+    }
+
+    {
+        std::string logFileName = filenamePrefix + "log.txt";
+        Petrichor::Core::Logger::AddConsoleOutput();
+        Petrichor::Core::Logger::AddFileOutput(outputDir / logFileName);
+    }
+
+    SCOPE_LOGGER(__FUNCTION__);
 
     Petrichor::Core::Scene scene;
     scene.LoadRenderSetting(
@@ -122,14 +111,7 @@ main(int argc, char** argv)
                            denoisingNormalTexture.get());
 
     Petrichor::Core::Petrichor petrichor;
-    petrichor.SetRenderCallback(OnRenderingFinished);
-
-    std::filesystem::path outputDir(
-      std::filesystem::weakly_canonical(FLAGS_imageOutputDir));
-    if (!std::filesystem::exists(outputDir))
-    {
-        std::filesystem::create_directory(outputDir);
-    }
+    petrichor.SetRenderCallback(nullptr);
 
     // 時間制限あればセット
     if (FLAGS_timeLimit > 0)
@@ -163,15 +145,6 @@ main(int argc, char** argv)
         });
         elapsedTimeChecker.detach();
     }
-
-#ifdef _WIN32
-    fmt::print("GetActiveProcessorCount(ALL_PROCESSOR_GROUPS): {}\n",
-               GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
-#endif
-    fmt::print("Hardware Concurrency: {}\n",
-               std::thread::hardware_concurrency());
-    fmt::print("Number of used threads: {}\n",
-               scene.GetRenderSetting().numThreads);
 
     const auto progressBar = [](float ratio) {
         std::string progressBar;
@@ -221,16 +194,6 @@ main(int argc, char** argv)
 
     petrichor.Render(scene);
 
-    std::string prefix;
-    if (FLAGS_useFixedFilename)
-    {
-        prefix = "image";
-    }
-    else
-    {
-        prefix = GetCurrentTimeString();
-    }
-
     if (targetTexture)
     {
         /*{
@@ -246,27 +209,27 @@ main(int argc, char** argv)
                            true);
 
         {
-            const std::string denoisedFilename = prefix + "_final.png";
+            const std::string denoisedFilename = filenamePrefix + "final.png";
             denoised.Save(outputDir / denoisedFilename);
         }
     }
 
-    /* if (uvCoordinateTexture)
-     {
-         const std::string fileName = prefix + "_uv.png";
-         uvCoordinateTexture->Save(outputDir / fileName);
-     }*/
-
-    /*if (denoisingAlbedoTexture)
+    /*if (uvCoordinateTexture)
     {
-        const std::string fileName = prefix + "_denoisingAlbedo.png";
+        const std::string fileName = filenamePrefix + "uv.png";
+        uvCoordinateTexture->Save(outputDir / fileName);
+    }
+
+    if (denoisingAlbedoTexture)
+    {
+        const std::string fileName = filenamePrefix + "_denoisingAlbedo.png";
         denoisingAlbedoTexture->Save(outputDir / fileName);
     }
 
     if (denoisingNormalTexture)
     {
         const std::string denoisingNormalFileName =
-          prefix + "_denoisingNormal.png";
+          filenamePrefix + "_denoisingNormal.png";
         denoisingNormalTexture->Save(outputDir / denoisingNormalFileName);
     }*/
 

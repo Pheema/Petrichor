@@ -1,5 +1,7 @@
 #include "Texture2D.h"
 
+#include "Core/Logger.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -108,7 +110,7 @@ Texture2D::Load(const std::filesystem::path& path,
 {
     if (!std::filesystem::exists(path))
     {
-        std::cerr << "[Error] Texture not found. (" << path << ")" << std::endl;
+        Logger::Error("Texture not found. {}", path.string());
         return false;
     }
 
@@ -121,10 +123,9 @@ Texture2D::Load(const std::filesystem::path& path,
                                               nullptr,
                                               kNumChannelsInPixelRGB);
 
-        if (data == nullptr)
+        if (!data)
         {
-            std::cerr << "[Error] Could not read png file. (" << path << ")"
-                      << std::endl;
+            Logger::Error("Could not read png file. [{}]", path.string());
             return false;
         }
 
@@ -165,10 +166,9 @@ Texture2D::Load(const std::filesystem::path& path,
         const float* const data =
           stbi_loadf(path.string().c_str(), &m_width, &m_height, nullptr, 0);
 
-        if (data == nullptr)
+        if (!data)
         {
-            std::cerr << "[Error] Could not read hdr file.(" << path << ")"
-                      << std::endl;
+            Logger::Error("Could not read hdr file. [{}]", path.string());
             return false;
         }
 
@@ -190,13 +190,12 @@ Texture2D::Load(const std::filesystem::path& path,
         return true;
     }
 
-    std::cerr << "[Error] Unsupported texture format.(" << path << ")"
-              << std::endl;
+    Logger::Error("Unsupported texture format. [{}]", path.string());
     return false;
 }
 
 void
-Texture2D::Save(std::filesystem::path path) const
+Texture2D::Save(const std::filesystem::path& path) const
 {
     if (path.extension() == ".png")
     {
@@ -249,7 +248,7 @@ Texture2D::Save(std::filesystem::path path) const
         return;
     }
 
-    throw std::runtime_error("Unsupported image type.");
+    Logger::Error("Unsupported image type. [{}]", path.string());
 }
 
 void

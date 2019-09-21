@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Scene.h"
+#include "Logger.h"
 #include <atomic>
 #include <chrono>
 #include <functional>
@@ -22,6 +23,8 @@ using ClockType = std::chrono::high_resolution_clock;
 class Petrichor
 {
 public:
+    Petrichor() {}
+
     //! シーンをレンダリングする
     //! @param scene レンダリングするシーン
     void
@@ -54,9 +57,6 @@ private:
 private:
     //! レンダリング済みタイルの個数
     std::atomic<uint32_t> m_numRenderedTiles = 0;
-
-    //! レンダリング時間計測用
-    ClockType::time_point m_timeRenderingBegin{};
 
     //! レンダリング終了時に呼ばれる
     std::function<void(const RenderingResult&)> m_onRenderingFinished;

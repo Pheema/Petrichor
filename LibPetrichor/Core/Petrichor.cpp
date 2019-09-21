@@ -10,6 +10,7 @@
 #include "Core/Geometry/Vertex.h"
 #include "Core/Integrator/PathTracing.h"
 #include "Core/Integrator/SimplePathTracing.h"
+#include "Core/Logger.h"
 #include "Core/Material/Emission.h"
 #include "Core/Material/GGX.h"
 #include "Core/Material/Lambert.h"
@@ -33,7 +34,7 @@ namespace Core
 void
 Petrichor::Render(const Scene& scene)
 {
-    m_timeRenderingBegin = ClockType::now();
+    SCOPE_LOGGER(__FUNCTION__);
 
     // #TODO 外部から設定可能にする
     // BruteForce accel;
@@ -51,7 +52,7 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::Rendered);
         if (targetTexure)
         {
-            fmt::print("[Render] Begin\n");
+            SCOPE_LOGGER("[AOV] Rendered");
 
             // #TODO: 外部から設定可能にする
             SimplePathTracing pt;
@@ -93,12 +94,10 @@ Petrichor::Render(const Scene& scene)
                     });
                 }
             }
-
-            fmt::print("[Render] End\n");
         }
         else
         {
-            fmt::print("[Error] Target texture has not been set.\n");
+            Logger::Error("Target texture has not been set.\n");
         }
     }
 
@@ -108,7 +107,7 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::UV);
         if (uvCoordinateTexture)
         {
-            fmt::print("[AOV][UV] Begin\n");
+            SCOPE_LOGGER("[AOV] UV");
 
             AOVUVCoordinate renderer;
 
@@ -152,8 +151,6 @@ Petrichor::Render(const Scene& scene)
                     tileIndex++;
                 }
             }
-
-            fmt::print("[AOV][UV] End\n");
         }
     }
 
@@ -163,7 +160,7 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::DenoisingAlbedo);
         if (denoisingAlbedoTexture)
         {
-            fmt::print("[AOV][DenoisingAlbedo] Begin\n");
+            SCOPE_LOGGER("[AOV] DenoisingAlbedo");
 
             AOVDenoisingAlbedo renderer;
 
@@ -207,8 +204,6 @@ Petrichor::Render(const Scene& scene)
                     tileIndex++;
                 }
             }
-
-            fmt::print("[AOV][DenoisingAlbedo] End\n");
         }
     }
 
@@ -218,7 +213,7 @@ Petrichor::Render(const Scene& scene)
           scene.GetTargetTexture(Scene::AOVType::DenoisingNormal);
         if (aovWorldNormalTexture)
         {
-            fmt::print("[AOV][DenoisingNormal] Begin\n");
+            SCOPE_LOGGER("[AOV] DenoisingNormal");
 
             AOVDenoisingNormal renderer;
 
@@ -262,8 +257,6 @@ Petrichor::Render(const Scene& scene)
                     tileIndex++;
                 }
             }
-
-            fmt::print("[AOV][DenoisingNormal] End\n");
         }
     }
 
@@ -273,12 +266,9 @@ Petrichor::Render(const Scene& scene)
 void
 Petrichor::Finalize()
 {
-    const std::chrono::duration<float> totalTime =
-      ClockType::now() - m_timeRenderingBegin;
-
+    if (m_onRenderingFinished)
     {
         RenderingResult renderingResult;
-        renderingResult.totalSec = totalTime.count();
         m_onRenderingFinished(renderingResult);
     }
 }

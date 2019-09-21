@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Core/Logger.h"
 #include "Core/RenderSettingLoader.h"
 #include "Material/Lambert.h"
 #include "SceneLoader.h"
@@ -13,14 +14,15 @@ Scene::LoadRenderSetting(const std::filesystem::path& path)
 {
     if (!std::filesystem::exists(path))
     {
-        fmt::print("Render setting file is not found.\n{}\n", path.string());
+        Logger::Error("Failed to read the render setting file. [{}]",
+                      path.string());
         return;
     }
 
     auto loader = std::make_unique<RenderSettingLoaderJson>();
     m_renderSetting = loader->Load(path.c_str());
 
-    fmt::print("[Setting]\n{}\n", m_renderSetting);
+    Logger::Info("\n{}", m_renderSetting);
 }
 
 void

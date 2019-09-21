@@ -11,6 +11,8 @@ target_sources(LibPetrichor PRIVATE
                Core/Environment.h
                Core/Environment.cpp
                Core/HitInfo.h
+               Core/Logger.h
+               Core/Logger.cpp
                Core/Petrichor.h
                Core/Petrichor.cpp
                Core/Ray.h
@@ -110,7 +112,7 @@ target_include_directories(LibPetrichor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(LibPetrichor SYSTEM
                            PRIVATE ${CMAKE_SOURCE_DIR}/External/stb
                                    ${CMAKE_SOURCE_DIR}/External/tinytoml/include
-                                   ${CMAKE_SOURCE_DIR}/External/spdlog/include)
+                           PUBLIC ${CMAKE_SOURCE_DIR}/External/spdlog/include)
 
 target_link_libraries(LibPetrichor
                       PRIVATE OpenImageDenoise

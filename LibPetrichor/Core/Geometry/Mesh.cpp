@@ -2,13 +2,13 @@
 
 #include "Core/Geometry/Triangle.h"
 #include "Core/Geometry/Vertex.h"
+#include "Core/Logger.h"
 #include "Core/Material/MaterialBase.h"
 #include "Core/Scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/mesh.h"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
-// #include "fmt/format.h"
 
 namespace Petrichor
 {
@@ -35,7 +35,7 @@ Mesh::Load(const std::filesystem::path& path,
     const auto* aiscene = importer.ReadFile(path.string(), importFlag);
     if (aiscene == nullptr)
     {
-        printf("Unable to load mesh: %s\n", importer.GetErrorString());
+        Logger::Error("Fail to load mesh. [{}]", importer.GetErrorString());
         return;
     }
 
@@ -45,7 +45,7 @@ Mesh::Load(const std::filesystem::path& path,
         for (size_t idxMesh = 0; idxMesh < aiscene->mNumMeshes; ++idxMesh)
         {
             const aiMesh* pMesh = aiscene->mMeshes[idxMesh];
-            fmt::print("[{}]: {}\n", path.string(), pMesh->mMaterialIndex);
+            Logger::Info("[{}]: {}", path.string(), pMesh->mMaterialIndex);
             // ---- 頂点の読み込み ----
             for (size_t idxVert = 0; idxVert < pMesh->mNumVertices; ++idxVert)
             {

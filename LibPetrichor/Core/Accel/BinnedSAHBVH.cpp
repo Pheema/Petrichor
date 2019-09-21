@@ -1,6 +1,7 @@
 #include "BinnedSAHBVH.h"
 
 #include "Core/Geometry/GeometryBase.h"
+#include "Core/Logger.h"
 #include "Core/Scene.h"
 #include <numeric>
 #include <stack>
@@ -14,7 +15,7 @@ namespace Core
 void
 BinnedSAHBVH::Build(const Scene& scene)
 {
-    fmt::print("[BVH] Construction starts.\n");
+    SCOPE_LOGGER("[BVH] Build");
 
     const auto numPrimitives = scene.GetGeometries().size();
     m_maxBVHDepth = 0;
@@ -219,8 +220,6 @@ BinnedSAHBVH::Build(const Scene& scene)
             }
         }
     }
-    fmt::print("[BVH] Construction ends.\n");
-    fmt::print("[BVH] Tree depth: {}\n", m_maxBVHDepth);
 }
 
 std::pair<float, int>
