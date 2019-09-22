@@ -24,6 +24,9 @@ enum class MaterialTypes
 class MaterialBase
 {
 public:
+    MaterialBase() = default;
+    virtual ~MaterialBase() {}
+
     virtual Color3f
     BxDF(const Ray& rayIn,
          const Ray& rayOut,
