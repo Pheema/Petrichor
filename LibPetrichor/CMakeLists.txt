@@ -112,6 +112,7 @@ target_include_directories(LibPetrichor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(LibPetrichor SYSTEM
                            PRIVATE ${CMAKE_SOURCE_DIR}/External/stb
                                    ${CMAKE_SOURCE_DIR}/External/tinytoml/include
+                                   $<TARGET_PROPERTY:OpenImageDenoise,INTERFACE_INCLUDE_DIRECTORIES>
                            PUBLIC ${CMAKE_SOURCE_DIR}/External/spdlog/include)
 
 target_link_libraries(LibPetrichor
