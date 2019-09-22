@@ -14,5 +14,5 @@ jobs:
             sudo apt update
             sudo apt install -y iwyu
             git submodule sync
-            git submodule update --init
+            git submodule update --init --recursive
             bash build.sh
