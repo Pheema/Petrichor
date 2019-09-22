@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.14)
 
 add_executable(TestPetrichor "Math/TestAliasMethod.cpp" "Math/TestVector3f.cpp"
                              "TestMain.cpp")

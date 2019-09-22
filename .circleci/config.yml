@@ -8,12 +8,6 @@ jobs:
       - checkout
       - run:
           command: |
-            cmake --version
-            sudo apt-get install software-properties-common
-            sudo add-apt-repository ppa:george-edison55/cmake-3.x
-            sudo apt update
-            sudo apt install cmake            
-            cmake --version
             wget -O ../tbb https://github.com/intel/tbb/releases/download/2019_U8/tbb2019_20190605oss_lin.tgz
             tar -xzvf ../tbb -C ../
             mv ../tbb2019_20190605oss ../tbb-linux
