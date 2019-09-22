@@ -162,8 +162,10 @@ BinnedSAHBVH::Build(const Scene& scene)
 
         // ---- 分割する場合 ----
         {
-            const auto [leftBoundary,
-                        rightBoundary] = [&]() -> std::pair<AABB, AABB> {
+            const auto [leftBoundary, rightBoundary] =
+              [&,
+               binPartitionIndexInBestDiv =
+                 binPartitionIndexInBestDiv]() -> std::pair<AABB, AABB> {
                 AABB leftBoundary_, rightBoundary_;
                 for (auto iter = iterBegin; iter != iterEnd; iter++)
                 {
