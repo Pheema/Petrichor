@@ -9,10 +9,9 @@ jobs:
       - run:
           command: |
             cmake --version
-            wget -O ../cmake-inst.sh https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.sh
-            sudo mkdir /opt/cmake
-            yes | sudo bash ../cmake-inst.sh --prefix=/opt/cmake
-            sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+            sudo add-apt-repository ppa:george-edison55/cmake-3.x
+            sudo apt update
+            sudo apt install cmake            
             cmake --version
             wget -O ../tbb https://github.com/intel/tbb/releases/download/2019_U8/tbb2019_20190605oss_lin.tgz
             tar -xzvf ../tbb -C ../
