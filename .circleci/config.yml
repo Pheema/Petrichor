@@ -9,9 +9,11 @@ jobs:
       - run:
           command: |
             wget -O ../tbb https://github.com/intel/tbb/releases/download/2019_U8/tbb2019_20190605oss_lin.tgz
-            tar -xzvf ../tbb
+            tar -xzvf ../tbb -C ../
             mv ../tbb2019_20190605oss ../tbb-linux
-            sudo apt update && sudo apt install -y iwyu
+            sudo add-apt-repository ppa:george-edison55/cmake-3.x
+            sudo apt update
+            sudo apt install -y iwyu
             git submodule sync
             git submodule update --init
             bash build.sh
