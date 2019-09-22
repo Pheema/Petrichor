@@ -8,7 +8,10 @@ jobs:
       - checkout
       - run:
           command: |
+            wget -O ../tbb https://github.com/intel/tbb/releases/download/2019_U8/tbb2019_20190605oss_lin.tgz
+            tar -xzvf tbb
+            mv tbb2019_20190605oss tbb-linux
+            sudo apt update && sudo apt install -y iwyu
             git submodule sync
             git submodule update --init
-            conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
             bash build.sh
