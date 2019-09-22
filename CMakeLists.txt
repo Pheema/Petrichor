@@ -28,7 +28,6 @@ endif(MSVC)
 
 # ---- Open Image Denoise ----
 option(OIDN_STATIC_LIB "Build Open Image Denoise as a static library." ON)
-set(TBB_ROOT "${CMAKE_SOURCE_DIR}/../tbb")
 add_subdirectory(External/oidn)
 
 add_subdirectory(LibPetrichor)
